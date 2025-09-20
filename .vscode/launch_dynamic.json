@@ -1,0 +1,45 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🎯 Select Device & Environment",
+            "request": "launch",
+            "type": "dart",
+            "program": "${workspaceFolder}/lib/main_dev.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ],
+            "preLaunchTask": "Select Device"
+        },
+        {
+            "name": "📱 Any Available Device (Dev)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "args": [
+                "--flavor",
+                "dev",
+                "--dart-define=ENVIRONMENT=dev"
+            ],
+            "toolArgs": [
+                "--flavor",
+                "dev"
+            ]
+        },
+        {
+            "name": "📱 Any Available Device (Prod)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "args": [
+                "--flavor",
+                "prod",
+                "--dart-define=ENVIRONMENT=production"
+            ],
+            "toolArgs": [
+                "--flavor",
+                "prod"
+            ]
+        }
+    ]
+}

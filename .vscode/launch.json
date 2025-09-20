@@ -1,0 +1,112 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🚀 Viernes Dev (Debug)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "🏭 Viernes Prod (Debug)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=production"
+            ]
+        },
+        {
+            "name": "🚀 Viernes Dev (Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "🏭 Viernes Prod (Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define=ENVIRONMENT=production"
+            ]
+        },
+        {
+            "name": "🌐 Viernes Web Dev",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "deviceId": "chrome",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "🌐 Viernes Web Prod",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "deviceId": "chrome",
+            "args": [
+                "--dart-define=ENVIRONMENT=production"
+            ]
+        },
+        {
+            "name": "🍎 Viernes iOS Dev",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "deviceId": "FB419AB3-DB53-4860-A812-F619AEE5D222",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "🍎 Viernes iOS Prod",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "deviceId": "FB419AB3-DB53-4860-A812-F619AEE5D222",
+            "args": [
+                "--dart-define=ENVIRONMENT=production"
+            ]
+        },
+        {
+            "name": "🍎 iOS Simulator (Auto)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "deviceId": "ios",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "🤖 Android Emulator",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "deviceId": "android",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        },
+        {
+            "name": "📱 Any Available Device",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "args": [
+                "--dart-define=ENVIRONMENT=dev"
+            ]
+        }
+    ]
+}

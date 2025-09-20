@@ -13,3 +13,9 @@
 # Dart and Flutter
 -keep class dartx.** { *; }
 -dontwarn dartx.**
+
+# Fix for Play Store split install issues
+-dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**
+-keep class com.google.android.play.core.** { *; }

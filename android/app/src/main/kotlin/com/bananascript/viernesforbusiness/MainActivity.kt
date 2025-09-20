@@ -1,4 +1,4 @@
-package com.bananascript.viernes.viernes_mobile
+package com.bananascript.viernesforbusiness
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,148 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🧹 Flutter Clean",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["clean"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "📦 Flutter Pub Get",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["pub", "get"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔧 Build Runner (Build)",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["packages", "pub", "run", "build_runner", "build"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔧 Build Runner (Watch)",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["packages", "pub", "run", "build_runner", "watch"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "isBackground": true
+        },
+        {
+            "label": "🏗️ Build APK Dev",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "build",
+                "apk",
+                "--flavor",
+                "dev",
+                "--dart-define=ENVIRONMENT=dev",
+                "-t",
+                "lib/main_dev.dart"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🏗️ Build APK Prod",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "build",
+                "apk",
+                "--flavor",
+                "prod",
+                "--dart-define=ENVIRONMENT=production",
+                "-t",
+                "lib/main_prod.dart"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🧪 Run Tests",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["test"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔍 Flutter Analyze",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["analyze"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🩺 Flutter Doctor",
+            "type": "shell",
+            "command": "flutter",
+            "args": ["doctor", "-v"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

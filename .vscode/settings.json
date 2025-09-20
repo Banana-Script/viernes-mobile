@@ -1,0 +1,60 @@
+{
+    "dart.flutterSdkPaths": [],
+    "dart.debugExternalPackageLibraries": false,
+    "dart.debugSdkLibraries": false,
+    "dart.lineLength": 120,
+    "dart.insertArgumentPlaceholders": false,
+    "dart.previewCommitCharacters": true,
+    "dart.previewLsp": true,
+    "dart.openDevTools": "flutter",
+    "dart.warnWhenEditingFilesOutsideWorkspace": true,
+    "dart.allowAnalytics": false,
+    "dart.checkForSdkUpdates": true,
+    "flutter.checkForSdkUpdates": true,
+    "dart.devToolsPort": 9103,
+    "dart.vmServicePort": 0,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/build": true,
+        "**/.dart_tool": true,
+        "**/.pub": true,
+        "**/.flutter-plugins": true,
+        "**/.flutter-plugins-dependencies": true
+    },
+    "search.exclude": {
+        "**/build": true,
+        "**/.dart_tool": true,
+        "**/.pub": true,
+        "**/ios/Pods": true,
+        "**/ios/.symlinks": true,
+        "**/android/.gradle": true,
+        "**/android/app/build": true,
+        "**/android/build": true
+    },
+    "dart.env": {
+        "ENVIRONMENT": "dev"
+    },
+    "files.associations": {
+        "*.arb": "json",
+        "*.dart": "dart"
+    },
+    "emmet.includeLanguages": {
+        "dart": "html"
+    },
+    "bracket-pair-colorizer-2.colors": [
+        "#fafafa",
+        "#9F51B6",
+        "#F7C244",
+        "#F07178",
+        "#53D5DC"
+    ]
+}
