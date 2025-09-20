@@ -1,0 +1,367 @@
+{
+  "@@locale": "en",
+  "appTitle": "Viernes",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Google sign in button text"
+  },
+  "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Dashboard tab/page title"
+  },
+  "customers": "Customers",
+  "@customers": {
+    "description": "Customers tab/page title"
+  },
+  "calls": "Calls",
+  "@calls": {
+    "description": "Calls tab/page title"
+  },
+  "conversations": "Conversations",
+  "@conversations": {
+    "description": "Conversations tab/page title"
+  },
+  "organization": "Organization",
+  "@organization": {
+    "description": "Organization tab/page title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings tab/page title"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile tab/page title"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "searchConversations": "Search conversations...",
+  "@searchConversations": {
+    "description": "Placeholder text for conversation search input"
+  },
+  "typeMessage": "Type a message...",
+  "@typeMessage": {
+    "description": "Placeholder text for message input"
+  },
+  "allConversations": "All",
+  "@allConversations": {
+    "description": "Tab title for all conversations"
+  },
+  "myConversations": "My Chats",
+  "@myConversations": {
+    "description": "Tab title for my conversations"
+  },
+  "viernesConversations": "Viernes AI",
+  "@viernesConversations": {
+    "description": "Tab title for Viernes AI conversations"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  "errorLoadingConversations": "Error loading conversations",
+  "@errorLoadingConversations": {
+    "description": "Error message when conversations fail to load"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Retry button text"
+  },
+  "noConversationsYet": "No conversations yet",
+  "@noConversationsYet": {
+    "description": "Empty state message when no conversations exist"
+  },
+  "startNewConversation": "Start New Conversation",
+  "@startNewConversation": {
+    "description": "Button text to start a new conversation"
+  },
+  "conversationInfo": "Conversation Info",
+  "@conversationInfo": {
+    "description": "Dialog title for conversation information"
+  },
+  "assignAgent": "Assign Agent",
+  "@assignAgent": {
+    "description": "Menu item to assign an agent"
+  },
+  "changeStatus": "Change Status",
+  "@changeStatus": {
+    "description": "Menu item to change conversation status"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status indicator"
+  },
+  "connecting": "Connecting...",
+  "@connecting": {
+    "description": "Connection status when establishing SSE connection"
+  },
+  "noMessagesYet": "No messages yet",
+  "@noMessagesYet": {
+    "description": "Empty state message when no messages in conversation"
+  },
+  "startConversationMessage": "Start the conversation by sending a message",
+  "@startConversationMessage": {
+    "description": "Empty state helper text for starting conversation"
+  },
+  "errorLoadingConversation": "Error loading conversation",
+  "@errorLoadingConversation": {
+    "description": "Error message when conversation fails to load"
+  },
+  "connectionIssue": "Connection issue",
+  "@connectionIssue": {
+    "description": "Warning message for SSE connection issues"
+  },
+  "dismiss": "Dismiss",
+  "@dismiss": {
+    "description": "Button to dismiss warning or error messages"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Button to close dialogs"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Button to refresh content"
+  },
+  "filters": "Filters",
+  "@filters": {
+    "description": "Button/title for filtering options"
+  },
+  "analytics": "Analytics",
+  "@analytics": {
+    "description": "Analytics page title"
+  },
+  "enterYourEmailAddress": "Enter your email address",
+  "@enterYourEmailAddress": {
+    "description": "Email input placeholder"
+  },
+  "rememberMe": "Remember me",
+  "@rememberMe": {
+    "description": "Remember me checkbox label"
+  },
+  "dontHaveAccount": "Don't have an account?",
+  "@dontHaveAccount": {
+    "description": "Text before sign up link"
+  },
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {
+    "description": "Text before login link"
+  },
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Create account button text"
+  },
+  "signUpToGetStarted": "Sign up to get started",
+  "@signUpToGetStarted": {
+    "description": "Sign up page subtitle"
+  },
+  "signUpWithGoogle": "Sign up with Google",
+  "@signUpWithGoogle": {
+    "description": "Google sign up button text"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "First name field label"
+  },
+  "lastName": "Last Name",
+  "@lastName": {
+    "description": "Last name field label"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+  "iAgreeToThe": "I agree to the",
+  "@iAgreeToThe": {
+    "description": "Terms agreement prefix"
+  },
+  "termsOfService": "Terms of Service",
+  "@termsOfService": {
+    "description": "Terms of service link text"
+  },
+  "and": "and",
+  "@and": {
+    "description": "Conjunction word"
+  },
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy policy link text"
+  },
+  "resetPassword": "Reset Password",
+  "@resetPassword": {
+    "description": "Reset password page title"
+  },
+  "passwordResetInstructions": "Enter your email address and we'll send you a link to reset your password.",
+  "@passwordResetInstructions": {
+    "description": "Password reset instructions"
+  },
+  "sendResetEmail": "Send Reset Email",
+  "@sendResetEmail": {
+    "description": "Send reset email button text"
+  },
+  "backToLogin": "Back to Login",
+  "@backToLogin": {
+    "description": "Back to login link text"
+  },
+  "rememberYourPassword": "Remember your password?",
+  "@rememberYourPassword": {
+    "description": "Text before back to login link"
+  },
+  "checkYourEmail": "Check your email",
+  "@checkYourEmail": {
+    "description": "Email sent confirmation title"
+  },
+  "emailSentInstructions": "We've sent password reset instructions to your email address.",
+  "@emailSentInstructions": {
+    "description": "Email sent confirmation message"
+  },
+  "followInstructions": "Please follow the instructions in the email to reset your password.",
+  "@followInstructions": {
+    "description": "Follow instructions message"
+  },
+  "sendAnotherEmail": "Send Another Email",
+  "@sendAnotherEmail": {
+    "description": "Send another email button text"
+  },
+  "emailSentSuccessfully": "Email sent successfully",
+  "@emailSentSuccessfully": {
+    "description": "Email sent success message"
+  },
+  "logoutConfirmation": "Are you sure you want to logout?",
+  "@logoutConfirmation": {
+    "description": "Logout confirmation message"
+  },
+  "coreFeatures": "Core Features",
+  "@coreFeatures": {
+    "description": "Core features menu section"
+  },
+  "businessTools": "Business Tools",
+  "@businessTools": {
+    "description": "Business tools menu section"
+  },
+  "comingSoon": "Coming Soon",
+  "@comingSoon": {
+    "description": "Coming soon indicator"
+  },
+  "voiceAgents": "Voice Agents",
+  "@voiceAgents": {
+    "description": "Voice agents menu item"
+  },
+  "organizationSettings": "Organization Settings",
+  "@organizationSettings": {
+    "description": "Organization settings menu item"
+  },
+  "pleaseEnterEmail": "Please enter your email",
+  "@pleaseEnterEmail": {
+    "description": "Email validation error"
+  },
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "@pleaseEnterValidEmail": {
+    "description": "Valid email validation error"
+  },
+  "pleaseEnterPassword": "Please enter your password",
+  "@pleaseEnterPassword": {
+    "description": "Password validation error"
+  },
+  "pleaseEnterFirstName": "Please enter your first name",
+  "@pleaseEnterFirstName": {
+    "description": "First name validation error"
+  },
+  "pleaseEnterLastName": "Please enter your last name",
+  "@pleaseEnterLastName": {
+    "description": "Last name validation error"
+  },
+  "pleaseEnterName": "Please enter your name",
+  "@pleaseEnterName": {
+    "description": "Name validation error"
+  },
+  "pleaseConfirmPassword": "Please confirm your password",
+  "@pleaseConfirmPassword": {
+    "description": "Confirm password validation error"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password mismatch validation error"
+  },
+  "passwordTooShort": "Password must be at least 6 characters",
+  "@passwordTooShort": {
+    "description": "Password length validation error"
+  },
+  "invalidEmailFormat": "Invalid email format",
+  "@invalidEmailFormat": {
+    "description": "Email format validation error"
+  },
+  "pleaseAcceptTerms": "Please accept the terms and conditions",
+  "@pleaseAcceptTerms": {
+    "description": "Terms acceptance validation error"
+  },
+  "invalidEmailOrPassword": "Invalid email or password",
+  "@invalidEmailOrPassword": {
+    "description": "Login error message"
+  },
+  "emailAlreadyInUse": "Email already in use",
+  "@emailAlreadyInUse": {
+    "description": "Email already exists error"
+  },
+  "weakPassword": "Password is too weak",
+  "@weakPassword": {
+    "description": "Weak password error"
+  },
+  "userNotFound": "User not found",
+  "@userNotFound": {
+    "description": "User not found error"
+  },
+  "tooManyRequests": "Too many requests. Please try again later",
+  "@tooManyRequests": {
+    "description": "Too many requests error"
+  },
+  "networkError": "Network error. Please check your connection",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  "googleSignInCancelled": "Google sign in was cancelled",
+  "@googleSignInCancelled": {
+    "description": "Google sign in cancelled message"
+  },
+  "googleSignInFailed": "Google sign in failed",
+  "@googleSignInFailed": {
+    "description": "Google sign in failed message"
+  },
+  "somethingWentWrong": "Something went wrong. Please try again",
+  "@somethingWentWrong": {
+    "description": "Generic error message"
+  }
+}

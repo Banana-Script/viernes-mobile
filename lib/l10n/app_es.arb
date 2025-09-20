@@ -1,0 +1,367 @@
+{
+  "@@locale": "es",
+  "appTitle": "Viernes",
+  "@appTitle": {
+    "description": "El título de la aplicación"
+  },
+  "welcome": "Bienvenido",
+  "@welcome": {
+    "description": "Mensaje de bienvenida"
+  },
+  "login": "Iniciar Sesión",
+  "@login": {
+    "description": "Texto del botón de inicio de sesión"
+  },
+  "logout": "Cerrar Sesión",
+  "@logout": {
+    "description": "Texto del botón de cerrar sesión"
+  },
+  "email": "Correo Electrónico",
+  "@email": {
+    "description": "Etiqueta del campo de correo electrónico"
+  },
+  "password": "Contraseña",
+  "@password": {
+    "description": "Etiqueta del campo de contraseña"
+  },
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "@forgotPassword": {
+    "description": "Texto del enlace de contraseña olvidada"
+  },
+  "signUp": "Registrarse",
+  "@signUp": {
+    "description": "Texto del botón de registro"
+  },
+  "signInWithGoogle": "Iniciar sesión con Google",
+  "@signInWithGoogle": {
+    "description": "Texto del botón de inicio de sesión con Google"
+  },
+  "dashboard": "Panel de Control",
+  "@dashboard": {
+    "description": "Título de la pestaña/página del panel de control"
+  },
+  "customers": "Clientes",
+  "@customers": {
+    "description": "Título de la pestaña/página de clientes"
+  },
+  "calls": "Llamadas",
+  "@calls": {
+    "description": "Título de la pestaña/página de llamadas"
+  },
+  "conversations": "Conversaciones",
+  "@conversations": {
+    "description": "Título de la pestaña/página de conversaciones"
+  },
+  "organization": "Organización",
+  "@organization": {
+    "description": "Título de la pestaña/página de organización"
+  },
+  "settings": "Configuración",
+  "@settings": {
+    "description": "Título de la pestaña/página de configuración"
+  },
+  "profile": "Perfil",
+  "@profile": {
+    "description": "Título de la pestaña/página de perfil"
+  },
+  "cancel": "Cancelar",
+  "@cancel": {
+    "description": "Texto del botón cancelar"
+  },
+  "searchConversations": "Buscar conversaciones...",
+  "@searchConversations": {
+    "description": "Texto placeholder para buscar conversaciones"
+  },
+  "typeMessage": "Escribe un mensaje...",
+  "@typeMessage": {
+    "description": "Texto placeholder para escribir mensajes"
+  },
+  "allConversations": "Todas",
+  "@allConversations": {
+    "description": "Título de la pestaña para todas las conversaciones"
+  },
+  "myConversations": "Mis Chats",
+  "@myConversations": {
+    "description": "Título de la pestaña para mis conversaciones"
+  },
+  "viernesConversations": "IA Viernes",
+  "@viernesConversations": {
+    "description": "Título de la pestaña para conversaciones de Viernes IA"
+  },
+  "loading": "Cargando...",
+  "@loading": {
+    "description": "Texto del indicador de carga"
+  },
+  "errorLoadingConversations": "Error al cargar conversaciones",
+  "@errorLoadingConversations": {
+    "description": "Mensaje de error cuando las conversaciones no se cargan"
+  },
+  "tryAgain": "Intentar de Nuevo",
+  "@tryAgain": {
+    "description": "Texto del botón de reintentar"
+  },
+  "noConversationsYet": "No hay conversaciones aún",
+  "@noConversationsYet": {
+    "description": "Mensaje de estado vacío cuando no hay conversaciones"
+  },
+  "startNewConversation": "Iniciar Nueva Conversación",
+  "@startNewConversation": {
+    "description": "Texto del botón para iniciar nueva conversación"
+  },
+  "conversationInfo": "Información de la Conversación",
+  "@conversationInfo": {
+    "description": "Título del diálogo de información de conversación"
+  },
+  "assignAgent": "Asignar Agente",
+  "@assignAgent": {
+    "description": "Elemento del menú para asignar agente"
+  },
+  "changeStatus": "Cambiar Estado",
+  "@changeStatus": {
+    "description": "Elemento del menú para cambiar estado"
+  },
+  "online": "En Línea",
+  "@online": {
+    "description": "Indicador de estado en línea"
+  },
+  "connecting": "Conectando...",
+  "@connecting": {
+    "description": "Estado de conexión cuando se establece conexión SSE"
+  },
+  "noMessagesYet": "No hay mensajes aún",
+  "@noMessagesYet": {
+    "description": "Mensaje de estado vacío cuando no hay mensajes"
+  },
+  "startConversationMessage": "Inicia la conversación enviando un mensaje",
+  "@startConversationMessage": {
+    "description": "Texto de ayuda para iniciar conversación"
+  },
+  "errorLoadingConversation": "Error al cargar conversación",
+  "@errorLoadingConversation": {
+    "description": "Mensaje de error cuando la conversación no se carga"
+  },
+  "connectionIssue": "Problema de conexión",
+  "@connectionIssue": {
+    "description": "Mensaje de advertencia para problemas de conexión SSE"
+  },
+  "dismiss": "Descartar",
+  "@dismiss": {
+    "description": "Botón para descartar advertencias o mensajes de error"
+  },
+  "close": "Cerrar",
+  "@close": {
+    "description": "Botón para cerrar diálogos"
+  },
+  "refresh": "Actualizar",
+  "@refresh": {
+    "description": "Botón para actualizar contenido"
+  },
+  "filters": "Filtros",
+  "@filters": {
+    "description": "Botón/título para opciones de filtrado"
+  },
+  "analytics": "Analíticas",
+  "@analytics": {
+    "description": "Título de página de analíticas"
+  },
+  "enterYourEmailAddress": "Ingresa tu dirección de correo",
+  "@enterYourEmailAddress": {
+    "description": "Placeholder de entrada de correo"
+  },
+  "rememberMe": "Recordarme",
+  "@rememberMe": {
+    "description": "Etiqueta de checkbox recordarme"
+  },
+  "dontHaveAccount": "¿No tienes una cuenta?",
+  "@dontHaveAccount": {
+    "description": "Texto antes del enlace de registro"
+  },
+  "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+  "@alreadyHaveAccount": {
+    "description": "Texto antes del enlace de inicio de sesión"
+  },
+  "createAccount": "Crear Cuenta",
+  "@createAccount": {
+    "description": "Texto del botón crear cuenta"
+  },
+  "signUpToGetStarted": "Regístrate para comenzar",
+  "@signUpToGetStarted": {
+    "description": "Subtítulo de página de registro"
+  },
+  "signUpWithGoogle": "Registrarse con Google",
+  "@signUpWithGoogle": {
+    "description": "Texto del botón de registro con Google"
+  },
+  "firstName": "Nombre",
+  "@firstName": {
+    "description": "Etiqueta del campo nombre"
+  },
+  "lastName": "Apellido",
+  "@lastName": {
+    "description": "Etiqueta del campo apellido"
+  },
+  "confirmPassword": "Confirmar Contraseña",
+  "@confirmPassword": {
+    "description": "Etiqueta del campo confirmar contraseña"
+  },
+  "iAgreeToThe": "Acepto los",
+  "@iAgreeToThe": {
+    "description": "Prefijo de acuerdo de términos"
+  },
+  "termsOfService": "Términos de Servicio",
+  "@termsOfService": {
+    "description": "Texto del enlace términos de servicio"
+  },
+  "and": "y",
+  "@and": {
+    "description": "Palabra de conjunción"
+  },
+  "privacyPolicy": "Política de Privacidad",
+  "@privacyPolicy": {
+    "description": "Texto del enlace política de privacidad"
+  },
+  "resetPassword": "Restablecer Contraseña",
+  "@resetPassword": {
+    "description": "Título de página restablecer contraseña"
+  },
+  "passwordResetInstructions": "Ingresa tu dirección de correo y te enviaremos un enlace para restablecer tu contraseña.",
+  "@passwordResetInstructions": {
+    "description": "Instrucciones para restablecer contraseña"
+  },
+  "sendResetEmail": "Enviar Correo de Restablecimiento",
+  "@sendResetEmail": {
+    "description": "Texto del botón enviar correo de restablecimiento"
+  },
+  "backToLogin": "Volver al Inicio de Sesión",
+  "@backToLogin": {
+    "description": "Texto del enlace volver al inicio"
+  },
+  "rememberYourPassword": "¿Recuerdas tu contraseña?",
+  "@rememberYourPassword": {
+    "description": "Texto antes del enlace volver al inicio"
+  },
+  "checkYourEmail": "Revisa tu correo",
+  "@checkYourEmail": {
+    "description": "Título de confirmación de correo enviado"
+  },
+  "emailSentInstructions": "Hemos enviado instrucciones para restablecer tu contraseña a tu dirección de correo.",
+  "@emailSentInstructions": {
+    "description": "Mensaje de confirmación de correo enviado"
+  },
+  "followInstructions": "Por favor sigue las instrucciones en el correo para restablecer tu contraseña.",
+  "@followInstructions": {
+    "description": "Mensaje de seguir instrucciones"
+  },
+  "sendAnotherEmail": "Enviar Otro Correo",
+  "@sendAnotherEmail": {
+    "description": "Texto del botón enviar otro correo"
+  },
+  "emailSentSuccessfully": "Correo enviado exitosamente",
+  "@emailSentSuccessfully": {
+    "description": "Mensaje de éxito de correo enviado"
+  },
+  "logoutConfirmation": "¿Estás seguro de que quieres cerrar sesión?",
+  "@logoutConfirmation": {
+    "description": "Mensaje de confirmación de cierre de sesión"
+  },
+  "coreFeatures": "Características Principales",
+  "@coreFeatures": {
+    "description": "Sección del menú características principales"
+  },
+  "businessTools": "Herramientas de Negocio",
+  "@businessTools": {
+    "description": "Sección del menú herramientas de negocio"
+  },
+  "comingSoon": "Próximamente",
+  "@comingSoon": {
+    "description": "Indicador próximamente"
+  },
+  "voiceAgents": "Agentes de Voz",
+  "@voiceAgents": {
+    "description": "Elemento del menú agentes de voz"
+  },
+  "organizationSettings": "Configuración de Organización",
+  "@organizationSettings": {
+    "description": "Elemento del menú configuración de organización"
+  },
+  "pleaseEnterEmail": "Por favor ingresa tu correo",
+  "@pleaseEnterEmail": {
+    "description": "Error de validación de correo"
+  },
+  "pleaseEnterValidEmail": "Por favor ingresa un correo válido",
+  "@pleaseEnterValidEmail": {
+    "description": "Error de validación de correo válido"
+  },
+  "pleaseEnterPassword": "Por favor ingresa tu contraseña",
+  "@pleaseEnterPassword": {
+    "description": "Error de validación de contraseña"
+  },
+  "pleaseEnterFirstName": "Por favor ingresa tu nombre",
+  "@pleaseEnterFirstName": {
+    "description": "Error de validación de nombre"
+  },
+  "pleaseEnterLastName": "Por favor ingresa tu apellido",
+  "@pleaseEnterLastName": {
+    "description": "Error de validación de apellido"
+  },
+  "pleaseEnterName": "Por favor ingresa tu nombre",
+  "@pleaseEnterName": {
+    "description": "Error de validación de nombre"
+  },
+  "pleaseConfirmPassword": "Por favor confirma tu contraseña",
+  "@pleaseConfirmPassword": {
+    "description": "Error de validación confirmar contraseña"
+  },
+  "passwordsDoNotMatch": "Las contraseñas no coinciden",
+  "@passwordsDoNotMatch": {
+    "description": "Error de validación contraseñas no coinciden"
+  },
+  "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+  "@passwordTooShort": {
+    "description": "Error de validación longitud de contraseña"
+  },
+  "invalidEmailFormat": "Formato de correo inválido",
+  "@invalidEmailFormat": {
+    "description": "Error de validación formato de correo"
+  },
+  "pleaseAcceptTerms": "Por favor acepta los términos y condiciones",
+  "@pleaseAcceptTerms": {
+    "description": "Error de validación aceptar términos"
+  },
+  "invalidEmailOrPassword": "Correo o contraseña inválidos",
+  "@invalidEmailOrPassword": {
+    "description": "Mensaje de error de inicio de sesión"
+  },
+  "emailAlreadyInUse": "El correo ya está en uso",
+  "@emailAlreadyInUse": {
+    "description": "Error de correo ya existe"
+  },
+  "weakPassword": "La contraseña es muy débil",
+  "@weakPassword": {
+    "description": "Error de contraseña débil"
+  },
+  "userNotFound": "Usuario no encontrado",
+  "@userNotFound": {
+    "description": "Error de usuario no encontrado"
+  },
+  "tooManyRequests": "Demasiadas solicitudes. Inténtalo de nuevo más tarde",
+  "@tooManyRequests": {
+    "description": "Error de demasiadas solicitudes"
+  },
+  "networkError": "Error de red. Por favor verifica tu conexión",
+  "@networkError": {
+    "description": "Mensaje de error de red"
+  },
+  "googleSignInCancelled": "El inicio de sesión con Google fue cancelado",
+  "@googleSignInCancelled": {
+    "description": "Mensaje de inicio con Google cancelado"
+  },
+  "googleSignInFailed": "El inicio de sesión con Google falló",
+  "@googleSignInFailed": {
+    "description": "Mensaje de fallo de inicio con Google"
+  },
+  "somethingWentWrong": "Algo salió mal. Por favor inténtalo de nuevo",
+  "@somethingWentWrong": {
+    "description": "Mensaje de error genérico"
+  }
+}
