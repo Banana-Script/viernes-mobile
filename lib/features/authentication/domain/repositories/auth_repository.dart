@@ -1,57 +1,49 @@
-import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/either.dart';
 import '../entities/auth_result_entity.dart';
 import '../entities/user_entity.dart';
 
 abstract class AuthRepository {
-  // Firebase Authentication Methods
-  Future<Either<AuthFailure, AuthResultEntity>> signInWithEmailAndPassword({
+  /// Sign in with email and password
+  Future<Either<Failure, AuthResultEntity>> signInWithEmailAndPassword({
     required String email,
     required String password,
   });
 
-  Future<Either<AuthFailure, AuthResultEntity>> signUpWithEmailAndPassword({
-    required String email,
-    required String password,
-  });
+  /// Sign in with Google
+  Future<Either<Failure, AuthResultEntity>> signInWithGoogle();
 
-  Future<Either<AuthFailure, AuthResultEntity>> signInWithGoogle();
+  /// Send password reset email
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email);
 
-  Future<Either<AuthFailure, void>> sendPasswordResetEmail({
-    required String email,
-  });
+  /// Sign out user
+  Future<Either<Failure, void>> signOut();
 
-  Future<Either<AuthFailure, void>> signOut();
+  /// Get current user from cache
+  Future<Either<Failure, UserEntity?>> getCurrentUser();
 
-  // User Data Management (API Integration)
-  Future<Either<AuthFailure, UserEntity?>> getUserByUid(String uid);
+  /// Refresh auth token
+  Future<Either<Failure, AuthResultEntity>> refreshToken();
 
-  Future<Either<AuthFailure, UserEntity>> registerUserInAPI({
-    required String email,
-    required String password,
-    required String firstName,
-    required String lastName,
-  });
+  /// Toggle user availability
+  Future<Either<Failure, UserEntity>> toggleUserAvailability(bool isAvailable);
 
-  Future<Either<AuthFailure, UserEntity>> getCurrentUserOrganizationalInfo();
+  /// Get authentication state stream
+  Stream<User?> get authStateChanges;
 
-  // User Status Management
-  Future<Either<AuthFailure, bool>> getUserAvailabilityStatus(String databaseId);
+  /// Check if user is authenticated
+  Future<bool> isAuthenticated();
 
-  Future<Either<AuthFailure, void>> toggleUserAvailability({
-    required String databaseId,
-    required bool available,
-  });
+  /// Get stored auth result
+  Future<AuthResultEntity?> getStoredAuthResult();
 
-  // Token Management
-  Future<Either<AuthFailure, String>> refreshAuthToken();
+  /// Enable/disable biometric authentication
+  Future<Either<Failure, void>> setBiometricEnabled(bool enabled);
 
-  Future<Either<AuthFailure, String?>> getStoredAuthToken();
+  /// Check if biometric authentication is enabled
+  Future<bool> isBiometricEnabled();
 
-  Future<Either<AuthFailure, void>> clearStoredAuthData();
-
-  // Stream for auth state changes
-  Stream<UserEntity?> get authStateChanges;
-
-  // Current user getter
-  UserEntity? get currentUser;
+  /// Authenticate with biometrics
+  Future<Either<Failure, bool>> authenticateWithBiometrics();
 }

@@ -1,149 +1,144 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/constants/app_constants.dart';
 
+/// Error page for displaying errors and exceptions
 class ErrorPage extends StatelessWidget {
   final String error;
+  final VoidCallback? onRetry;
 
   const ErrorPage({
     super.key,
     required this.error,
+    this.onRetry,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SafeArea(
+      appBar: AppBar(
+        title: const Text('Error'),
+        elevation: 0,
+      ),
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(ViernesSpacing.space6),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Viernes gradient circle with error icon
+              // Error icon
               Container(
-                width: 120,
-                height: 120,
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
-                  gradient: AppTheme.viernesGradient,
+                  color: ViernesColors.danger.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.viernesGray.withValues(alpha:0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
                 ),
                 child: const Icon(
                   Icons.error_outline,
-                  color: Colors.white,
-                  size: 60,
+                  size: 50,
+                  color: ViernesColors.danger,
                 ),
-              ),
+              )
+                  .animate()
+                  .scale(
+                    duration: ViernesAnimations.normal,
+                    curve: ViernesAnimations.easeOut,
+                  )
+                  .fadeIn(),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: ViernesSpacing.space8),
 
               // Error title
               Text(
                 'Oops! Something went wrong',
-                style: AppTheme.headingBold.copyWith(
-                  fontSize: 24,
-                  color: theme.colorScheme.onSurface,
-                ),
+                style: ViernesTextStyles.h4,
                 textAlign: TextAlign.center,
-              ),
+              )
+                  .animate()
+                  .slideY(
+                    begin: 0.3,
+                    duration: ViernesAnimations.normal,
+                  )
+                  .fadeIn(delay: 200.ms),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: ViernesSpacing.space4),
 
               // Error message
-              Text(
-                'We encountered an unexpected error. Please try again.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha:0.7),
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 8),
-
-              // Error details (in debug mode)
-              if (error.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: theme.colorScheme.outline.withValues(alpha:0.2),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Error Details:',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.danger,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        error,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontFamily: 'monospace',
-                          color: theme.colorScheme.onSurface.withValues(alpha:0.8),
-                        ),
-                      ),
-                    ],
+              Container(
+                padding: const EdgeInsets.all(ViernesSpacing.space4),
+                decoration: BoxDecoration(
+                  color: ViernesColors.danger.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(ViernesRadius.md),
+                  border: Border.all(
+                    color: ViernesColors.danger.withValues(alpha: 0.2),
                   ),
                 ),
-              ],
+                child: Text(
+                  error,
+                  style: ViernesTextStyles.bodyBase.copyWith(
+                    color: ViernesColors.danger,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              )
+                  .animate()
+                  .slideY(
+                    begin: 0.3,
+                    duration: ViernesAnimations.normal,
+                  )
+                  .fadeIn(delay: 400.ms),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: ViernesSpacing.space8),
 
               // Action buttons
               Column(
                 children: [
-                  // Primary action button with Viernes gradient
-                  ViernesGradientButton(
-                    text: 'Try Again',
-                    width: double.infinity,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  if (onRetry != null)
+                    ElevatedButton.icon(
+                      onPressed: onRetry,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(200, 48),
+                      ),
+                    )
+                        .animate()
+                        .scale(
+                          duration: ViernesAnimations.normal,
+                        )
+                        .fadeIn(delay: 600.ms),
 
-                  const SizedBox(height: 12),
+                  if (onRetry != null) const SizedBox(height: ViernesSpacing.space4),
 
-                  // Secondary action button
-                  OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/dashboard',
-                        (route) => false,
-                      );
-                    },
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Go Back'),
                     style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                      side: BorderSide(
-                        color: AppTheme.viernesGray,
-                        width: 1.5,
-                      ),
+                      minimumSize: const Size(200, 48),
                     ),
-                    child: Text(
-                      'Go to Dashboard',
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.viernesGray,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                  )
+                      .animate()
+                      .scale(
+                        duration: ViernesAnimations.normal,
+                      )
+                      .fadeIn(delay: 800.ms),
                 ],
               ),
+
+              const SizedBox(height: ViernesSpacing.space8),
+
+              // Additional help text
+              Text(
+                'If this problem persists, please contact support.',
+                style: ViernesTextStyles.bodySmall.copyWith(
+                  color: ViernesColors.textGray,
+                ),
+                textAlign: TextAlign.center,
+              )
+                  .animate()
+                  .fadeIn(delay: 1000.ms),
             ],
           ),
         ),

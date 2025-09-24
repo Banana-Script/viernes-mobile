@@ -1,325 +1,275 @@
-import 'dart:async';
-
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:local_auth/local_auth.dart';
+import '../../../../core/errors/exceptions.dart';
+import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/either.dart';
 import '../../domain/entities/auth_result_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_api_service.dart';
 import '../datasources/firebase_auth_service.dart';
 import '../datasources/secure_storage_service.dart';
-import '../models/auth_result_model.dart';
-import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuthService _firebaseAuthService;
   final AuthApiService _authApiService;
   final SecureStorageService _secureStorageService;
-
-  // Private stream controller for auth state
-  final StreamController<UserEntity?> _authStateController =
-      StreamController<UserEntity?>.broadcast();
-
-  StreamSubscription<UserModel?>? _authStateSubscription;
-  UserEntity? _currentUser;
+  final LocalAuthentication _localAuth;
 
   AuthRepositoryImpl({
     required FirebaseAuthService firebaseAuthService,
     required AuthApiService authApiService,
     required SecureStorageService secureStorageService,
+    LocalAuthentication? localAuth,
   })  : _firebaseAuthService = firebaseAuthService,
         _authApiService = authApiService,
-        _secureStorageService = secureStorageService {
-    _initializeAuthStateListener();
-  }
-
-  void _initializeAuthStateListener() {
-    _authStateSubscription = _firebaseAuthService.authStateChanges.listen((user) async {
-      if (user != null) {
-        // User is logged in, load their data from API
-        final userData = await _loadUserData(user);
-        _currentUser = userData;
-        _authStateController.add(userData);
-      } else {
-        // User is logged out
-        _currentUser = null;
-        _authStateController.add(null);
-        await _secureStorageService.clearAllAuthData();
-      }
-    });
-  }
-
-  Future<UserEntity?> _loadUserData(UserModel firebaseUser) async {
-    try {
-      // Get user data from API
-      final apiUser = await _authApiService.getUserByUid(firebaseUser.uid);
-
-      if (apiUser == null) {
-        // User not found in API, return basic Firebase user
-        return firebaseUser;
-      }
-
-      UserModel enrichedUser = apiUser;
-
-      // Load availability status if user has database_id
-      if (apiUser.databaseId != null) {
-        try {
-          final availability = await _authApiService.getUserAvailabilityStatus(apiUser.databaseId!);
-          enrichedUser = apiUser.copyWith(available: availability);
-
-          // Store availability flag for future reference
-          await _secureStorageService.storeUserAvailabilityFlag(availability);
-        } catch (e) {
-          // If availability check fails, use default false
-          enrichedUser = apiUser.copyWith(available: false);
-        }
-
-        // Load organizational info
-        try {
-          final orgInfo = await _authApiService.getCurrentUserOrganizationalInfo();
-          enrichedUser = enrichedUser.copyWith(
-            organizationalRole: orgInfo.organizationalRole,
-            organizationalStatus: orgInfo.organizationalStatus,
-            organizationId: orgInfo.organizationId,
-          );
-        } catch (e) {
-          // Organizational info loading failed, continue without it
-        }
-      }
-
-      // Store enriched user data
-      await _secureStorageService.storeUserData(enrichedUser);
-
-      return enrichedUser;
-    } catch (e) {
-      // If API calls fail, return the Firebase user
-      return firebaseUser;
-    }
-  }
+        _secureStorageService = secureStorageService,
+        _localAuth = localAuth ?? LocalAuthentication();
 
   @override
-  Future<Either<AuthFailure, AuthResultEntity>> signInWithEmailAndPassword({
+  Future<Either<Failure, AuthResultEntity>> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      final result = await _firebaseAuthService.signInWithEmailAndPassword(email, password);
+      // Step 1: Sign in with Firebase
+      final firebaseUser = await _firebaseAuthService.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      // Store tokens
-      await _secureStorageService.storeAuthToken(result.idToken);
-      if (result.refreshToken != null) {
-        await _secureStorageService.storeRefreshToken(result.refreshToken!);
+      // Step 2: Get Firebase ID token
+      final firebaseToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+      if (firebaseToken == null) {
+        return const Left(AuthFailure(message: 'Failed to get Firebase token'));
       }
 
-      return Right(result);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailureModel.fromFirebaseAuthException(e));
+      // Step 3: Validate with backend
+      final authResult = await _authApiService.validateFirebaseToken(firebaseToken);
+
+      // Step 4: Store auth data
+      await _secureStorageService.storeAuthResult(authResult);
+
+      return Right(authResult.toEntity());
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message));
+    } on ApiException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
     } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
+      return Left(UnknownFailure(message: 'Sign in failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<AuthFailure, AuthResultEntity>> signUpWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
+  Future<Either<Failure, AuthResultEntity>> signInWithGoogle() async {
     try {
-      final result = await _firebaseAuthService.createUserWithEmailAndPassword(email, password);
+      // Step 1: Sign in with Google via Firebase
+      final firebaseUser = await _firebaseAuthService.signInWithGoogle();
 
-      // Store tokens
-      await _secureStorageService.storeAuthToken(result.idToken);
-      if (result.refreshToken != null) {
-        await _secureStorageService.storeRefreshToken(result.refreshToken!);
+      // Step 2: Get Firebase ID token
+      final firebaseToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+      if (firebaseToken == null) {
+        return const Left(AuthFailure(message: 'Failed to get Firebase token'));
       }
 
-      return Right(result);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailureModel.fromFirebaseAuthException(e));
+      // Step 3: Validate with backend
+      final authResult = await _authApiService.validateFirebaseToken(firebaseToken);
+
+      // Step 4: Store auth data
+      await _secureStorageService.storeAuthResult(authResult);
+
+      return Right(authResult.toEntity());
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message));
+    } on ApiException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
     } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
+      return Left(UnknownFailure(message: 'Google sign in failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<AuthFailure, AuthResultEntity>> signInWithGoogle() async {
-    try {
-      final result = await _firebaseAuthService.signInWithGoogle();
-
-      // Store tokens
-      await _secureStorageService.storeAuthToken(result.idToken);
-      if (result.refreshToken != null) {
-        await _secureStorageService.storeRefreshToken(result.refreshToken!);
-      }
-
-      return Right(result);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailureModel.fromFirebaseAuthException(e));
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Future<Either<AuthFailure, void>> sendPasswordResetEmail({
-    required String email,
-  }) async {
+  Future<Either<Failure, void>> sendPasswordResetEmail(String email) async {
     try {
       await _firebaseAuthService.sendPasswordResetEmail(email);
       return const Right(null);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailureModel.fromFirebaseAuthException(e));
+    } on AuthException catch (e) {
+      return Left(AuthFailure(message: e.message));
     } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
+      return Left(UnknownFailure(message: 'Password reset failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<AuthFailure, void>> signOut() async {
+  Future<Either<Failure, void>> signOut() async {
     try {
+      // Get access token before clearing storage
+      final accessToken = await _secureStorageService.getAccessToken();
+
+      // Sign out from Firebase
       await _firebaseAuthService.signOut();
-      await _secureStorageService.clearAllAuthData();
-      return const Right(null);
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
 
-  @override
-  Future<Either<AuthFailure, UserEntity?>> getUserByUid(String uid) async {
-    try {
-      final user = await _authApiService.getUserByUid(uid);
-      return Right(user);
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        return const Right(null);
+      // Notify backend (best effort)
+      if (accessToken != null) {
+        await _authApiService.logout(accessToken);
       }
-      return Left(AuthFailureModel.network(e.message ?? 'Network error'));
+
+      // Clear stored auth data
+      await _secureStorageService.clearAuthData();
+
+      return const Right(null);
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
     } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
+      return Left(UnknownFailure(message: 'Sign out failed: ${e.toString()}'));
     }
   }
 
   @override
-  Future<Either<AuthFailure, UserEntity>> registerUserInAPI({
-    required String email,
-    required String password,
-    required String firstName,
-    required String lastName,
-  }) async {
+  Future<Either<Failure, UserEntity?>> getCurrentUser() async {
     try {
-      final user = await _authApiService.registerUser(
-        email: email,
-        password: password,
-        firstName: firstName,
-        lastName: lastName,
+      final authResult = await _secureStorageService.getAuthResult();
+      if (authResult == null) return const Right(null);
+
+      // Check if token is expired
+      if (authResult.toEntity().isTokenExpired) {
+        // Try to refresh token
+        final refreshResult = await refreshToken();
+        return refreshResult.fold(
+          (failure) => const Right(null), // Return null if refresh failed
+          (newAuthResult) => Right(newAuthResult.user),
+        );
+      }
+
+      return Right(authResult.user.toEntity());
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Failed to get current user: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, AuthResultEntity>> refreshToken() async {
+    try {
+      final refreshToken = await _secureStorageService.getRefreshToken();
+      if (refreshToken == null) {
+        return const Left(AuthFailure(message: 'No refresh token available'));
+      }
+
+      final authResult = await _authApiService.refreshToken(refreshToken);
+      await _secureStorageService.storeAuthResult(authResult);
+
+      return Right(authResult.toEntity());
+    } on ApiException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Token refresh failed: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> toggleUserAvailability(bool isAvailable) async {
+    try {
+      final updatedUser = await _authApiService.updateUserAvailability(isAvailable);
+
+      // Update stored auth result with new user data
+      final storedAuthResult = await _secureStorageService.getAuthResult();
+      if (storedAuthResult != null) {
+        final updatedAuthResult = storedAuthResult.copyWith(user: updatedUser);
+        await _secureStorageService.storeAuthResult(updatedAuthResult);
+      }
+
+      return Right(updatedUser.toEntity());
+    } on ApiException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Failed to toggle availability: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Stream<User?> get authStateChanges => _firebaseAuthService.authStateChanges;
+
+  @override
+  Future<bool> isAuthenticated() async {
+    try {
+      final authResult = await _secureStorageService.getAuthResult();
+      if (authResult == null) return false;
+
+      // Check if token is not expired
+      return !authResult.toEntity().isTokenExpired;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<AuthResultEntity?> getStoredAuthResult() async {
+    try {
+      final authResult = await _secureStorageService.getAuthResult();
+      return authResult?.toEntity();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> setBiometricEnabled(bool enabled) async {
+    try {
+      await _secureStorageService.storeBiometricEnabled(enabled);
+      return const Right(null);
+    } on StorageException catch (e) {
+      return Left(StorageFailure(message: e.message));
+    } catch (e) {
+      return Left(UnknownFailure(message: 'Failed to set biometric setting: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<bool> isBiometricEnabled() async {
+    try {
+      return await _secureStorageService.getBiometricEnabled();
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> authenticateWithBiometrics() async {
+    try {
+      // Check if biometric authentication is available
+      final isAvailable = await _localAuth.canCheckBiometrics;
+      if (!isAvailable) {
+        return const Left(PermissionFailure(message: 'Biometric authentication not available'));
+      }
+
+      // Check if biometrics are enrolled
+      final availableBiometrics = await _localAuth.getAvailableBiometrics();
+      if (availableBiometrics.isEmpty) {
+        return const Left(PermissionFailure(message: 'No biometrics enrolled'));
+      }
+
+      // Authenticate
+      final didAuthenticate = await _localAuth.authenticate(
+        localizedReason: 'Please authenticate to access your account',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
       );
-      return Right(user);
-    } on DioException catch (e) {
-      String message = 'Registration failed';
-      if (e.response?.data != null && e.response!.data['message'] != null) {
-        message = e.response!.data['message'];
-      }
-      return Left(AuthFailureModel.server(message));
+
+      return Right(didAuthenticate);
     } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
+      return Left(PermissionFailure(message: 'Biometric authentication failed: ${e.toString()}'));
     }
-  }
-
-  @override
-  Future<Either<AuthFailure, UserEntity>> getCurrentUserOrganizationalInfo() async {
-    try {
-      final user = await _authApiService.getCurrentUserOrganizationalInfo();
-      return Right(user);
-    } on DioException catch (e) {
-      return Left(AuthFailureModel.server(e.message ?? 'Failed to get organizational info'));
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Future<Either<AuthFailure, bool>> getUserAvailabilityStatus(String databaseId) async {
-    try {
-      final availability = await _authApiService.getUserAvailabilityStatus(databaseId);
-      return Right(availability);
-    } on DioException catch (e) {
-      return Left(AuthFailureModel.server(e.message ?? 'Failed to get availability status'));
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Future<Either<AuthFailure, void>> toggleUserAvailability({
-    required String databaseId,
-    required bool available,
-  }) async {
-    try {
-      await _authApiService.toggleUserAvailability(databaseId, available);
-
-      // Update local storage
-      await _secureStorageService.storeUserAvailabilityFlag(available);
-
-      // Update current user if it matches
-      if (_currentUser != null && _currentUser!.databaseId == databaseId) {
-        final updatedUser = (_currentUser as UserModel).copyWith(available: available);
-        _currentUser = updatedUser;
-        _authStateController.add(updatedUser);
-        await _secureStorageService.storeUserData(updatedUser);
-      }
-
-      return const Right(null);
-    } on DioException catch (e) {
-      return Left(AuthFailureModel.server(e.message ?? 'Failed to toggle availability'));
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Future<Either<AuthFailure, String>> refreshAuthToken() async {
-    try {
-      final token = await _firebaseAuthService.refreshCurrentUserToken();
-      await _secureStorageService.storeAuthToken(token);
-      return Right(token);
-    } on FirebaseAuthException catch (e) {
-      return Left(AuthFailureModel.fromFirebaseAuthException(e));
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Future<Either<AuthFailure, String?>> getStoredAuthToken() async {
-    try {
-      final token = await _secureStorageService.getAuthToken();
-      return Right(token);
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Future<Either<AuthFailure, void>> clearStoredAuthData() async {
-    try {
-      await _secureStorageService.clearAllAuthData();
-      return const Right(null);
-    } catch (e) {
-      return Left(AuthFailureModel.fromException(e as Exception));
-    }
-  }
-
-  @override
-  Stream<UserEntity?> get authStateChanges => _authStateController.stream;
-
-  @override
-  UserEntity? get currentUser => _currentUser;
-
-  void dispose() {
-    _authStateSubscription?.cancel();
-    _authStateController.close();
   }
 }

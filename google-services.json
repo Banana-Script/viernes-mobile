@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "502544225919",
+    "project_id": "viernes-for-business-dev",
+    "storage_bucket": "viernes-for-business-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502544225919:android:45b4b924b39a4bc065514a",
+        "android_client_info": {
+          "package_name": "com.bananascript.viernesforbusiness"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCoHihPpB22eiCfV1wKzIPzdd1wQ6ALKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

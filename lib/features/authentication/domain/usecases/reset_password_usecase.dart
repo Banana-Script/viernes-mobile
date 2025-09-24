@@ -1,26 +1,31 @@
-import 'package:dartz/dartz.dart';
-import '../entities/auth_result_entity.dart';
+import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/either.dart';
 import '../repositories/auth_repository.dart';
 
 class ResetPasswordUseCase {
-  final AuthRepository _authRepository;
+  final AuthRepository _repository;
 
-  ResetPasswordUseCase(this._authRepository);
+  ResetPasswordUseCase(this._repository);
 
-  Future<Either<AuthFailure, void>> call({
-    required String email,
-  }) async {
+  Future<Either<Failure, void>> call(String email) async {
+    final trimmedEmail = email.trim().toLowerCase();
+
     // Basic email validation
-    if (email.isEmpty || !email.contains('@')) {
-      return const Left(AuthFailure(
-        message: 'Please enter a valid email address',
-        code: 'invalid-email',
-        type: AuthFailureType.invalidCredentials,
-      ));
+    if (trimmedEmail.isEmpty) {
+      return const Left(ValidationFailure(message: 'Email is required'));
     }
 
-    return await _authRepository.sendPasswordResetEmail(
-      email: email.trim().toLowerCase(),
+    if (!_isValidEmail(trimmedEmail)) {
+      return const Left(ValidationFailure(message: 'Please enter a valid email address'));
+    }
+
+    return await _repository.sendPasswordResetEmail(trimmedEmail);
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegExp = RegExp(
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
     );
+    return emailRegExp.hasMatch(email);
   }
 }

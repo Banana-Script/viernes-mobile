@@ -1,13 +1,13 @@
-import 'package:dartz/dartz.dart';
-import '../entities/auth_result_entity.dart';
+import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/either.dart';
 import '../repositories/auth_repository.dart';
 
 class LogoutUseCase {
-  final AuthRepository _authRepository;
+  final AuthRepository _repository;
 
-  LogoutUseCase(this._authRepository);
+  LogoutUseCase(this._repository);
 
-  Future<Either<AuthFailure, void>> call() async {
-    return await _authRepository.signOut();
+  Future<Either<Failure, void>> call() async {
+    return await _repository.signOut();
   }
 }

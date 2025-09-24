@@ -1,153 +1,58 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/user_entity.dart';
 
-class UserModel extends UserEntity {
-  const UserModel({
-    required super.uid,
-    required super.email,
-    super.displayName,
-    super.photoURL,
-    required super.emailVerified,
-    super.databaseId,
-    super.available,
-    super.organizationalRole,
-    super.organizationalStatus,
-    super.organizationId,
-  });
+part 'user_model.freezed.dart';
+part 'user_model.g.dart';
 
-  // Factory constructor from Firebase User
-  factory UserModel.fromFirebaseUser(User firebaseUser) {
-    return UserModel(
-      uid: firebaseUser.uid,
-      email: firebaseUser.email ?? '',
-      displayName: firebaseUser.displayName,
-      photoURL: firebaseUser.photoURL,
-      emailVerified: firebaseUser.emailVerified,
+@freezed
+class UserModel with _$UserModel {
+  const factory UserModel({
+    required String id,
+    required String email,
+    String? name,
+    @JsonKey(name: 'photo_url') String? photoUrl,
+    @JsonKey(name: 'is_email_verified') @Default(false) bool isEmailVerified,
+    @JsonKey(name: 'is_available') @Default(true) bool isAvailable,
+    @JsonKey(name: 'organization_id') String? organizationId,
+    String? role,
+    @JsonKey(name: 'last_active_at') DateTime? lastActiveAt,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  }) = _UserModel;
+
+  const UserModel._();
+
+  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+
+  UserEntity toEntity() {
+    return UserEntity(
+      id: id,
+      email: email,
+      name: name,
+      photoUrl: photoUrl,
+      isEmailVerified: isEmailVerified,
+      isAvailable: isAvailable,
+      organizationId: organizationId,
+      role: role,
+      lastActiveAt: lastActiveAt,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 
-  // Factory constructor from JSON (API response)
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  static UserModel fromEntity(UserEntity entity) {
     return UserModel(
-      uid: json['uid'] ?? '',
-      email: json['email'] ?? '',
-      displayName: json['displayName'],
-      photoURL: json['photoURL'],
-      emailVerified: json['emailVerified'] ?? false,
-      databaseId: json['database_id']?.toString(),
-      available: json['available'],
-      organizationalRole: json['organizationalRole'] != null
-          ? OrganizationalRoleModel.fromJson(json['organizationalRole'])
-          : null,
-      organizationalStatus: json['organizationalStatus'] != null
-          ? OrganizationalStatusModel.fromJson(json['organizationalStatus'])
-          : null,
-      organizationId: json['organization_id']?.toString(),
-    );
-  }
-
-  // Convert to JSON for API requests
-  Map<String, dynamic> toJson() {
-    return {
-      'uid': uid,
-      'email': email,
-      'displayName': displayName,
-      'photoURL': photoURL,
-      'emailVerified': emailVerified,
-      'database_id': databaseId,
-      'available': available,
-      'organizationalRole': organizationalRole != null
-          ? (organizationalRole as OrganizationalRoleModel).toJson()
-          : null,
-      'organizationalStatus': organizationalStatus != null
-          ? (organizationalStatus as OrganizationalStatusModel).toJson()
-          : null,
-      'organization_id': organizationId,
-    };
-  }
-
-  // Convert entity to model
-  factory UserModel.fromEntity(UserEntity entity) {
-    return UserModel(
-      uid: entity.uid,
+      id: entity.id,
       email: entity.email,
-      displayName: entity.displayName,
-      photoURL: entity.photoURL,
-      emailVerified: entity.emailVerified,
-      databaseId: entity.databaseId,
-      available: entity.available,
-      organizationalRole: entity.organizationalRole,
-      organizationalStatus: entity.organizationalStatus,
+      name: entity.name,
+      photoUrl: entity.photoUrl,
+      isEmailVerified: entity.isEmailVerified,
+      isAvailable: entity.isAvailable,
       organizationId: entity.organizationId,
+      role: entity.role,
+      lastActiveAt: entity.lastActiveAt,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
     );
-  }
-
-  @override
-  UserModel copyWith({
-    String? uid,
-    String? email,
-    String? displayName,
-    String? photoURL,
-    bool? emailVerified,
-    String? databaseId,
-    bool? available,
-    OrganizationalRole? organizationalRole,
-    OrganizationalStatus? organizationalStatus,
-    String? organizationId,
-  }) {
-    return UserModel(
-      uid: uid ?? this.uid,
-      email: email ?? this.email,
-      displayName: displayName ?? this.displayName,
-      photoURL: photoURL ?? this.photoURL,
-      emailVerified: emailVerified ?? this.emailVerified,
-      databaseId: databaseId ?? this.databaseId,
-      available: available ?? this.available,
-      organizationalRole: organizationalRole ?? this.organizationalRole,
-      organizationalStatus: organizationalStatus ?? this.organizationalStatus,
-      organizationId: organizationId ?? this.organizationId,
-    );
-  }
-}
-
-class OrganizationalRoleModel extends OrganizationalRole {
-  const OrganizationalRoleModel({
-    required super.valueDefinition,
-    required super.description,
-  });
-
-  factory OrganizationalRoleModel.fromJson(Map<String, dynamic> json) {
-    return OrganizationalRoleModel(
-      valueDefinition: json['value_definition'] ?? '',
-      description: json['description'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value_definition': valueDefinition,
-      'description': description,
-    };
-  }
-}
-
-class OrganizationalStatusModel extends OrganizationalStatus {
-  const OrganizationalStatusModel({
-    required super.valueDefinition,
-    required super.description,
-  });
-
-  factory OrganizationalStatusModel.fromJson(Map<String, dynamic> json) {
-    return OrganizationalStatusModel(
-      valueDefinition: json['value_definition'] ?? '',
-      description: json['description'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'value_definition': valueDefinition,
-      'description': description,
-    };
   }
 }

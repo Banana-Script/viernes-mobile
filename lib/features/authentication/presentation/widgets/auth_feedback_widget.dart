@@ -1,152 +1,149 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
-/// Custom feedback widget for authentication screens
-/// Shows success, error, warning, and info messages with Viernes styling
 class AuthFeedbackWidget extends StatelessWidget {
-  final String message;
+  final String? message;
   final AuthFeedbackType type;
-  final bool showIcon;
   final VoidCallback? onDismiss;
+  final bool dismissible;
   final Duration? autoDismissAfter;
 
   const AuthFeedbackWidget({
     super.key,
-    required this.message,
-    required this.type,
-    this.showIcon = true,
+    this.message,
+    this.type = AuthFeedbackType.info,
     this.onDismiss,
+    this.dismissible = true,
     this.autoDismissAfter,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+    if (message == null || message!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+    final colors = _getColors(theme);
+
+    Widget content = Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: _getBackgroundColor(context),
-        borderRadius: BorderRadius.circular(12),
+        color: colors.backgroundColor,
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: _getBorderColor(context),
+          color: colors.borderColor,
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: _getShadowColor(context),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Row(
         children: [
-          if (showIcon) ...[
-            Icon(
-              _getIcon(),
-              color: _getIconColor(context),
-              size: 24,
-            ),
-            const SizedBox(width: 12),
-          ],
+          Icon(
+            _getIcon(),
+            color: colors.iconColor,
+            size: 20,
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              message,
-              style: AppTheme.bodyMedium.copyWith(
-                color: _getTextColor(context),
-                fontSize: 14,
-                height: 1.4,
+              message!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.textColor,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          if (onDismiss != null) ...[
+          if (dismissible) ...[
             const SizedBox(width: 8),
-            InkWell(
+            GestureDetector(
               onTap: onDismiss,
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                child: Icon(
-                  Icons.close,
-                  size: 18,
-                  color: _getIconColor(context),
-                ),
+              child: Icon(
+                Icons.close,
+                color: colors.iconColor.withValues(alpha: 0.7),
+                size: 18,
               ),
             ),
           ],
         ],
       ),
     );
-  }
 
-  Color _getBackgroundColor(BuildContext context) {
-    switch (type) {
-      case AuthFeedbackType.success:
-        return AppTheme.success.withValues(alpha:0.1);
-      case AuthFeedbackType.error:
-        return AppTheme.danger.withValues(alpha:0.1);
-      case AuthFeedbackType.warning:
-        return AppTheme.warning.withValues(alpha:0.1);
-      case AuthFeedbackType.info:
-        return AppTheme.viernesGray.withValues(alpha:0.1);
+    // Add animation
+    content = content
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideY(begin: -0.3, duration: 300.ms);
+
+    // Auto dismiss if specified
+    if (autoDismissAfter != null) {
+      Future.delayed(autoDismissAfter!, () {
+        onDismiss?.call();
+      });
     }
-  }
 
-  Color _getBorderColor(BuildContext context) {
-    switch (type) {
-      case AuthFeedbackType.success:
-        return AppTheme.success.withValues(alpha:0.3);
-      case AuthFeedbackType.error:
-        return AppTheme.danger.withValues(alpha:0.3);
-      case AuthFeedbackType.warning:
-        return AppTheme.warning.withValues(alpha:0.3);
-      case AuthFeedbackType.info:
-        return AppTheme.viernesGray.withValues(alpha:0.3);
-    }
-  }
-
-  Color _getShadowColor(BuildContext context) {
-    switch (type) {
-      case AuthFeedbackType.success:
-        return AppTheme.success.withValues(alpha:0.1);
-      case AuthFeedbackType.error:
-        return AppTheme.danger.withValues(alpha:0.1);
-      case AuthFeedbackType.warning:
-        return AppTheme.warning.withValues(alpha:0.1);
-      case AuthFeedbackType.info:
-        return AppTheme.viernesGray.withValues(alpha:0.1);
-    }
-  }
-
-  Color _getIconColor(BuildContext context) {
-    switch (type) {
-      case AuthFeedbackType.success:
-        return AppTheme.success;
-      case AuthFeedbackType.error:
-        return AppTheme.danger;
-      case AuthFeedbackType.warning:
-        return AppTheme.warning;
-      case AuthFeedbackType.info:
-        return AppTheme.viernesGray;
-    }
-  }
-
-  Color _getTextColor(BuildContext context) {
-    return Theme.of(context).colorScheme.onSurface;
+    return content;
   }
 
   IconData _getIcon() {
     switch (type) {
       case AuthFeedbackType.success:
-        return Icons.check_circle_outline;
+        return Icons.check_circle;
       case AuthFeedbackType.error:
-        return Icons.error_outline;
+        return Icons.error;
       case AuthFeedbackType.warning:
-        return Icons.warning_amber_outlined;
+        return Icons.warning;
       case AuthFeedbackType.info:
-        return Icons.info_outline;
+        return Icons.info;
     }
   }
+
+  _FeedbackColors _getColors(ThemeData theme) {
+    switch (type) {
+      case AuthFeedbackType.success:
+        return _FeedbackColors(
+          backgroundColor: Colors.green.shade50,
+          borderColor: Colors.green.shade200,
+          iconColor: Colors.green.shade600,
+          textColor: Colors.green.shade800,
+        );
+      case AuthFeedbackType.error:
+        return _FeedbackColors(
+          backgroundColor: Colors.red.shade50,
+          borderColor: Colors.red.shade200,
+          iconColor: Colors.red.shade600,
+          textColor: Colors.red.shade800,
+        );
+      case AuthFeedbackType.warning:
+        return _FeedbackColors(
+          backgroundColor: Colors.orange.shade50,
+          borderColor: Colors.orange.shade200,
+          iconColor: Colors.orange.shade600,
+          textColor: Colors.orange.shade800,
+        );
+      case AuthFeedbackType.info:
+        return _FeedbackColors(
+          backgroundColor: Colors.blue.shade50,
+          borderColor: Colors.blue.shade200,
+          iconColor: Colors.blue.shade600,
+          textColor: Colors.blue.shade800,
+        );
+    }
+  }
+}
+
+class _FeedbackColors {
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color iconColor;
+  final Color textColor;
+
+  const _FeedbackColors({
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.iconColor,
+    required this.textColor,
+  });
 }
 
 enum AuthFeedbackType {
@@ -156,327 +153,127 @@ enum AuthFeedbackType {
   info,
 }
 
-/// Animated feedback card for important messages
-class AuthAnimatedFeedback extends StatefulWidget {
-  final String message;
-  final AuthFeedbackType type;
-  final bool showIcon;
-  final VoidCallback? onDismiss;
-  final Duration animationDuration;
+// Snackbar helpers
+class AuthFeedbackSnackbar {
+  static void show(
+    BuildContext context, {
+    required String message,
+    AuthFeedbackType type = AuthFeedbackType.info,
+    Duration duration = const Duration(seconds: 4),
+  }) {
+    Color backgroundColor;
+    Color textColor;
+    IconData icon;
 
-  const AuthAnimatedFeedback({
-    super.key,
-    required this.message,
-    required this.type,
-    this.showIcon = true,
-    this.onDismiss,
-    this.animationDuration = const Duration(milliseconds: 300),
-  });
+    switch (type) {
+      case AuthFeedbackType.success:
+        backgroundColor = Colors.green.shade600;
+        textColor = Colors.white;
+        icon = Icons.check_circle;
+        break;
+      case AuthFeedbackType.error:
+        backgroundColor = Colors.red.shade600;
+        textColor = Colors.white;
+        icon = Icons.error;
+        break;
+      case AuthFeedbackType.warning:
+        backgroundColor = Colors.orange.shade600;
+        textColor = Colors.white;
+        icon = Icons.warning;
+        break;
+      case AuthFeedbackType.info:
+        backgroundColor = Colors.blue.shade600;
+        textColor = Colors.white;
+        icon = Icons.info;
+        break;
+    }
 
-  @override
-  State<AuthAnimatedFeedback> createState() => _AuthAnimatedFeedbackState();
-}
-
-class _AuthAnimatedFeedbackState extends State<AuthAnimatedFeedback>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _opacityAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      duration: widget.animationDuration,
-      vsync: this,
-    );
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    ));
-
-    _opacityAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.2),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return SlideTransition(
-          position: _slideAnimation,
-          child: FadeTransition(
-            opacity: _opacityAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: AuthFeedbackWidget(
-                message: widget.message,
-                type: widget.type,
-                showIcon: widget.showIcon,
-                onDismiss: widget.onDismiss,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(icon, color: textColor, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-/// Success message card specifically for authentication
-class AuthSuccessCard extends StatelessWidget {
-  final String title;
-  final String message;
-  final VoidCallback? onContinue;
-  final String? continueButtonText;
-
-  const AuthSuccessCard({
-    super.key,
-    required this.title,
-    required this.message,
-    this.onContinue,
-    this.continueButtonText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.success.withValues(alpha:0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppTheme.success.withValues(alpha:0.3),
-          width: 1,
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.success.withValues(alpha:0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Success icon
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: AppTheme.success,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.success.withValues(alpha:0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Title
-          Text(
-            title,
-            style: AppTheme.headingBold.copyWith(
-              fontSize: 20,
-              color: AppTheme.success,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          const SizedBox(height: 8),
-
-          // Message
-          Text(
-            message,
-            style: AppTheme.bodyRegular.copyWith(
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.8),
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          if (onContinue != null) ...[
-            const SizedBox(height: 24),
-            ViernesGradientButton(
-              text: continueButtonText ?? 'Continue',
-              onPressed: onContinue,
-            ),
-          ],
-        ],
+        backgroundColor: backgroundColor,
+        duration: duration,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
+
+  static void showSuccess(BuildContext context, String message) {
+    show(context, message: message, type: AuthFeedbackType.success);
+  }
+
+  static void showError(BuildContext context, String message) {
+    show(context, message: message, type: AuthFeedbackType.error);
+  }
+
+  static void showWarning(BuildContext context, String message) {
+    show(context, message: message, type: AuthFeedbackType.warning);
+  }
+
+  static void showInfo(BuildContext context, String message) {
+    show(context, message: message, type: AuthFeedbackType.info);
+  }
 }
 
-/// Error message card specifically for authentication
-class AuthErrorCard extends StatelessWidget {
-  final String title;
-  final String message;
-  final VoidCallback? onRetry;
-  final String? retryButtonText;
-  final String? suggestion;
+// Biometric feedback widget
+class BiometricFeedbackWidget extends StatelessWidget {
+  final bool isVisible;
+  final String? message;
 
-  const AuthErrorCard({
+  const BiometricFeedbackWidget({
     super.key,
-    required this.title,
-    required this.message,
-    this.onRetry,
-    this.retryButtonText,
-    this.suggestion,
+    required this.isVisible,
+    this.message,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (!isVisible) return const SizedBox.shrink();
+
     return Container(
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.danger.withValues(alpha:0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppTheme.danger.withValues(alpha:0.3),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.danger.withValues(alpha:0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.shade200),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          // Error icon
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: AppTheme.danger,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.danger.withValues(alpha:0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: const Icon(
-              Icons.error_outline,
-              color: Colors.white,
-              size: 32,
-            ),
+          Icon(
+            Icons.fingerprint,
+            color: Colors.blue.shade600,
+            size: 24,
           ),
-
-          const SizedBox(height: 16),
-
-          // Title
-          Text(
-            title,
-            style: AppTheme.headingBold.copyWith(
-              fontSize: 20,
-              color: AppTheme.danger,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          const SizedBox(height: 8),
-
-          // Message
-          Text(
-            message,
-            style: AppTheme.bodyRegular.copyWith(
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.8),
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          // Suggestion
-          if (suggestion != null) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha:0.3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.lightbulb_outline,
-                    size: 20,
-                    color: AppTheme.warning,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      suggestion!,
-                      style: AppTheme.bodyRegular.copyWith(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
-                      ),
-                    ),
-                  ),
-                ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message ?? 'Use your fingerprint or face to sign in',
+              style: TextStyle(
+                color: Colors.blue.shade800,
+                fontWeight: FontWeight.w500,
               ),
             ),
-          ],
-
-          if (onRetry != null) ...[
-            const SizedBox(height: 24),
-            ViernesGradientButton(
-              text: retryButtonText ?? 'Try Again',
-              onPressed: onRetry,
-            ),
-          ],
+          ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.9, 0.9));
   }
 }

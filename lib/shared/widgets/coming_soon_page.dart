@@ -1,250 +1,130 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/router/app_router.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/constants/app_constants.dart';
 
+/// Placeholder page for features not yet implemented
 class ComingSoonPage extends StatelessWidget {
-  final String featureName;
+  final String title;
+  final String? description;
+  final IconData? icon;
 
   const ComingSoonPage({
     super.key,
-    required this.featureName,
+    required this.title,
+    this.description,
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: Text(
-          featureName,
-          style: AppTheme.headingBold.copyWith(
-            fontSize: 18,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        backgroundColor: theme.colorScheme.surface,
+        title: Text(title),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => AppNavigation.pop(),
-        ),
       ),
-      body: SafeArea(
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.all(ViernesSpacing.space6),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Animated Viernes gradient circle with construction icon
-              TweenAnimationBuilder<double>(
-                duration: const Duration(seconds: 2),
-                tween: Tween(begin: 0.0, end: 1.0),
-                builder: (context, value, child) {
-                  return Transform.scale(
-                    scale: 0.8 + (0.2 * value),
-                    child: Container(
-                      width: 140,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.viernesGradient,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.viernesGray.withValues(alpha:0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.construction,
-                        color: Colors.white,
-                        size: 70,
-                      ),
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 40),
-
-              // Feature name title
-              Text(
-                featureName,
-                style: AppTheme.headingBold.copyWith(
-                  fontSize: 28,
-                  color: theme.colorScheme.onSurface,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 16),
-
-              // Coming soon message
+              // Icon
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
-                  color: AppTheme.viernesYellow.withValues(alpha:0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppTheme.viernesYellow.withValues(alpha:0.3),
-                    width: 1,
-                  ),
+                  color: ViernesColors.secondary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
                 ),
-                child: Text(
-                  l10n.comingSoon.toUpperCase(),
-                  style: AppTheme.bodyMedium.copyWith(
-                    color: AppTheme.viernesGray,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
-                    letterSpacing: 1.2,
-                  ),
+                child: Icon(
+                  icon ?? Icons.construction,
+                  size: 50,
+                  color: ViernesColors.secondary,
                 ),
-              ),
+              )
+                  .animate()
+                  .scale(
+                    duration: ViernesAnimations.normal,
+                    curve: ViernesAnimations.easeOut,
+                  )
+                  .fadeIn(),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: ViernesSpacing.space8),
+
+              // Title
+              Text(
+                title,
+                style: ViernesTextStyles.h3,
+                textAlign: TextAlign.center,
+              )
+                  .animate()
+                  .slideY(
+                    begin: 0.3,
+                    duration: ViernesAnimations.normal,
+                  )
+                  .fadeIn(delay: 200.ms),
+
+              const SizedBox(height: ViernesSpacing.space4),
 
               // Description
               Text(
-                'We\'re working hard to bring you this feature. '
-                'Stay tuned for updates!',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha:0.7),
-                  height: 1.5,
+                description ?? 'This feature is coming soon!',
+                style: ViernesTextStyles.bodyBase.copyWith(
+                  color: ViernesColors.textGray,
                 ),
                 textAlign: TextAlign.center,
-              ),
+              )
+                  .animate()
+                  .slideY(
+                    begin: 0.3,
+                    duration: ViernesAnimations.normal,
+                  )
+                  .fadeIn(delay: 400.ms),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: ViernesSpacing.space8),
 
-              // Feature highlights
+              // Coming soon badge
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: ViernesSpacing.space4,
+                  vertical: ViernesSpacing.space2,
+                ),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  color: ViernesColors.accent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(ViernesRadius.full),
                   border: Border.all(
-                    color: theme.colorScheme.outline.withValues(alpha:0.2),
+                    color: ViernesColors.accent.withValues(alpha: 0.3),
                   ),
                 ),
-                child: Column(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 16,
+                      color: ViernesColors.accent,
+                    ),
+                    const SizedBox(width: ViernesSpacing.space2),
                     Text(
-                      'What to expect:',
-                      style: AppTheme.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.viernesGray,
-                        fontSize: 16,
+                      'Coming Soon',
+                      style: ViernesTextStyles.bodySmall.copyWith(
+                        color: ViernesColors.accent,
+                        fontWeight: ViernesTextStyles.fontSemiBold,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildFeatureHighlight(
-                      context,
-                      icon: Icons.speed,
-                      title: 'Fast Performance',
-                      description: 'Optimized for mobile experience',
-                    ),
-                    const SizedBox(height: 12),
-                    _buildFeatureHighlight(
-                      context,
-                      icon: Icons.security,
-                      title: 'Secure & Reliable',
-                      description: 'Enterprise-grade security',
-                    ),
-                    const SizedBox(height: 12),
-                    _buildFeatureHighlight(
-                      context,
-                      icon: Icons.mobile_friendly,
-                      title: 'Mobile-First',
-                      description: 'Designed specifically for mobile',
                     ),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Action buttons
-              Column(
-                children: [
-                  // Primary action button
-                  ViernesGradientButton(
-                    text: 'Back to Dashboard',
-                    width: double.infinity,
-                    onPressed: () => AppNavigation.goToDashboard(),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Secondary action button
-                  TextButton(
-                    onPressed: () => AppNavigation.goToProfile(),
-                    child: Text(
-                      'Manage Notifications',
-                      style: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.viernesGray,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              )
+                  .animate()
+                  .scale(
+                    duration: ViernesAnimations.normal,
+                    curve: ViernesAnimations.easeOut,
+                  )
+                  .fadeIn(delay: 600.ms),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFeatureHighlight(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String description,
-  }) {
-    final theme = Theme.of(context);
-
-    return Row(
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppTheme.viernesYellow.withValues(alpha:0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: AppTheme.viernesGray,
-            size: 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              Text(
-                description,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha:0.7),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

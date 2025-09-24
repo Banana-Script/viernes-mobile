@@ -1,44 +1,28 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'user_entity.dart';
 
-class AuthResultEntity extends Equatable {
-  final UserEntity user;
-  final String idToken;
-  final String? refreshToken;
+part 'auth_result_entity.freezed.dart';
 
-  const AuthResultEntity({
-    required this.user,
-    required this.idToken,
-    this.refreshToken,
-  });
+@freezed
+class AuthResultEntity with _$AuthResultEntity {
+  const factory AuthResultEntity({
+    required UserEntity user,
+    required String accessToken,
+    required String refreshToken,
+    DateTime? expiresAt,
+    @Default(false) bool isNewUser,
+  }) = _AuthResultEntity;
 
-  @override
-  List<Object?> get props => [user, idToken, refreshToken];
-}
+  const AuthResultEntity._();
 
-class AuthFailure extends Equatable {
-  final String message;
-  final String code;
-  final AuthFailureType type;
+  bool get isTokenExpired {
+    if (expiresAt == null) return false;
+    return DateTime.now().isAfter(expiresAt!);
+  }
 
-  const AuthFailure({
-    required this.message,
-    required this.code,
-    required this.type,
-  });
-
-  @override
-  List<Object> get props => [message, code, type];
-}
-
-enum AuthFailureType {
-  network,
-  server,
-  invalidCredentials,
-  userNotFound,
-  emailAlreadyInUse,
-  weakPassword,
-  userDisabled,
-  tooManyRequests,
-  unknown,
+  bool get willExpireSoon {
+    if (expiresAt == null) return false;
+    final fiveMinutesFromNow = DateTime.now().add(const Duration(minutes: 5));
+    return expiresAt!.isBefore(fiveMinutesFromNow);
+  }
 }

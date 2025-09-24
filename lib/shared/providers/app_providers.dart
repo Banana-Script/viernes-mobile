@@ -1,71 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../core/network/dio_client.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../../core/config/environment.dart';
 import '../../core/constants/app_constants.dart';
 
-// Storage providers
-final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('SharedPreferences must be initialized in main()');
+/// Provider for theme mode (light/dark/system)
+final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
+  return ThemeModeNotifier();
 });
 
-final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
-  return const FlutterSecureStorage();
-});
+/// Theme mode notifier
+class ThemeModeNotifier extends StateNotifier<ThemeMode> {
+  ThemeModeNotifier() : super(ThemeMode.system);
 
-// Network provider
-final dioProvider = Provider((ref) => DioClient.instance.dio);
-
-// Firebase providers
-final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
-  return FirebaseAuth.instance;
-});
-
-final authStateProvider = StreamProvider<User?>((ref) {
-  return ref.watch(firebaseAuthProvider).authStateChanges();
-});
-
-// Theme provider
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return ThemeNotifier(prefs);
-});
-
-class ThemeNotifier extends StateNotifier<ThemeMode> {
-  final SharedPreferences _prefs;
-
-  ThemeNotifier(this._prefs) : super(_loadTheme(_prefs));
-
-  static ThemeMode _loadTheme(SharedPreferences prefs) {
-    final themeIndex = prefs.getInt(AppConstants.themeKey) ?? 0;
-    return ThemeMode.values[themeIndex];
+  void setThemeMode(ThemeMode mode) {
+    state = mode;
+    // TODO: Persist to storage
   }
 
-  void setTheme(ThemeMode theme) {
-    state = theme;
-    _prefs.setInt(AppConstants.themeKey, theme.index);
+  void toggleTheme() {
+    switch (state) {
+      case ThemeMode.light:
+        setThemeMode(ThemeMode.dark);
+        break;
+      case ThemeMode.dark:
+        setThemeMode(ThemeMode.light);
+        break;
+      case ThemeMode.system:
+        setThemeMode(ThemeMode.light);
+        break;
+    }
   }
 }
 
-// Language provider
-final languageProvider = StateNotifierProvider<LanguageNotifier, String>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return LanguageNotifier(prefs);
+/// Provider for connectivity status
+final connectivityProvider = StreamProvider<ConnectivityResult>((ref) {
+  return Connectivity().onConnectivityChanged.map((List<ConnectivityResult> results) {
+    // Return the first result, or none if empty
+    return results.isNotEmpty ? results.first : ConnectivityResult.none;
+  });
 });
 
-class LanguageNotifier extends StateNotifier<String> {
-  final SharedPreferences _prefs;
+/// Provider for checking if device is online
+final isOnlineProvider = Provider<bool>((ref) {
+  final connectivity = ref.watch(connectivityProvider);
+  return connectivity.when(
+    data: (result) => result != ConnectivityResult.none,
+    loading: () => true, // Assume online while loading
+    error: (_, __) => false,
+  );
+});
 
-  LanguageNotifier(this._prefs) : super(_loadLanguage(_prefs));
+/// Provider for locale/language
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+  return LocaleNotifier();
+});
 
-  static String _loadLanguage(SharedPreferences prefs) {
-    return prefs.getString(AppConstants.languageKey) ?? 'en';
+/// Locale notifier
+class LocaleNotifier extends StateNotifier<Locale> {
+  LocaleNotifier() : super(const Locale('en'));
+
+  void setLocale(Locale locale) {
+    state = locale;
+    // TODO: Persist to storage
+  }
+}
+
+/// Provider for app lifecycle state
+final appLifecycleProvider = StateNotifierProvider<AppLifecycleNotifier, AppLifecycleState>((ref) {
+  return AppLifecycleNotifier();
+});
+
+/// App lifecycle notifier
+class AppLifecycleNotifier extends StateNotifier<AppLifecycleState> with WidgetsBindingObserver {
+  AppLifecycleNotifier() : super(AppLifecycleState.resumed) {
+    WidgetsBinding.instance.addObserver(this);
   }
 
-  void setLanguage(String languageCode) {
-    state = languageCode;
-    _prefs.setString(AppConstants.languageKey, languageCode);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    this.state = state;
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+}
+
+/// Provider for app version info
+final appVersionProvider = Provider<String>((ref) {
+  return AppConstants.appVersion;
+});
+
+/// Provider for environment info
+final environmentProvider = Provider<Environment>((ref) {
+  return AppConfig.instance.environment;
+});
+
+/// Provider for debug mode status
+final isDebugModeProvider = Provider<bool>((ref) {
+  return AppConfig.instance.debugMode;
+});
+
+/// Provider for feature flags
+final featureFlagsProvider = Provider<FeatureFlagsNotifier>((ref) {
+  return FeatureFlagsNotifier();
+});
+
+/// Feature flags notifier
+class FeatureFlagsNotifier {
+  bool get biometricAuth => FeatureFlags.biometricAuth;
+  bool get pushNotifications => FeatureFlags.pushNotifications;
+  bool get offlineMode => FeatureFlags.offlineMode;
+  bool get voiceCalls => FeatureFlags.voiceCalls;
+  bool get videoCalls => FeatureFlags.videoCalls;
+  bool get fileSharing => FeatureFlags.fileSharing;
+  bool get darkMode => FeatureFlags.darkMode;
+  bool get analytics => FeatureFlags.analytics;
+  bool get crashReporting => FeatureFlags.crashReporting;
+}
+
+/// Global loading state provider
+final globalLoadingProvider = StateNotifierProvider<GlobalLoadingNotifier, bool>((ref) {
+  return GlobalLoadingNotifier();
+});
+
+/// Global loading notifier
+class GlobalLoadingNotifier extends StateNotifier<bool> {
+  GlobalLoadingNotifier() : super(false);
+
+  void setLoading(bool isLoading) {
+    state = isLoading;
+  }
+
+  void show() => setLoading(true);
+  void hide() => setLoading(false);
+}
+
+/// Global error state provider
+final globalErrorProvider = StateNotifierProvider<GlobalErrorNotifier, String?>((ref) {
+  return GlobalErrorNotifier();
+});
+
+/// Global error notifier
+class GlobalErrorNotifier extends StateNotifier<String?> {
+  GlobalErrorNotifier() : super(null);
+
+  void setError(String? error) {
+    state = error;
+  }
+
+  void showError(String error) => setError(error);
+  void clearError() => setError(null);
 }

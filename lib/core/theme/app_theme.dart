@@ -1,364 +1,433 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_constants.dart';
 
-/// Viernes Brand Theme - Exact match to web app branding
-/// Colors and styling matching the React/Tailwind configuration
+/// Application theme configuration following Viernes design system
 class AppTheme {
-  // === EXACT VIERNES BRAND COLORS FROM WEB APP ===
+  AppTheme._();
 
-  // Primary colors (exact hex matches)
-  static const Color viernesGray = Color(0xFF374151);           // #374151 - Primary gray
-  static const Color viernesGrayLight = Color(0xFF9CA3AF);      // #9CA3AF - Light gray
-  static const Color viernesGrayDark = Color(0xFF1F2937);       // #1F2937 - Dark gray
-
-  static const Color viernesYellow = Color(0xFFFFE61B);         // #FFE61B - Secondary yellow
-  static const Color viernesYellowLight = Color(0xFFFFF04D);    // #FFF04D - Light yellow
-  static const Color viernesYellowDark = Color(0xFFE6CF00);     // #E6CF00 - Dark yellow
-
-  static const Color viernesGreen = Color(0xFF16A34A);          // #16a34a - System green
-  static const Color viernesGreenLight = Color(0xFF22C55E);     // #22c55e
-  static const Color viernesGreenDark = Color(0xFF15803D);      // #15803d
-
-  // System colors from web app
-  static const Color primary = viernesGray;                     // #374151 (Dark gray)
-  static const Color secondary = viernesYellow;                 // #FFE61B (Yellow)
-  static const Color accent = Color(0xFF51F5F8);                // #51f5f8 (Cyan)
-  static const Color success = viernesGreen;                    // #16a34a (Green)
-  static const Color danger = Color(0xFFE7515A);                // #e7515a (Red)
-  static const Color warning = Color(0xFFE2A03F);               // #e2a03f (Orange)
-
-  // Gradient colors for the signature Viernes gradient
-  static const List<Color> viernesGradientColors = [
-    viernesGray,    // #374151 at 0%
-    viernesYellow,  // #FFE61B at 100%
-  ];
-
-  // Gradient definition (135deg, #374151 0%, #FFE61B 100%)
-  static const LinearGradient viernesGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: viernesGradientColors,
-    stops: [0.0, 1.0],
-  );
-
-  // === LIGHT THEME COLORS ===
-  static const Color lightBackground = Color(0xFFFFFFFF);
-  static const Color lightSurface = Color(0xFFF8FAFC);
-  static const Color lightOnSurface = viernesGrayDark;           // Better contrast with Viernes gray
-  static const Color lightOnBackground = viernesGray;            // Primary Viernes gray
-  static const Color lightCardBackground = Color(0xFFFFFFFF);
-  static const Color lightBorder = Color(0xFFE5E7EB);           // Subtle border color
-
-  // === DARK THEME COLORS ===
-  static const Color darkBackground = viernesGrayDark;           // Using Viernes dark gray
-  static const Color darkSurface = viernesGray;                 // Using Viernes primary gray
-  static const Color darkOnSurface = Color(0xFFF9FAFB);         // High contrast white
-  static const Color darkOnBackground = viernesGrayLight;       // Viernes light gray
-  static const Color darkCardBackground = viernesGray;
-  static const Color darkBorder = Color(0xFF4B5563);            // Darker border for dark mode
-
-  // === NUNITO FONT CONFIGURATION ===
-  // Exact match to web app font family: Nunito (sans-serif)
-  static TextTheme get _textTheme => GoogleFonts.nunitoTextTheme();
-
-  // Custom text styles matching web app
-  static TextStyle get headingBold => GoogleFonts.nunito(
-    fontWeight: FontWeight.w700,
-    color: viernesGrayDark,
-  );
-
-  static TextStyle get bodyRegular => GoogleFonts.nunito(
-    fontWeight: FontWeight.w400,
-    color: viernesGray,
-  );
-
-  static TextStyle get bodyMedium => GoogleFonts.nunito(
-    fontWeight: FontWeight.w500,
-    color: viernesGray,
-  );
-
-  static TextStyle get buttonText => GoogleFonts.nunito(
-    fontWeight: FontWeight.w700,
-    color: Colors.white,
-  );
-
-  // === LIGHT THEME ===
+  /// Light theme configuration
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      textTheme: GoogleFonts.nunitoTextTheme(ThemeData.light().textTheme),
+
+      // Color scheme
       colorScheme: const ColorScheme.light(
-        primary: primary,                    // Viernes gray (#374151)
-        secondary: secondary,                // Viernes yellow (#FFE61B)
-        tertiary: success,                   // Viernes green (#16a34a)
-        surface: lightSurface,
+        primary: ViernesColors.primary,
+        primaryContainer: ViernesColors.primaryLight,
+        secondary: ViernesColors.secondary,
+        secondaryContainer: ViernesColors.secondaryLight,
+        tertiary: ViernesColors.accent,
+        surface: ViernesColors.panelLight,
+        surfaceContainer: ViernesColors.bgLight,
+        error: ViernesColors.danger,
         onPrimary: Colors.white,
-        onSecondary: viernesGrayDark,        // Dark text on yellow
-        onTertiary: Colors.white,
-        onSurface: lightOnSurface,
-        error: danger,
+        onSecondary: Colors.black,
+        onSurface: ViernesColors.primary,
         onError: Colors.white,
-        outline: lightBorder,
       ),
-      textTheme: _textTheme.apply(
-        bodyColor: lightOnBackground,
-        displayColor: lightOnSurface,
-      ),
+
+      // AppBar theme
       appBarTheme: AppBarTheme(
-        backgroundColor: lightBackground,
-        foregroundColor: lightOnSurface,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: _textTheme.headlineSmall?.copyWith(
-          color: lightOnSurface,
-          fontWeight: FontWeight.w600,
+        backgroundColor: ViernesColors.panelLight,
+        foregroundColor: ViernesColors.primary,
+        surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: ViernesTextStyles.h5.copyWith(
+          color: ViernesColors.primary,
+        ),
+        iconTheme: const IconThemeData(
+          color: ViernesColors.primary,
         ),
       ),
+
+      // Card theme
+      cardTheme: CardThemeData(
+        elevation: 2,
+        color: ViernesColors.panelLight,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+        ),
+        shadowColor: ViernesColors.primary.withValues(alpha: 0.1),
+      ),
+
+      // Elevated button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primary,                    // Viernes gray primary
+          backgroundColor: ViernesColors.primary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: buttonText.copyWith(fontSize: 14),
           elevation: 2,
-          shadowColor: primary.withValues(alpha: 0.3),
+          shadowColor: ViernesColors.primary.withValues(alpha: 0.6),
+          padding: const EdgeInsets.symmetric(
+            horizontal: ViernesSpacing.space5,
+            vertical: ViernesSpacing.space2,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ViernesRadius.md),
+          ),
+          textStyle: ViernesTextStyles.buttonText,
         ),
       ),
+
+      // Outlined button theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: primary,
-          side: const BorderSide(color: primary, width: 1.5),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          foregroundColor: ViernesColors.primary,
+          side: const BorderSide(color: ViernesColors.primary),
+          padding: const EdgeInsets.symmetric(
+            horizontal: ViernesSpacing.space5,
+            vertical: ViernesSpacing.space2,
           ),
-          textStyle: bodyMedium.copyWith(fontSize: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ViernesRadius.md),
+          ),
+          textStyle: ViernesTextStyles.buttonText,
         ),
       ),
+
+      // Text button theme
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: ViernesColors.primary,
+          padding: const EdgeInsets.symmetric(
+            horizontal: ViernesSpacing.space4,
+            vertical: ViernesSpacing.space2,
+          ),
+          textStyle: ViernesTextStyles.buttonText,
+        ),
+      ),
+
+      // Input decoration theme
       inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: ViernesColors.panelLight,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: ViernesSpacing.space4,
+          vertical: ViernesSpacing.space2,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.whiteLight),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.whiteLight),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primary, width: 2),
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.primary, width: 2),
         ),
-        filled: true,
-        fillColor: lightSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.danger),
+        ),
+        hintStyle: ViernesTextStyles.bodyBase.copyWith(
+          color: ViernesColors.textGray,
+        ),
+        labelStyle: ViernesTextStyles.bodyBase.copyWith(
+          color: ViernesColors.textGray,
+        ),
       ),
+
+      // Checkbox theme
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return ViernesColors.primary;
+          }
+          return Colors.transparent;
+        }),
+        checkColor: WidgetStateProperty.all(Colors.white),
+        side: const BorderSide(color: ViernesColors.whiteLight, width: 2),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.sm),
+        ),
+      ),
+
+      // Bottom navigation bar theme
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: ViernesColors.panelLight,
+        selectedItemColor: ViernesColors.primary,
+        unselectedItemColor: ViernesColors.textGray,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+
+      // Tab bar theme
+      tabBarTheme: TabBarThemeData(
+        labelColor: ViernesColors.primary,
+        unselectedLabelColor: ViernesColors.textGray,
+        indicatorColor: ViernesColors.secondary,
+        labelStyle: ViernesTextStyles.buttonText,
+        unselectedLabelStyle: ViernesTextStyles.bodyBase,
+      ),
+
+      // Dialog theme
+      dialogTheme: DialogThemeData(
+        backgroundColor: ViernesColors.panelLight,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.lg),
+        ),
+        elevation: 8,
+      ),
+
+      // Drawer theme
+      drawerTheme: const DrawerThemeData(
+        backgroundColor: ViernesColors.panelLight,
+        surfaceTintColor: Colors.transparent,
+      ),
+
+      // List tile theme
+      listTileTheme: ListTileThemeData(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: ViernesSpacing.space4,
+          vertical: ViernesSpacing.space1,
+        ),
+        titleTextStyle: ViernesTextStyles.bodyBase.copyWith(
+          color: ViernesColors.primary,
+        ),
+        subtitleTextStyle: ViernesTextStyles.bodySmall.copyWith(
+          color: ViernesColors.textGray,
+        ),
+      ),
+
+      // Divider theme
+      dividerTheme: const DividerThemeData(
+        color: ViernesColors.whiteLight,
+        thickness: 1,
+        space: 1,
+      ),
+
+      // Text theme handled by GoogleFonts above
     );
   }
 
-  // === DARK THEME ===
+  /// Dark theme configuration
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      textTheme: GoogleFonts.nunitoTextTheme(ThemeData.dark().textTheme),
+
+      // Color scheme
       colorScheme: const ColorScheme.dark(
-        primary: accent,                     // Cyan for dark mode primary
-        secondary: secondary,                // Viernes yellow
-        tertiary: success,                   // Viernes green
-        surface: darkSurface,
-        onPrimary: viernesGrayDark,          // Dark text on cyan
-        onSecondary: viernesGrayDark,        // Dark text on yellow
-        onTertiary: Colors.white,
-        onSurface: darkOnSurface,
-        error: danger,
+        primary: ViernesColors.secondary, // Yellow primary in dark mode
+        primaryContainer: ViernesColors.secondaryDark,
+        secondary: ViernesColors.primary,
+        secondaryContainer: ViernesColors.primaryLight,
+        tertiary: ViernesColors.accent,
+        surface: ViernesColors.panelDark,
+        surfaceContainer: ViernesColors.bgDark,
+        error: ViernesColors.danger,
+        onPrimary: Colors.black,
+        onSecondary: Colors.white,
+        onSurface: Colors.white,
         onError: Colors.white,
-        outline: darkBorder,
       ),
-      textTheme: _textTheme.apply(
-        bodyColor: darkOnBackground,
-        displayColor: darkOnSurface,
-      ),
+
+      // AppBar theme
       appBarTheme: AppBarTheme(
-        backgroundColor: darkBackground,
-        foregroundColor: darkOnSurface,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: _textTheme.headlineSmall?.copyWith(
-          color: darkOnSurface,
-          fontWeight: FontWeight.w600,
+        backgroundColor: ViernesColors.panelDark,
+        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        titleTextStyle: ViernesTextStyles.h5.copyWith(
+          color: Colors.white,
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
         ),
       ),
+
+      // Card theme
+      cardTheme: CardThemeData(
+        elevation: 2,
+        color: ViernesColors.panelDark,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+        ),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
+      ),
+
+      // Elevated button theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: accent,                     // Cyan for dark mode
-          foregroundColor: viernesGrayDark,            // Dark text on cyan
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          textStyle: buttonText.copyWith(
-            fontSize: 14,
-            color: viernesGrayDark,
-          ),
+          backgroundColor: ViernesColors.primaryLight, // Gray in dark mode
+          foregroundColor: Colors.black,
           elevation: 2,
-          shadowColor: accent.withValues(alpha: 0.3),
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: accent,
-          side: const BorderSide(color: accent, width: 1.5),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shadowColor: ViernesColors.primaryLight.withValues(alpha: 0.6),
+          padding: const EdgeInsets.symmetric(
+            horizontal: ViernesSpacing.space5,
+            vertical: ViernesSpacing.space2,
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(ViernesRadius.md),
           ),
-          textStyle: bodyMedium.copyWith(
-            fontSize: 14,
-            color: accent,
-          ),
+          textStyle: ViernesTextStyles.buttonText,
         ),
       ),
+
+      // Input decoration theme
       inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: ViernesColors.darkPanel,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: ViernesSpacing.space4,
+          vertical: ViernesSpacing.space2,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: darkBorder),
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.darkBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: darkBorder),
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.darkBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: accent, width: 2),
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.secondary, width: 2),
         ),
-        filled: true,
-        fillColor: darkSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.md),
+          borderSide: const BorderSide(color: ViernesColors.danger),
+        ),
+        hintStyle: ViernesTextStyles.bodyBase.copyWith(
+          color: ViernesColors.textGray,
+        ),
+        labelStyle: ViernesTextStyles.bodyBase.copyWith(
+          color: ViernesColors.textGray,
+        ),
       ),
+
+      // Bottom navigation bar theme
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: ViernesColors.panelDark,
+        selectedItemColor: ViernesColors.secondary,
+        unselectedItemColor: ViernesColors.textGray,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
+
+      // Tab bar theme
+      tabBarTheme: TabBarThemeData(
+        labelColor: ViernesColors.secondary,
+        unselectedLabelColor: ViernesColors.textGray,
+        indicatorColor: ViernesColors.secondary,
+        labelStyle: ViernesTextStyles.buttonText,
+        unselectedLabelStyle: ViernesTextStyles.bodyBase,
+      ),
+
+      // Dialog theme
+      dialogTheme: DialogThemeData(
+        backgroundColor: ViernesColors.panelDark,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ViernesRadius.lg),
+        ),
+        elevation: 8,
+      ),
+
+      // Drawer theme
+      drawerTheme: const DrawerThemeData(
+        backgroundColor: ViernesColors.panelDark,
+        surfaceTintColor: Colors.transparent,
+      ),
+
+      // Text theme handled by GoogleFonts above
     );
   }
+
 }
 
-/// Viernes Custom Theme Extensions
-/// Additional styling components matching the web app
-extension ViernesThemeExtension on ThemeData {
-  /// Signature Viernes gradient button style
-  /// Matches: background: linear-gradient(135deg, #374151 0%, #FFE61B 100%)
-  ButtonStyle get viernesGradientButton => ElevatedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+/// Custom button styles following Viernes design system
+class ViernesButtonStyles {
+  ViernesButtonStyles._();
+
+  /// Primary button with Viernes gradient
+  static ButtonStyle get viernesGradient => ElevatedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(
+      horizontal: ViernesSpacing.space6,
+      vertical: ViernesSpacing.space3,
+    ),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(ViernesRadius.lg),
     ),
-    elevation: 4,
-    shadowColor: AppTheme.viernesGray.withValues(alpha: 0.4),
+    elevation: 0,
+    shadowColor: Colors.transparent,
   ).copyWith(
-    backgroundColor: WidgetStateProperty.resolveWith((states) {
-      if (states.contains(WidgetState.pressed)) {
-        return null; // Use gradient
-      }
-      return null; // Use gradient
-    }),
-    foregroundColor: WidgetStateProperty.all(Colors.white),
-    textStyle: WidgetStateProperty.all(
-      AppTheme.buttonText.copyWith(
-        fontSize: 14,
-        letterSpacing: 0.5,
-      ),
-    ),
+    backgroundColor: WidgetStateProperty.all(Colors.transparent),
   );
 
-  /// Viernes card style
-  BoxDecoration get viernesCard => BoxDecoration(
-    color: colorScheme.surface,
-    borderRadius: BorderRadius.circular(8),
-    border: Border.all(
-      color: colorScheme.outline.withValues(alpha: 0.2),
-      width: 1,
+  /// Secondary button (yellow)
+  static ButtonStyle get secondary => ElevatedButton.styleFrom(
+    backgroundColor: ViernesColors.secondary,
+    foregroundColor: Colors.black,
+    elevation: 2,
+    shadowColor: ViernesColors.secondary.withValues(alpha: 0.6),
+    padding: const EdgeInsets.symmetric(
+      horizontal: ViernesSpacing.space5,
+      vertical: ViernesSpacing.space2,
     ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(ViernesRadius.md),
+    ),
+    textStyle: ViernesTextStyles.buttonText,
+  );
+
+  /// Accent button (cyan)
+  static ButtonStyle get accent => ElevatedButton.styleFrom(
+    backgroundColor: ViernesColors.accent,
+    foregroundColor: Colors.black,
+    elevation: 2,
+    shadowColor: ViernesColors.accent.withValues(alpha: 0.6),
+    padding: const EdgeInsets.symmetric(
+      horizontal: ViernesSpacing.space5,
+      vertical: ViernesSpacing.space2,
+    ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(ViernesRadius.md),
+    ),
+    textStyle: ViernesTextStyles.buttonText,
+  );
+}
+
+/// Custom decoration utilities
+class ViernesDecorations {
+  ViernesDecorations._();
+
+  /// Viernes gradient decoration
+  static const LinearGradient viernesGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [ViernesColors.primary, ViernesColors.secondary],
+  );
+
+  /// Panel decoration for light theme
+  static BoxDecoration get panelLight => BoxDecoration(
+    color: ViernesColors.panelLight,
+    borderRadius: BorderRadius.circular(ViernesRadius.md),
+    boxShadow: [ViernesShadows.cardShadow],
+  );
+
+  /// Panel decoration for dark theme
+  static BoxDecoration get panelDark => BoxDecoration(
+    color: ViernesColors.panelDark,
+    borderRadius: BorderRadius.circular(ViernesRadius.md),
     boxShadow: [
       BoxShadow(
-        color: AppTheme.viernesGray.withValues(alpha: 0.08),
-        blurRadius: 8,
+        color: Colors.black.withValues(alpha: 0.3),
         offset: const Offset(0, 2),
+        blurRadius: 8,
+        spreadRadius: 1,
       ),
     ],
   );
-
-  /// Success color variations
-  Color get successLight => AppTheme.viernesGreenLight;
-  Color get successDark => AppTheme.viernesGreenDark;
-
-  /// Warning color variations
-  Color get warningLight => const Color(0xFFFBBF24);
-  Color get warningDark => const Color(0xFFD97706);
-}
-
-/// Custom Viernes Gradient Button Widget
-/// Matches the exact .btn-viernes style from the web app
-class ViernesGradientButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final EdgeInsetsGeometry? padding;
-  final double? width;
-  final double? height;
-  final bool isLoading;
-
-  const ViernesGradientButton({
-    super.key,
-    required this.text,
-    this.onPressed,
-    this.padding,
-    this.width,
-    this.height,
-    this.isLoading = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height ?? 48,
-      decoration: BoxDecoration(
-        gradient: AppTheme.viernesGradient,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.viernesGray.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: isLoading ? null : onPressed,
-          child: Container(
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Center(
-              child: isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                  : Text(
-                      text.toUpperCase(),
-                      style: AppTheme.buttonText.copyWith(
-                        fontSize: 14,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }

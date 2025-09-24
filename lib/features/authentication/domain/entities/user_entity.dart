@@ -1,93 +1,26 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class UserEntity extends Equatable {
-  final String uid;
-  final String email;
-  final String? displayName;
-  final String? photoURL;
-  final bool emailVerified;
-  final String? databaseId;
-  final bool? available;
-  final OrganizationalRole? organizationalRole;
-  final OrganizationalStatus? organizationalStatus;
-  final String? organizationId;
+part 'user_entity.freezed.dart';
 
-  const UserEntity({
-    required this.uid,
-    required this.email,
-    this.displayName,
-    this.photoURL,
-    required this.emailVerified,
-    this.databaseId,
-    this.available,
-    this.organizationalRole,
-    this.organizationalStatus,
-    this.organizationId,
-  });
-
-  UserEntity copyWith({
-    String? uid,
-    String? email,
-    String? displayName,
-    String? photoURL,
-    bool? emailVerified,
-    String? databaseId,
-    bool? available,
-    OrganizationalRole? organizationalRole,
-    OrganizationalStatus? organizationalStatus,
+@freezed
+class UserEntity with _$UserEntity {
+  const factory UserEntity({
+    required String id,
+    required String email,
+    String? name,
+    String? photoUrl,
+    @Default(false) bool isEmailVerified,
+    @Default(true) bool isAvailable,
     String? organizationId,
-  }) {
-    return UserEntity(
-      uid: uid ?? this.uid,
-      email: email ?? this.email,
-      displayName: displayName ?? this.displayName,
-      photoURL: photoURL ?? this.photoURL,
-      emailVerified: emailVerified ?? this.emailVerified,
-      databaseId: databaseId ?? this.databaseId,
-      available: available ?? this.available,
-      organizationalRole: organizationalRole ?? this.organizationalRole,
-      organizationalStatus: organizationalStatus ?? this.organizationalStatus,
-      organizationId: organizationId ?? this.organizationId,
-    );
-  }
+    String? role,
+    DateTime? lastActiveAt,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) = _UserEntity;
 
-  @override
-  List<Object?> get props => [
-        uid,
-        email,
-        displayName,
-        photoURL,
-        emailVerified,
-        databaseId,
-        available,
-        organizationalRole,
-        organizationalStatus,
-        organizationId,
-      ];
-}
+  const UserEntity._();
 
-class OrganizationalRole extends Equatable {
-  final String valueDefinition;
-  final String description;
+  String get displayName => name ?? email.split('@').first;
 
-  const OrganizationalRole({
-    required this.valueDefinition,
-    required this.description,
-  });
-
-  @override
-  List<Object> get props => [valueDefinition, description];
-}
-
-class OrganizationalStatus extends Equatable {
-  final String valueDefinition;
-  final String description;
-
-  const OrganizationalStatus({
-    required this.valueDefinition,
-    required this.description,
-  });
-
-  @override
-  List<Object> get props => [valueDefinition, description];
+  bool get hasCompletedProfile => name != null && name!.isNotEmpty;
 }

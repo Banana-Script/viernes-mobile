@@ -9,7 +9,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appTitle => 'Viernes';
+  String get appName => 'Viernes Mobile';
 
   @override
   String get welcome => 'Bienvenido';
@@ -30,254 +30,189 @@ class AppLocalizationsEs extends AppLocalizations {
   String get forgotPassword => '¿Olvidaste tu contraseña?';
 
   @override
-  String get signUp => 'Registrarse';
-
-  @override
-  String get signInWithGoogle => 'Iniciar sesión con Google';
+  String get register => 'Registrarse';
 
   @override
   String get dashboard => 'Panel de Control';
 
   @override
-  String get customers => 'Clientes';
-
-  @override
-  String get calls => 'Llamadas';
-
-  @override
   String get conversations => 'Conversaciones';
-
-  @override
-  String get organization => 'Organización';
-
-  @override
-  String get settings => 'Configuración';
 
   @override
   String get profile => 'Perfil';
 
   @override
-  String get cancel => 'Cancelar';
-
-  @override
-  String get searchConversations => 'Buscar conversaciones...';
-
-  @override
-  String get typeMessage => 'Escribe un mensaje...';
-
-  @override
-  String get allConversations => 'Todas';
-
-  @override
-  String get myConversations => 'Mis Chats';
-
-  @override
-  String get viernesConversations => 'IA Viernes';
-
-  @override
-  String get loading => 'Cargando...';
-
-  @override
-  String get errorLoadingConversations => 'Error al cargar conversaciones';
-
-  @override
-  String get tryAgain => 'Intentar de Nuevo';
-
-  @override
-  String get noConversationsYet => 'No hay conversaciones aún';
-
-  @override
-  String get startNewConversation => 'Iniciar Nueva Conversación';
-
-  @override
-  String get conversationInfo => 'Información de la Conversación';
-
-  @override
-  String get assignAgent => 'Asignar Agente';
-
-  @override
-  String get changeStatus => 'Cambiar Estado';
-
-  @override
-  String get online => 'En Línea';
-
-  @override
-  String get connecting => 'Conectando...';
-
-  @override
-  String get noMessagesYet => 'No hay mensajes aún';
-
-  @override
-  String get startConversationMessage => 'Inicia la conversación enviando un mensaje';
-
-  @override
-  String get errorLoadingConversation => 'Error al cargar conversación';
-
-  @override
-  String get connectionIssue => 'Problema de conexión';
-
-  @override
-  String get dismiss => 'Descartar';
-
-  @override
-  String get close => 'Cerrar';
-
-  @override
-  String get refresh => 'Actualizar';
-
-  @override
-  String get filters => 'Filtros';
+  String get settings => 'Configuración';
 
   @override
   String get analytics => 'Analíticas';
 
   @override
-  String get enterYourEmailAddress => 'Ingresa tu dirección de correo';
+  String get customers => 'Clientes';
 
   @override
-  String get rememberMe => 'Recordarme';
+  String get templates => 'Plantillas';
 
   @override
-  String get dontHaveAccount => '¿No tienes una cuenta?';
+  String get workflows => 'Flujos de Trabajo';
 
   @override
-  String get alreadyHaveAccount => '¿Ya tienes una cuenta?';
+  String get calls => 'Llamadas';
 
   @override
-  String get createAccount => 'Crear Cuenta';
-
-  @override
-  String get signUpToGetStarted => 'Regístrate para comenzar';
-
-  @override
-  String get signUpWithGoogle => 'Registrarse con Google';
-
-  @override
-  String get firstName => 'Nombre';
-
-  @override
-  String get lastName => 'Apellido';
-
-  @override
-  String get confirmPassword => 'Confirmar Contraseña';
-
-  @override
-  String get iAgreeToThe => 'Acepto los';
-
-  @override
-  String get termsOfService => 'Términos de Servicio';
-
-  @override
-  String get and => 'y';
-
-  @override
-  String get privacyPolicy => 'Política de Privacidad';
-
-  @override
-  String get resetPassword => 'Restablecer Contraseña';
-
-  @override
-  String get passwordResetInstructions => 'Ingresa tu dirección de correo y te enviaremos un enlace para restablecer tu contraseña.';
-
-  @override
-  String get sendResetEmail => 'Enviar Correo de Restablecimiento';
-
-  @override
-  String get backToLogin => 'Volver al Inicio de Sesión';
-
-  @override
-  String get rememberYourPassword => '¿Recuerdas tu contraseña?';
-
-  @override
-  String get checkYourEmail => 'Revisa tu correo';
-
-  @override
-  String get emailSentInstructions => 'Hemos enviado instrucciones para restablecer tu contraseña a tu dirección de correo.';
-
-  @override
-  String get followInstructions => 'Por favor sigue las instrucciones en el correo para restablecer tu contraseña.';
-
-  @override
-  String get sendAnotherEmail => 'Enviar Otro Correo';
-
-  @override
-  String get emailSentSuccessfully => 'Correo enviado exitosamente';
-
-  @override
-  String get logoutConfirmation => '¿Estás seguro de que quieres cerrar sesión?';
-
-  @override
-  String get coreFeatures => 'Características Principales';
-
-  @override
-  String get businessTools => 'Herramientas de Negocio';
+  String get organization => 'Organización';
 
   @override
   String get comingSoon => 'Próximamente';
 
   @override
-  String get voiceAgents => 'Agentes de Voz';
+  String get comingSoonDescription => '¡Esta funcionalidad estará disponible pronto!';
 
   @override
-  String get organizationSettings => 'Configuración de Organización';
+  String get error => 'Error';
 
   @override
-  String get pleaseEnterEmail => 'Por favor ingresa tu correo';
+  String get errorOccurred => '¡Ups! Algo salió mal';
 
   @override
-  String get pleaseEnterValidEmail => 'Por favor ingresa un correo válido';
+  String get retry => 'Reintentar';
 
   @override
-  String get pleaseEnterPassword => 'Por favor ingresa tu contraseña';
+  String get goBack => 'Regresar';
 
   @override
-  String get pleaseEnterFirstName => 'Por favor ingresa tu nombre';
+  String get contactSupport => 'Si este problema persiste, por favor contacta soporte.';
 
   @override
-  String get pleaseEnterLastName => 'Por favor ingresa tu apellido';
+  String get loading => 'Cargando...';
 
   @override
-  String get pleaseEnterName => 'Por favor ingresa tu nombre';
+  String get save => 'Guardar';
 
   @override
-  String get pleaseConfirmPassword => 'Por favor confirma tu contraseña';
+  String get cancel => 'Cancelar';
 
   @override
-  String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
+  String get delete => 'Eliminar';
 
   @override
-  String get passwordTooShort => 'La contraseña debe tener al menos 6 caracteres';
+  String get edit => 'Editar';
 
   @override
-  String get invalidEmailFormat => 'Formato de correo inválido';
+  String get search => 'Buscar';
 
   @override
-  String get pleaseAcceptTerms => 'Por favor acepta los términos y condiciones';
+  String get noResultsFound => 'No se encontraron resultados';
 
   @override
-  String get invalidEmailOrPassword => 'Correo o contraseña inválidos';
+  String get refresh => 'Actualizar';
 
   @override
-  String get emailAlreadyInUse => 'El correo ya está en uso';
+  String version(String version) {
+    return 'Versión $version';
+  }
 
   @override
-  String get weakPassword => 'La contraseña es muy débil';
+  String get darkMode => 'Modo Oscuro';
 
   @override
-  String get userNotFound => 'Usuario no encontrado';
+  String get lightMode => 'Modo Claro';
 
   @override
-  String get tooManyRequests => 'Demasiadas solicitudes. Inténtalo de nuevo más tarde';
+  String get systemMode => 'Sistema';
 
   @override
-  String get networkError => 'Error de red. Por favor verifica tu conexión';
+  String get language => 'Idioma';
 
   @override
-  String get googleSignInCancelled => 'El inicio de sesión con Google fue cancelado';
+  String get notifications => 'Notificaciones';
 
   @override
-  String get googleSignInFailed => 'El inicio de sesión con Google falló';
+  String get biometricAuth => 'Autenticación Biométrica';
 
   @override
-  String get somethingWentWrong => 'Algo salió mal. Por favor inténtalo de nuevo';
+  String get offlineMode => 'Modo Sin Conexión';
+
+  @override
+  String get online => 'En Línea';
+
+  @override
+  String get offline => 'Sin Conexión';
+
+  @override
+  String get welcomeToViernes => 'Bienvenido a Viernes';
+
+  @override
+  String get signInToContinue => 'Inicia sesión para continuar';
+
+  @override
+  String get signIn => 'Iniciar Sesión';
+
+  @override
+  String get enterYourEmail => 'Ingresa tu correo electrónico';
+
+  @override
+  String get enterYourPassword => 'Ingresa tu contraseña';
+
+  @override
+  String get rememberMe => 'Recordarme';
+
+  @override
+  String get orContinueWith => 'o continúa con';
+
+  @override
+  String get continueWithGoogle => 'Continuar con Google';
+
+  @override
+  String get passwordRecovery => 'Recuperación de Contraseña';
+
+  @override
+  String get forgotYourPassword => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get enterEmailToResetPassword => 'Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.';
+
+  @override
+  String get resetPasswordHelperText => 'Enviaremos un enlace de restablecimiento a este correo';
+
+  @override
+  String get sendResetEmail => 'Enviar Correo de Restablecimiento';
+
+  @override
+  String get rememberPassword => '¿Recuerdas tu contraseña?';
+
+  @override
+  String get backToSignIn => 'Volver al Inicio de Sesión';
+
+  @override
+  String get checkYourEmail => 'Revisa tu correo electrónico';
+
+  @override
+  String passwordResetEmailSent(String email) {
+    return 'Hemos enviado un enlace de restablecimiento de contraseña a $email';
+  }
+
+  @override
+  String get checkSpamFolder => '¿No ves el correo? Revisa tu carpeta de spam.';
+
+  @override
+  String get sendAnotherEmail => 'Enviar Otro Correo';
+
+  @override
+  String get enableFaceId => 'Habilitar Face ID';
+
+  @override
+  String get enableFingerprint => 'Habilitar Huella Dactilar';
+
+  @override
+  String get enableBiometric => 'Habilitar Autenticación Biométrica';
+
+  @override
+  String get faceIdDescription => 'Usa Face ID para acceso rápido y seguro a tu cuenta';
+
+  @override
+  String get fingerprintDescription => 'Usa tu huella dactilar para acceso rápido y seguro a tu cuenta';
+
+  @override
+  String get biometricDescription => 'Usa autenticación biométrica para acceso rápido y seguro';
 }

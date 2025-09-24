@@ -1,20 +1,23 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../models/auth_result_model.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../models/user_model.dart';
 
 abstract class FirebaseAuthService {
-  Future<AuthResultModel> signInWithEmailAndPassword(String email, String password);
-  Future<AuthResultModel> createUserWithEmailAndPassword(String email, String password);
-  Future<AuthResultModel> signInWithGoogle();
+  Future<UserModel> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  });
+
+  Future<UserModel> signInWithGoogle();
+
   Future<void> sendPasswordResetEmail(String email);
+
   Future<void> signOut();
-  Future<String?> getCurrentUserToken();
-  Future<String> refreshCurrentUserToken();
-  Stream<UserModel?> get authStateChanges;
-  UserModel? get currentUser;
+
+  User? getCurrentUser();
+
+  Stream<User?> get authStateChanges;
 }
 
 class FirebaseAuthServiceImpl implements FirebaseAuthService {
@@ -28,142 +31,135 @@ class FirebaseAuthServiceImpl implements FirebaseAuthService {
         _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   @override
-  Future<AuthResultModel> signInWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    final credential = await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    final idToken = await credential.user!.getIdToken();
-    if (idToken == null) {
-      throw FirebaseAuthException(
-        code: 'token-generation-failed',
-        message: 'Failed to generate authentication token',
+  Future<UserModel> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-    }
 
-    return AuthResultModel.fromFirebaseUserCredential(credential, idToken);
+      final user = credential.user;
+      if (user == null) {
+        throw const AuthException(message: 'Sign in failed');
+      }
+
+      return _mapFirebaseUserToModel(user);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(message: _mapFirebaseAuthErrorCode(e.code));
+    } catch (e) {
+      throw AuthException(message: 'An unexpected error occurred: ${e.toString()}');
+    }
   }
 
   @override
-  Future<AuthResultModel> createUserWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<UserModel> signInWithGoogle() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-    final idToken = await credential.user!.getIdToken();
-    if (idToken == null) {
-      throw FirebaseAuthException(
-        code: 'token-generation-failed',
-        message: 'Failed to generate authentication token',
+      if (googleUser == null) {
+        throw const AuthException(message: 'Google sign in was cancelled');
+      }
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
+
+      // Sign in to Firebase with the credential
+      final userCredential = await _firebaseAuth.signInWithCredential(credential);
+
+      final user = userCredential.user;
+      if (user == null) {
+        throw const AuthException(message: 'Google sign in failed');
+      }
+
+      return _mapFirebaseUserToModel(user);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(message: _mapFirebaseAuthErrorCode(e.code));
+    } catch (e) {
+      throw AuthException(message: 'An unexpected error occurred: ${e.toString()}');
     }
-
-    return AuthResultModel.fromFirebaseUserCredential(credential, idToken);
-  }
-
-  @override
-  Future<AuthResultModel> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-    if (googleUser == null) {
-      throw FirebaseAuthException(
-        code: 'sign_in_canceled',
-        message: 'Google sign in was canceled',
-      );
-    }
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    // Sign in to Firebase with the Google credentials
-    final firebaseCredential = await _firebaseAuth.signInWithCredential(credential);
-
-    final idToken = await firebaseCredential.user!.getIdToken();
-    if (idToken == null) {
-      throw FirebaseAuthException(
-        code: 'token-generation-failed',
-        message: 'Failed to generate authentication token',
-      );
-    }
-
-    return AuthResultModel.fromFirebaseUserCredential(firebaseCredential, idToken);
   }
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    await _firebaseAuth.sendPasswordResetEmail(email: email);
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(message: _mapFirebaseAuthErrorCode(e.code));
+    } catch (e) {
+      throw AuthException(message: 'Failed to send password reset email: ${e.toString()}');
+    }
   }
 
   @override
   Future<void> signOut() async {
-    await Future.wait([
-      _firebaseAuth.signOut(),
-      _googleSignIn.signOut(),
-    ]);
-  }
-
-  @override
-  Future<String?> getCurrentUserToken() async {
-    final user = _firebaseAuth.currentUser;
-    if (user == null) return null;
-
-    return await user.getIdToken();
-  }
-
-  @override
-  Future<String> refreshCurrentUserToken() async {
-    final user = _firebaseAuth.currentUser;
-    if (user == null) {
-      throw FirebaseAuthException(
-        code: 'no-current-user',
-        message: 'No current user to refresh token for',
-      );
+    try {
+      await Future.wait([
+        _firebaseAuth.signOut(),
+        _googleSignIn.signOut(),
+      ]);
+    } catch (e) {
+      throw AuthException(message: 'Failed to sign out: ${e.toString()}');
     }
+  }
 
-    final token = await user.getIdToken(true); // Force refresh
-    if (token == null) {
-      throw FirebaseAuthException(
-        code: 'token-refresh-failed',
-        message: 'Failed to refresh authentication token',
-      );
+  @override
+  User? getCurrentUser() {
+    return _firebaseAuth.currentUser;
+  }
+
+  @override
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+
+  UserModel _mapFirebaseUserToModel(User user) {
+    return UserModel(
+      id: user.uid,
+      email: user.email ?? '',
+      name: user.displayName,
+      photoUrl: user.photoURL,
+      isEmailVerified: user.emailVerified,
+      createdAt: user.metadata.creationTime,
+      updatedAt: user.metadata.lastSignInTime,
+    );
+  }
+
+  String _mapFirebaseAuthErrorCode(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'No user found with this email address';
+      case 'wrong-password':
+        return 'Invalid password';
+      case 'invalid-email':
+        return 'Invalid email address';
+      case 'user-disabled':
+        return 'This account has been disabled';
+      case 'too-many-requests':
+        return 'Too many failed attempts. Please try again later';
+      case 'operation-not-allowed':
+        return 'This sign in method is not enabled';
+      case 'weak-password':
+        return 'Password is too weak';
+      case 'email-already-in-use':
+        return 'An account with this email already exists';
+      case 'invalid-credential':
+        return 'Invalid credentials provided';
+      case 'account-exists-with-different-credential':
+        return 'Account exists with different credentials';
+      case 'requires-recent-login':
+        return 'Please re-authenticate to continue';
+      case 'network-request-failed':
+        return 'Network error. Please check your connection';
+      default:
+        return 'Authentication failed. Please try again';
     }
-    return token;
-  }
-
-  @override
-  Stream<UserModel?> get authStateChanges {
-    return _firebaseAuth.authStateChanges().map((User? firebaseUser) {
-      if (firebaseUser == null) return null;
-      return UserModel.fromFirebaseUser(firebaseUser);
-    });
-  }
-
-  @override
-  UserModel? get currentUser {
-    final firebaseUser = _firebaseAuth.currentUser;
-    if (firebaseUser == null) return null;
-    return UserModel.fromFirebaseUser(firebaseUser);
-  }
-}
-
-// Extension to handle common Firebase Auth exceptions
-extension FirebaseAuthExceptionHandler on FirebaseAuthException {
-  AuthFailureModel toAuthFailure() {
-    return AuthFailureModel.fromFirebaseAuthException(this);
   }
 }

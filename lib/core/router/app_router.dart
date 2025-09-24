@@ -1,268 +1,294 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Authentication pages
 import '../../features/authentication/presentation/pages/login_page.dart';
-import '../../features/authentication/presentation/pages/register_page.dart';
 import '../../features/authentication/presentation/pages/password_recovery_page.dart';
-
-// MVP Core pages
-import '../../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/conversations/presentation/pages/conversations_page.dart';
-import '../../features/conversations/presentation/pages/conversation_chat_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart';
-
-// Future Feature pages (placeholder structure)
-import '../../features/customers/presentation/pages/customers_page.dart';
-import '../../features/customers/presentation/pages/customer_detail_page.dart';
-import '../../features/calls/presentation/pages/calls_page.dart';
-import '../../features/voice/presentation/pages/voice_agents_page.dart';
-import '../../features/voice/presentation/pages/inbound_calls_page.dart';
-import '../../features/voice/presentation/pages/outbound_campaigns_page.dart';
-import '../../features/organizations/presentation/pages/organization_settings_page.dart';
-import '../../features/analytics/presentation/pages/analytics_page.dart';
-import '../../features/workflows/presentation/pages/workflows_page.dart';
-import '../../features/templates/presentation/pages/templates_page.dart';
+import '../../features/authentication/presentation/providers/auth_providers.dart';
 
 // Shared widgets
-import '../../shared/widgets/main_layout.dart';
+import '../../shared/widgets/coming_soon_page.dart';
 import '../../shared/widgets/splash_screen.dart';
 import '../../shared/widgets/error_page.dart';
-import '../../shared/widgets/coming_soon_page.dart';
+import '../../shared/widgets/main_layout.dart';
 
-class AppRouter {
-  static final GoRouter _router = GoRouter(
-    initialLocation: '/splash',
+/// Custom refresh listenable for GoRouter
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
+/// Custom refresh notifier for GoRouter that listens to authentication state changes
+class GoRouterRefreshNotifier extends ChangeNotifier {
+  GoRouterRefreshNotifier(this.ref) {
+    ref.listen(authNotifierProvider, (previous, next) {
+      notifyListeners();
+    });
+  }
+
+  final Ref ref;
+}
+
+/// Route names for navigation
+class RouteNames {
+  RouteNames._();
+
+  static const String splash = '/';
+  static const String login = '/login';
+  static const String register = '/register';
+  static const String passwordRecovery = '/password-recovery';
+
+  // Main app routes
+  static const String dashboard = '/dashboard';
+  static const String conversations = '/conversations';
+  static const String conversationChat = '/conversations/:id';
+  static const String profile = '/profile';
+  static const String settings = '/settings';
+
+  // Additional feature routes
+  static const String analytics = '/analytics';
+  static const String customers = '/customers';
+  static const String customerDetail = '/customers/:id';
+  static const String templates = '/templates';
+  static const String workflows = '/workflows';
+  static const String calls = '/calls';
+  static const String voiceAgents = '/voice-agents';
+  static const String organization = '/organization';
+}
+
+/// Router configuration using GoRouter
+final appRouterProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    debugLogDiagnostics: true,
+    initialLocation: RouteNames.splash,
     errorBuilder: (context, state) => ErrorPage(error: state.error.toString()),
     redirect: (context, state) {
-      final user = FirebaseAuth.instance.currentUser;
-      final isLoggedIn = user != null;
-      final authRoutes = ['/login', '/register', '/auth/recovery'];
-      final publicRoutes = ['/splash', ...authRoutes];
-      final isOnAuthRoute = authRoutes.contains(state.matchedLocation);
-      final isOnPublicRoute = publicRoutes.contains(state.matchedLocation);
+      final isAuthenticated = ref.read(isAuthenticatedProvider);
+      final isInitialized = ref.read(authNotifierProvider).isInitialized;
+      final currentLocation = state.uri.path;
 
-      // Allow splash screen and public routes
-      if (isOnPublicRoute) return null;
+      // Don't redirect if not initialized yet
+      if (!isInitialized) return null;
 
-      // If not logged in and not on auth pages, redirect to login
-      if (!isLoggedIn && !isOnPublicRoute) {
-        return '/login';
+      // Public routes that don't require authentication
+      final publicRoutes = [
+        RouteNames.splash,
+        RouteNames.login,
+        RouteNames.passwordRecovery,
+      ];
+
+      final isPublicRoute = publicRoutes.contains(currentLocation);
+
+      // If user is authenticated and trying to access public route, redirect to dashboard
+      if (isAuthenticated && isPublicRoute && currentLocation != RouteNames.splash) {
+        return RouteNames.dashboard;
       }
 
-      // If logged in and on auth pages, redirect to dashboard
-      if (isLoggedIn && isOnAuthRoute) {
-        return '/dashboard';
+      // If user is not authenticated and trying to access private route, redirect to login
+      if (!isAuthenticated && !isPublicRoute) {
+        return RouteNames.login;
       }
 
+      // No redirect needed
       return null;
     },
+    refreshListenable: GoRouterRefreshNotifier(ref),
     routes: [
       // Splash route
       GoRoute(
-        path: '/splash',
-        name: 'splash',
+        path: RouteNames.splash,
+        name: RouteNames.splash,
         builder: (context, state) => const SplashScreen(),
       ),
 
-      // Authentication routes (public)
+      // Authentication routes
       GoRoute(
-        path: '/login',
-        name: 'login',
+        path: RouteNames.login,
+        name: RouteNames.login,
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
-        path: '/register',
-        name: 'register',
-        builder: (context, state) => const RegisterPage(),
-      ),
-      GoRoute(
-        path: '/auth/recovery',
-        name: 'passwordRecovery',
+        path: RouteNames.passwordRecovery,
+        name: RouteNames.passwordRecovery,
         builder: (context, state) => const PasswordRecoveryPage(),
       ),
 
-      // Main authenticated app shell with bottom navigation
+      // Main app shell with bottom navigation
       ShellRoute(
-        builder: (context, state, child) {
-          return MainLayout(child: child);
-        },
+        builder: (context, state, child) => MainLayout(child: child),
         routes: [
-          // MVP Core Features
+          // Dashboard
           GoRoute(
-            path: '/dashboard',
-            name: 'dashboard',
-            builder: (context, state) => const DashboardPage(),
+            path: RouteNames.dashboard,
+            name: RouteNames.dashboard,
+            builder: (context, state) => const ComingSoonPage(title: 'Dashboard'),
           ),
+
+          // Conversations
           GoRoute(
-            path: '/conversations',
-            name: 'conversations',
-            builder: (context, state) => const ConversationsPage(),
+            path: RouteNames.conversations,
+            name: RouteNames.conversations,
+            builder: (context, state) => const ComingSoonPage(title: 'Conversations'),
             routes: [
+              // Individual conversation chat
               GoRoute(
-                path: '/:conversationId',
-                name: 'conversationChat',
+                path: '/:id',
+                name: RouteNames.conversationChat,
                 builder: (context, state) {
-                  final conversationId = state.pathParameters['conversationId']!;
-                  return ConversationChatPage(conversationId: conversationId);
+                  final conversationId = state.pathParameters['id'] ?? '';
+                  return ComingSoonPage(title: 'Chat: $conversationId');
                 },
               ),
             ],
           ),
+
+          // Profile
           GoRoute(
-            path: '/profile',
-            name: 'profile',
-            builder: (context, state) => const ProfilePage(),
+            path: RouteNames.profile,
+            name: RouteNames.profile,
+            builder: (context, state) => const ComingSoonPage(title: 'Profile'),
+          ),
+
+          // Settings
+          GoRoute(
+            path: RouteNames.settings,
+            name: RouteNames.settings,
+            builder: (context, state) => const ComingSoonPage(title: 'Settings'),
           ),
         ],
       ),
 
-      // Future Features Routes (outside main shell for different navigation patterns)
+      // Additional feature routes (outside main shell)
       GoRoute(
-        path: '/customers',
-        name: 'customers',
-        builder: (context, state) => const CustomersPage(),
+        path: RouteNames.analytics,
+        name: RouteNames.analytics,
+        builder: (context, state) => const ComingSoonPage(title: 'Analytics'),
+      ),
+      GoRoute(
+        path: RouteNames.customers,
+        name: RouteNames.customers,
+        builder: (context, state) => const ComingSoonPage(title: 'Customers'),
         routes: [
           GoRoute(
-            path: '/:customerId',
-            name: 'customerDetail',
+            path: '/:id',
+            name: RouteNames.customerDetail,
             builder: (context, state) {
-              final customerId = state.pathParameters['customerId']!;
-              return CustomerDetailPage(customerId: customerId);
+              final customerId = state.pathParameters['id'] ?? '';
+              return ComingSoonPage(title: 'Customer: $customerId');
             },
           ),
         ],
       ),
       GoRoute(
-        path: '/calls',
-        name: 'calls',
-        builder: (context, state) => const CallsPage(),
+        path: RouteNames.templates,
+        name: RouteNames.templates,
+        builder: (context, state) => const ComingSoonPage(title: 'Templates'),
       ),
       GoRoute(
-        path: '/voice/agents',
-        name: 'voiceAgents',
-        builder: (context, state) => const VoiceAgentsPage(),
+        path: RouteNames.workflows,
+        name: RouteNames.workflows,
+        builder: (context, state) => const ComingSoonPage(title: 'Workflows'),
       ),
       GoRoute(
-        path: '/voice/inbound-calls',
-        name: 'inboundCalls',
-        builder: (context, state) => const InboundCallsPage(),
+        path: RouteNames.calls,
+        name: RouteNames.calls,
+        builder: (context, state) => const ComingSoonPage(title: 'Calls'),
       ),
       GoRoute(
-        path: '/voice/outbound-campaigns',
-        name: 'outboundCampaigns',
-        builder: (context, state) => const OutboundCampaignsPage(),
+        path: RouteNames.voiceAgents,
+        name: RouteNames.voiceAgents,
+        builder: (context, state) => const ComingSoonPage(title: 'Voice Agents'),
       ),
       GoRoute(
-        path: '/organization/settings',
-        name: 'organizationSettings',
-        builder: (context, state) => const OrganizationSettingsPage(),
-      ),
-      GoRoute(
-        path: '/analytics',
-        name: 'analytics',
-        builder: (context, state) => const AnalyticsPage(),
-      ),
-      GoRoute(
-        path: '/workflows',
-        name: 'workflows',
-        builder: (context, state) => const WorkflowsPage(),
-      ),
-      GoRoute(
-        path: '/templates',
-        name: 'templates',
-        builder: (context, state) => const TemplatesPage(),
-      ),
-
-      // Coming Soon placeholder for future features
-      GoRoute(
-        path: '/coming-soon/:feature',
-        name: 'comingSoon',
-        builder: (context, state) {
-          final feature = state.pathParameters['feature'] ?? 'Feature';
-          return ComingSoonPage(featureName: feature);
-        },
+        path: RouteNames.organization,
+        name: RouteNames.organization,
+        builder: (context, state) => const ComingSoonPage(title: 'Organization'),
       ),
     ],
   );
+});
 
-  static GoRouter get router => _router;
-
-  // Helper method to check if current route is in main navigation
-  static bool isMainNavigationRoute(String route) {
-    const mainRoutes = ['/dashboard', '/conversations', '/profile'];
-    return mainRoutes.contains(route);
-  }
-
-  // Helper method to get the current route name
-  static String? getCurrentRouteName() {
-    final location = _router.routerDelegate.currentConfiguration.uri.toString();
-    return location;
-  }
-}
-
-// Navigation helper methods with type-safe navigation
+/// Navigation helper class
 class AppNavigation {
-  static final GoRouter _router = AppRouter.router;
+  AppNavigation._();
 
-  // Authentication Navigation
-  static void goToLogin() => _router.goNamed('login');
-  static void goToRegister() => _router.goNamed('register');
-  static void goToPasswordRecovery() => _router.goNamed('passwordRecovery');
-
-  // MVP Core Navigation
-  static void goToDashboard() => _router.goNamed('dashboard');
-  static void goToConversations() => _router.goNamed('conversations');
-  static void goToConversationChat(String conversationId) =>
-      _router.goNamed('conversationChat', pathParameters: {'conversationId': conversationId});
-  static void goToProfile() => _router.goNamed('profile');
-
-  // Future Features Navigation
-  static void goToCustomers() => _router.goNamed('customers');
-  static void goToCustomerDetail(String customerId) =>
-      _router.goNamed('customerDetail', pathParameters: {'customerId': customerId});
-  static void goToCalls() => _router.goNamed('calls');
-  static void goToVoiceAgents() => _router.goNamed('voiceAgents');
-  static void goToInboundCalls() => _router.goNamed('inboundCalls');
-  static void goToOutboundCampaigns() => _router.goNamed('outboundCampaigns');
-  static void goToOrganizationSettings() => _router.goNamed('organizationSettings');
-  static void goToAnalytics() => _router.goNamed('analytics');
-  static void goToWorkflows() => _router.goNamed('workflows');
-  static void goToTemplates() => _router.goNamed('templates');
-
-  // Utility methods
-  static void goToComingSoon(String featureName) =>
-      _router.goNamed('comingSoon', pathParameters: {'feature': featureName});
-
-  static void pop() => _router.pop();
-  static bool canPop() => _router.canPop();
-
-  static void logout() {
-    // Clear any app state here if needed
-    _router.goNamed('login');
+  /// Navigate to login
+  static void toLogin(BuildContext context) {
+    context.goNamed(RouteNames.login);
   }
-}
 
-// Route definitions for easy reference
-class AppRoutes {
-  // Authentication
-  static const login = '/login';
-  static const register = '/register';
-  static const passwordRecovery = '/auth/recovery';
+  /// Navigate to dashboard
+  static void toDashboard(BuildContext context) {
+    context.goNamed(RouteNames.dashboard);
+  }
 
-  // MVP Core
-  static const dashboard = '/dashboard';
-  static const conversations = '/conversations';
-  static const profile = '/profile';
+  /// Navigate to conversations
+  static void toConversations(BuildContext context) {
+    context.goNamed(RouteNames.conversations);
+  }
 
-  // Future Features
-  static const customers = '/customers';
-  static const calls = '/calls';
-  static const voiceAgents = '/voice/agents';
-  static const inboundCalls = '/voice/inbound-calls';
-  static const outboundCampaigns = '/voice/outbound-campaigns';
-  static const organizationSettings = '/organization/settings';
-  static const analytics = '/analytics';
-  static const workflows = '/workflows';
-  static const templates = '/templates';
+  /// Navigate to specific conversation
+  static void toConversationChat(BuildContext context, String conversationId) {
+    context.goNamed(
+      RouteNames.conversationChat,
+      pathParameters: {'id': conversationId},
+    );
+  }
+
+  /// Navigate to profile
+  static void toProfile(BuildContext context) {
+    context.goNamed(RouteNames.profile);
+  }
+
+  /// Navigate to settings
+  static void toSettings(BuildContext context) {
+    context.goNamed(RouteNames.settings);
+  }
+
+  /// Navigate to analytics
+  static void toAnalytics(BuildContext context) {
+    context.goNamed(RouteNames.analytics);
+  }
+
+  /// Navigate to customers
+  static void toCustomers(BuildContext context) {
+    context.goNamed(RouteNames.customers);
+  }
+
+  /// Navigate to specific customer
+  static void toCustomerDetail(BuildContext context, String customerId) {
+    context.goNamed(
+      RouteNames.customerDetail,
+      pathParameters: {'id': customerId},
+    );
+  }
+
+  /// Navigate back
+  static void back(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    }
+  }
+
+  /// Replace current route
+  static void replace(BuildContext context, String location) {
+    context.go(location);
+  }
+
+  /// Push new route
+  static void push(BuildContext context, String location) {
+    context.push(location);
+  }
 }

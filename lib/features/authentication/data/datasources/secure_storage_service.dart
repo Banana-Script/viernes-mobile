@@ -1,102 +1,151 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
-import '../models/user_model.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../../core/errors/exceptions.dart';
+import '../models/auth_result_model.dart';
 
 abstract class SecureStorageService {
-  Future<void> storeAuthToken(String token);
-  Future<String?> getAuthToken();
+  Future<void> storeAuthResult(AuthResultModel authResult);
+
+  Future<AuthResultModel?> getAuthResult();
+
+  Future<void> storeAccessToken(String token);
+
+  Future<String?> getAccessToken();
+
   Future<void> storeRefreshToken(String token);
+
   Future<String?> getRefreshToken();
-  Future<void> storeUserData(UserModel user);
-  Future<UserModel?> getUserData();
-  Future<void> clearAllAuthData();
-  Future<void> storeUserAvailabilityFlag(bool available);
-  Future<bool?> getUserAvailabilityFlag();
+
+  Future<void> storeBiometricEnabled(bool enabled);
+
+  Future<bool> getBiometricEnabled();
+
+  Future<void> clearAuthData();
+
+  Future<void> clearAll();
 }
 
 class SecureStorageServiceImpl implements SecureStorageService {
   final FlutterSecureStorage _secureStorage;
 
-  // Storage keys
-  static const String _authTokenKey = 'auth_token';
+  static const String _accessTokenKey = 'access_token';
   static const String _refreshTokenKey = 'refresh_token';
-  static const String _userDataKey = 'user_data';
-  static const String _userAvailabilityKey = 'user_availability';
+  static const String _authResultKey = 'auth_result';
+  static const String _biometricEnabledKey = 'biometric_enabled';
 
-  SecureStorageServiceImpl({FlutterSecureStorage? secureStorage})
-      : _secureStorage = secureStorage ??
+  SecureStorageServiceImpl({
+    FlutterSecureStorage? secureStorage,
+  }) : _secureStorage = secureStorage ??
             const FlutterSecureStorage(
               aOptions: AndroidOptions(
                 encryptedSharedPreferences: true,
+                resetOnError: true,
               ),
               iOptions: IOSOptions(
                 accessibility: KeychainAccessibility.first_unlock_this_device,
               ),
+              lOptions: LinuxOptions(),
+              wOptions: WindowsOptions(),
+              mOptions: MacOsOptions(),
             );
 
   @override
-  Future<void> storeAuthToken(String token) async {
-    await _secureStorage.write(key: _authTokenKey, value: token);
-  }
-
-  @override
-  Future<String?> getAuthToken() async {
-    return await _secureStorage.read(key: _authTokenKey);
-  }
-
-  @override
-  Future<void> storeRefreshToken(String token) async {
-    await _secureStorage.write(key: _refreshTokenKey, value: token);
-  }
-
-  @override
-  Future<String?> getRefreshToken() async {
-    return await _secureStorage.read(key: _refreshTokenKey);
-  }
-
-  @override
-  Future<void> storeUserData(UserModel user) async {
-    final userJson = jsonEncode(user.toJson());
-    await _secureStorage.write(key: _userDataKey, value: userJson);
-  }
-
-  @override
-  Future<UserModel?> getUserData() async {
-    final userJson = await _secureStorage.read(key: _userDataKey);
-    if (userJson == null) return null;
-
+  Future<void> storeAuthResult(AuthResultModel authResult) async {
     try {
-      final userMap = jsonDecode(userJson) as Map<String, dynamic>;
-      return UserModel.fromJson(userMap);
+      final json = jsonEncode(authResult.toJson());
+      await _secureStorage.write(key: _authResultKey, value: json);
     } catch (e) {
-      // If parsing fails, return null and clear corrupted data
-      await _secureStorage.delete(key: _userDataKey);
-      return null;
+      throw StorageException(message: 'Failed to store auth result: ${e.toString()}');
     }
   }
 
   @override
-  Future<void> storeUserAvailabilityFlag(bool available) async {
-    await _secureStorage.write(
-      key: _userAvailabilityKey,
-      value: available.toString(),
-    );
+  Future<AuthResultModel?> getAuthResult() async {
+    try {
+      final json = await _secureStorage.read(key: _authResultKey);
+      if (json == null) return null;
+
+      final Map<String, dynamic> data = jsonDecode(json);
+      return AuthResultModel.fromJson(data);
+    } catch (e) {
+      throw StorageException(message: 'Failed to retrieve auth result: ${e.toString()}');
+    }
   }
 
   @override
-  Future<bool?> getUserAvailabilityFlag() async {
-    final availabilityString = await _secureStorage.read(key: _userAvailabilityKey);
-    if (availabilityString == null) return null;
-    return availabilityString.toLowerCase() == 'true';
+  Future<void> storeAccessToken(String token) async {
+    try {
+      await _secureStorage.write(key: _accessTokenKey, value: token);
+    } catch (e) {
+      throw StorageException(message: 'Failed to store access token: ${e.toString()}');
+    }
   }
 
   @override
-  Future<void> clearAllAuthData() async {
-    await Future.wait([
-      _secureStorage.delete(key: _authTokenKey),
-      _secureStorage.delete(key: _refreshTokenKey),
-      _secureStorage.delete(key: _userDataKey),
-      _secureStorage.delete(key: _userAvailabilityKey),
-    ]);
+  Future<String?> getAccessToken() async {
+    try {
+      return await _secureStorage.read(key: _accessTokenKey);
+    } catch (e) {
+      throw StorageException(message: 'Failed to retrieve access token: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> storeRefreshToken(String token) async {
+    try {
+      await _secureStorage.write(key: _refreshTokenKey, value: token);
+    } catch (e) {
+      throw StorageException(message: 'Failed to store refresh token: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<String?> getRefreshToken() async {
+    try {
+      return await _secureStorage.read(key: _refreshTokenKey);
+    } catch (e) {
+      throw StorageException(message: 'Failed to retrieve refresh token: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> storeBiometricEnabled(bool enabled) async {
+    try {
+      await _secureStorage.write(key: _biometricEnabledKey, value: enabled.toString());
+    } catch (e) {
+      throw StorageException(message: 'Failed to store biometric setting: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<bool> getBiometricEnabled() async {
+    try {
+      final value = await _secureStorage.read(key: _biometricEnabledKey);
+      return value?.toLowerCase() == 'true';
+    } catch (e) {
+      throw StorageException(message: 'Failed to retrieve biometric setting: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> clearAuthData() async {
+    try {
+      await Future.wait([
+        _secureStorage.delete(key: _accessTokenKey),
+        _secureStorage.delete(key: _refreshTokenKey),
+        _secureStorage.delete(key: _authResultKey),
+      ]);
+    } catch (e) {
+      throw StorageException(message: 'Failed to clear auth data: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> clearAll() async {
+    try {
+      await _secureStorage.deleteAll();
+    } catch (e) {
+      throw StorageException(message: 'Failed to clear all data: ${e.toString()}');
+    }
   }
 }

@@ -1,190 +1,216 @@
-import 'dart:developer' as dev;
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../core/errors/failures.dart';
 
-/// Centralized error handling for authentication operations
-/// Provides user-friendly error messages and consistent error handling
 class AuthErrorHandler {
-  /// Convert Firebase Auth exceptions to user-friendly messages
-  static String getFirebaseAuthErrorMessage(
-    FirebaseAuthException exception,
-    AppLocalizations l10n,
-  ) {
-    switch (exception.code) {
-      // Login errors
-      case 'user-not-found':
-        return l10n.userNotFound;
-      case 'wrong-password':
-        return l10n.invalidEmailOrPassword;
-      case 'invalid-email':
-        return l10n.invalidEmailFormat;
-      case 'user-disabled':
-        return 'This account has been disabled. Please contact support.';
-      case 'too-many-requests':
-        return l10n.tooManyRequests;
-      case 'operation-not-allowed':
-        return 'This sign-in method is not enabled. Please contact support.';
-
-      // Registration errors
-      case 'email-already-in-use':
-        return l10n.emailAlreadyInUse;
-      case 'weak-password':
-        return l10n.weakPassword;
-      case 'invalid-credential':
-        return l10n.invalidEmailOrPassword;
-
-      // Password reset errors
-      case 'invalid-action-code':
-        return 'The password reset link is invalid or has expired.';
-      case 'expired-action-code':
-        return 'The password reset link has expired. Please request a new one.';
-
-      // Google Sign-In specific errors
-      case 'account-exists-with-different-credential':
-        return 'An account already exists with the same email but different sign-in credentials.';
-      case 'credential-already-in-use':
-        return 'This credential is already associated with a different user account.';
-
-      // Network and general errors
-      case 'network-request-failed':
-        return l10n.networkError;
-      case 'internal-error':
-        return l10n.somethingWentWrong;
-      case 'app-not-authorized':
-        return 'This app is not authorized to use Firebase Authentication.';
-      case 'invalid-api-key':
-        return 'Invalid API key. Please contact support.';
-
-      // Generic fallback
+  /// Convert failures to user-friendly error messages
+  static String getErrorMessage(Failure failure) {
+    switch (failure.runtimeType) {
+      case AuthFailure:
+        return _getAuthErrorMessage(failure);
+      case NetworkFailure:
+        return _getNetworkErrorMessage(failure);
+      case ServerFailure:
+        return _getServerErrorMessage(failure as ServerFailure);
+      case ValidationFailure:
+        return _getValidationErrorMessage(failure as ValidationFailure);
+      case StorageFailure:
+        return _getStorageErrorMessage(failure);
+      case PermissionFailure:
+        return _getPermissionErrorMessage(failure);
+      case FirebaseFailure:
+        return _getFirebaseErrorMessage(failure);
+      case TimeoutFailure:
+        return _getTimeoutErrorMessage(failure);
       default:
-        return '${l10n.somethingWentWrong} (${exception.code})';
+        return failure.message.isNotEmpty ? failure.message : 'An unexpected error occurred';
     }
   }
 
-  /// Convert general exceptions to user-friendly messages
-  static String getGeneralErrorMessage(
-    Exception exception,
-    AppLocalizations l10n,
-  ) {
-    if (exception is FirebaseAuthException) {
-      return getFirebaseAuthErrorMessage(exception, l10n);
+  static String _getAuthErrorMessage(Failure failure) {
+    final message = failure.message.toLowerCase();
+
+    // Firebase Auth specific errors
+    if (message.contains('user-not-found')) {
+      return 'No account found with this email address';
+    }
+    if (message.contains('wrong-password') || message.contains('invalid-credential')) {
+      return 'Invalid email or password';
+    }
+    if (message.contains('invalid-email')) {
+      return 'Please enter a valid email address';
+    }
+    if (message.contains('user-disabled')) {
+      return 'This account has been disabled. Please contact support';
+    }
+    if (message.contains('too-many-requests')) {
+      return 'Too many failed attempts. Please try again later';
+    }
+    if (message.contains('operation-not-allowed')) {
+      return 'This sign-in method is not enabled';
+    }
+    if (message.contains('weak-password')) {
+      return 'Password is too weak. Please choose a stronger password';
+    }
+    if (message.contains('email-already-in-use')) {
+      return 'An account with this email already exists';
+    }
+    if (message.contains('requires-recent-login')) {
+      return 'Please sign in again to continue';
+    }
+    if (message.contains('network-request-failed')) {
+      return 'Network error. Please check your connection';
+    }
+    if (message.contains('cancelled') || message.contains('canceled')) {
+      return 'Sign in was cancelled';
     }
 
-    // Handle other common exceptions
-    final message = exception.toString().toLowerCase();
-
-    if (message.contains('network') || message.contains('connection')) {
-      return l10n.networkError;
-    }
-
-    if (message.contains('timeout')) {
-      return 'Request timed out. Please try again.';
-    }
-
-    if (message.contains('format')) {
-      return l10n.invalidEmailFormat;
-    }
-
-    // Generic fallback
-    return l10n.somethingWentWrong;
+    return failure.message.isNotEmpty ? failure.message : 'Authentication failed';
   }
 
-  /// Handle Google Sign-In specific errors
-  static String getGoogleSignInErrorMessage(
-    String errorCode,
-    AppLocalizations l10n,
-  ) {
-    switch (errorCode) {
-      case 'sign_in_canceled':
-        return l10n.googleSignInCancelled;
-      case 'sign_in_failed':
-        return l10n.googleSignInFailed;
-      case 'network_error':
-        return l10n.networkError;
-      case 'sign_in_required':
-        return 'Please sign in to continue.';
+  static String _getNetworkErrorMessage(Failure failure) {
+    return 'No internet connection. Please check your network and try again';
+  }
+
+  static String _getServerErrorMessage(ServerFailure failure) {
+    final statusCode = failure.statusCode;
+
+    switch (statusCode) {
+      case 400:
+        return failure.message.isNotEmpty ? failure.message : 'Invalid request';
+      case 401:
+        return 'Your session has expired. Please sign in again';
+      case 403:
+        return 'You don\'t have permission to perform this action';
+      case 404:
+        return 'Service not found. Please try again later';
+      case 422:
+        return failure.message.isNotEmpty ? failure.message : 'Validation failed';
+      case 429:
+        return 'Too many requests. Please wait a moment and try again';
+      case 500:
+      case 502:
+      case 503:
+        return 'Server error. Please try again later';
       default:
-        return l10n.googleSignInFailed;
+        return failure.message.isNotEmpty ? failure.message : 'Request failed';
+    }
+  }
+
+  static String _getValidationErrorMessage(ValidationFailure failure) {
+    if (failure.fieldErrors != null && failure.fieldErrors!.isNotEmpty) {
+      // Return the first field error
+      final firstField = failure.fieldErrors!.keys.first;
+      final firstErrors = failure.fieldErrors![firstField]!;
+      if (firstErrors.isNotEmpty) {
+        return firstErrors.first;
+      }
+    }
+
+    return failure.message.isNotEmpty ? failure.message : 'Please check your input';
+  }
+
+  static String _getStorageErrorMessage(Failure failure) {
+    return 'Failed to save data locally. Please try again';
+  }
+
+  static String _getPermissionErrorMessage(Failure failure) {
+    final message = failure.message.toLowerCase();
+
+    if (message.contains('biometric')) {
+      return 'Biometric authentication is not available or not set up';
+    }
+    if (message.contains('camera')) {
+      return 'Camera permission is required';
+    }
+    if (message.contains('photo') || message.contains('gallery')) {
+      return 'Photo library permission is required';
+    }
+
+    return failure.message.isNotEmpty ? failure.message : 'Permission denied';
+  }
+
+  static String _getFirebaseErrorMessage(Failure failure) {
+    return failure.message.isNotEmpty ? failure.message : 'Firebase service error';
+  }
+
+  static String _getTimeoutErrorMessage(Failure failure) {
+    return 'Request timed out. Please check your connection and try again';
+  }
+
+  /// Get a user-friendly error message for common scenarios
+  static String getGenericErrorMessage(String operation) {
+    switch (operation.toLowerCase()) {
+      case 'login':
+      case 'signin':
+        return 'Failed to sign in. Please check your credentials and try again';
+      case 'logout':
+      case 'signout':
+        return 'Failed to sign out. Please try again';
+      case 'register':
+      case 'signup':
+        return 'Failed to create account. Please try again';
+      case 'reset':
+      case 'forgot':
+        return 'Failed to send password reset email. Please try again';
+      case 'google':
+        return 'Google sign in failed. Please try again';
+      case 'biometric':
+        return 'Biometric authentication failed. Please try again';
+      default:
+        return 'Something went wrong. Please try again';
     }
   }
 
   /// Check if error is retryable
-  static bool isRetryableError(String errorCode) {
-    const retryableErrors = [
-      'network-request-failed',
-      'timeout',
-      'internal-error',
-      'too-many-requests',
-    ];
+  static bool isRetryableError(Failure failure) {
+    if (failure is NetworkFailure) return true;
+    if (failure is TimeoutFailure) return true;
 
-    return retryableErrors.contains(errorCode);
-  }
-
-  /// Check if error requires user action
-  static bool requiresUserAction(String errorCode) {
-    const userActionErrors = [
-      'weak-password',
-      'invalid-email',
-      'email-already-in-use',
-      'wrong-password',
-      'user-not-found',
-      'invalid-credential',
-    ];
-
-    return userActionErrors.contains(errorCode);
-  }
-
-  /// Get suggestion for error resolution
-  static String? getErrorSuggestion(String errorCode, AppLocalizations l10n) {
-    switch (errorCode) {
-      case 'weak-password':
-        return 'Try using a stronger password with at least 8 characters, including uppercase, lowercase, and numbers.';
-      case 'invalid-email':
-        return 'Please check your email address format.';
-      case 'email-already-in-use':
-        return 'Try signing in instead, or use the "Forgot Password" option if you don\'t remember your password.';
-      case 'user-not-found':
-        return 'Please check your email address or create a new account.';
-      case 'wrong-password':
-        return 'Please check your password or use the "Forgot Password" option.';
-      case 'too-many-requests':
-        return 'Please wait a few minutes before trying again.';
-      case 'network-request-failed':
-        return 'Please check your internet connection and try again.';
-      default:
-        return null;
+    if (failure is ServerFailure) {
+      final statusCode = failure.statusCode;
+      return statusCode == 429 || // Too many requests
+          statusCode == 500 || // Internal server error
+          statusCode == 502 || // Bad gateway
+          statusCode == 503; // Service unavailable
     }
+
+    final message = failure.message.toLowerCase();
+    return message.contains('network') ||
+        message.contains('timeout') ||
+        message.contains('connection') ||
+        message.contains('server') ||
+        message.contains('try again');
   }
 
-  /// Log error for debugging (in development only)
-  static void logError(Exception exception, String context) {
-    // Only log in development mode
-    assert(() {
-      dev.log('Auth Error in $context: $exception', name: 'AuthErrorHandler');
-      if (exception is FirebaseAuthException) {
-        dev.log('Firebase Auth Error Code: ${exception.code}', name: 'AuthErrorHandler');
-        dev.log('Firebase Auth Error Message: ${exception.message}', name: 'AuthErrorHandler');
-      }
+  /// Check if error requires re-authentication
+  static bool requiresReauth(Failure failure) {
+    if (failure is ServerFailure && failure.statusCode == 401) {
       return true;
-    }());
+    }
+
+    final message = failure.message.toLowerCase();
+    return message.contains('expired') ||
+        message.contains('unauthorized') ||
+        message.contains('invalid token') ||
+        message.contains('requires-recent-login');
   }
 
-  /// Create error details for reporting
-  static Map<String, dynamic> createErrorReport(
-    Exception exception,
-    String context,
-  ) {
-    return {
-      'timestamp': DateTime.now().toIso8601String(),
-      'context': context,
-      'exception_type': exception.runtimeType.toString(),
-      'exception_message': exception.toString(),
-      if (exception is FirebaseAuthException) ...{
-        'firebase_code': exception.code,
-        'firebase_message': exception.message,
-        'is_retryable': isRetryableError(exception.code),
-        'requires_user_action': requiresUserAction(exception.code),
-      },
-    };
+  /// Get error type for analytics or logging
+  static String getErrorType(Failure failure) {
+    return failure.runtimeType.toString().replaceAll('Failure', '').toLowerCase();
+  }
+
+  /// Check if error should be reported to crash analytics
+  static bool shouldReport(Failure failure) {
+    // Don't report user-caused errors
+    if (failure is ValidationFailure) return false;
+    if (failure is AuthFailure) {
+      final message = failure.message.toLowerCase();
+      return !message.contains('cancelled') &&
+          !message.contains('invalid-email') &&
+          !message.contains('wrong-password') &&
+          !message.contains('user-not-found');
+    }
+
+    return true;
   }
 }

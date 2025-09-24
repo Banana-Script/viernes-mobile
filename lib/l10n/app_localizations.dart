@@ -95,11 +95,11 @@ abstract class AppLocalizations {
     Locale('es')
   ];
 
-  /// The title of the application
+  /// Application name
   ///
   /// In en, this message translates to:
-  /// **'Viernes'**
-  String get appTitle;
+  /// **'Viernes Mobile'**
+  String get appName;
 
   /// Welcome message
   ///
@@ -137,203 +137,35 @@ abstract class AppLocalizations {
   /// **'Forgot Password?'**
   String get forgotPassword;
 
-  /// Sign up button text
+  /// Register button text
   ///
   /// In en, this message translates to:
-  /// **'Sign Up'**
-  String get signUp;
+  /// **'Register'**
+  String get register;
 
-  /// Google sign in button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in with Google'**
-  String get signInWithGoogle;
-
-  /// Dashboard tab/page title
+  /// Dashboard tab label
   ///
   /// In en, this message translates to:
   /// **'Dashboard'**
   String get dashboard;
 
-  /// Customers tab/page title
-  ///
-  /// In en, this message translates to:
-  /// **'Customers'**
-  String get customers;
-
-  /// Calls tab/page title
-  ///
-  /// In en, this message translates to:
-  /// **'Calls'**
-  String get calls;
-
-  /// Conversations tab/page title
+  /// Conversations tab label
   ///
   /// In en, this message translates to:
   /// **'Conversations'**
   String get conversations;
 
-  /// Organization tab/page title
-  ///
-  /// In en, this message translates to:
-  /// **'Organization'**
-  String get organization;
-
-  /// Settings tab/page title
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
-
-  /// Profile tab/page title
+  /// Profile tab label
   ///
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
 
-  /// Cancel button text
+  /// Settings page title
   ///
   /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
-
-  /// Placeholder text for conversation search input
-  ///
-  /// In en, this message translates to:
-  /// **'Search conversations...'**
-  String get searchConversations;
-
-  /// Placeholder text for message input
-  ///
-  /// In en, this message translates to:
-  /// **'Type a message...'**
-  String get typeMessage;
-
-  /// Tab title for all conversations
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get allConversations;
-
-  /// Tab title for my conversations
-  ///
-  /// In en, this message translates to:
-  /// **'My Chats'**
-  String get myConversations;
-
-  /// Tab title for Viernes AI conversations
-  ///
-  /// In en, this message translates to:
-  /// **'Viernes AI'**
-  String get viernesConversations;
-
-  /// Loading indicator text
-  ///
-  /// In en, this message translates to:
-  /// **'Loading...'**
-  String get loading;
-
-  /// Error message when conversations fail to load
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading conversations'**
-  String get errorLoadingConversations;
-
-  /// Retry button text
-  ///
-  /// In en, this message translates to:
-  /// **'Try Again'**
-  String get tryAgain;
-
-  /// Empty state message when no conversations exist
-  ///
-  /// In en, this message translates to:
-  /// **'No conversations yet'**
-  String get noConversationsYet;
-
-  /// Button text to start a new conversation
-  ///
-  /// In en, this message translates to:
-  /// **'Start New Conversation'**
-  String get startNewConversation;
-
-  /// Dialog title for conversation information
-  ///
-  /// In en, this message translates to:
-  /// **'Conversation Info'**
-  String get conversationInfo;
-
-  /// Menu item to assign an agent
-  ///
-  /// In en, this message translates to:
-  /// **'Assign Agent'**
-  String get assignAgent;
-
-  /// Menu item to change conversation status
-  ///
-  /// In en, this message translates to:
-  /// **'Change Status'**
-  String get changeStatus;
-
-  /// Online status indicator
-  ///
-  /// In en, this message translates to:
-  /// **'Online'**
-  String get online;
-
-  /// Connection status when establishing SSE connection
-  ///
-  /// In en, this message translates to:
-  /// **'Connecting...'**
-  String get connecting;
-
-  /// Empty state message when no messages in conversation
-  ///
-  /// In en, this message translates to:
-  /// **'No messages yet'**
-  String get noMessagesYet;
-
-  /// Empty state helper text for starting conversation
-  ///
-  /// In en, this message translates to:
-  /// **'Start the conversation by sending a message'**
-  String get startConversationMessage;
-
-  /// Error message when conversation fails to load
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading conversation'**
-  String get errorLoadingConversation;
-
-  /// Warning message for SSE connection issues
-  ///
-  /// In en, this message translates to:
-  /// **'Connection issue'**
-  String get connectionIssue;
-
-  /// Button to dismiss warning or error messages
-  ///
-  /// In en, this message translates to:
-  /// **'Dismiss'**
-  String get dismiss;
-
-  /// Button to close dialogs
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get close;
-
-  /// Button to refresh content
-  ///
-  /// In en, this message translates to:
-  /// **'Refresh'**
-  String get refresh;
-
-  /// Button/title for filtering options
-  ///
-  /// In en, this message translates to:
-  /// **'Filters'**
-  String get filters;
+  /// **'Settings'**
+  String get settings;
 
   /// Analytics page title
   ///
@@ -341,11 +173,215 @@ abstract class AppLocalizations {
   /// **'Analytics'**
   String get analytics;
 
-  /// Email input placeholder
+  /// Customers page title
   ///
   /// In en, this message translates to:
-  /// **'Enter your email address'**
-  String get enterYourEmailAddress;
+  /// **'Customers'**
+  String get customers;
+
+  /// Templates page title
+  ///
+  /// In en, this message translates to:
+  /// **'Templates'**
+  String get templates;
+
+  /// Workflows page title
+  ///
+  /// In en, this message translates to:
+  /// **'Workflows'**
+  String get workflows;
+
+  /// Calls page title
+  ///
+  /// In en, this message translates to:
+  /// **'Calls'**
+  String get calls;
+
+  /// Organization page title
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get organization;
+
+  /// Coming soon text
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoon;
+
+  /// Coming soon description
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is coming soon!'**
+  String get comingSoonDescription;
+
+  /// Error title
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// General error message
+  ///
+  /// In en, this message translates to:
+  /// **'Oops! Something went wrong'**
+  String get errorOccurred;
+
+  /// Retry button text
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// Go back button text
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// Contact support message
+  ///
+  /// In en, this message translates to:
+  /// **'If this problem persists, please contact support.'**
+  String get contactSupport;
+
+  /// Loading message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// Save button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Cancel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Delete button text
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Edit button text
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// Search placeholder text
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No results message
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// Refresh button text
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// Version text with placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String version(String version);
+
+  /// Dark mode setting
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// Light mode setting
+  ///
+  /// In en, this message translates to:
+  /// **'Light Mode'**
+  String get lightMode;
+
+  /// System theme setting
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get systemMode;
+
+  /// Language setting
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Notifications setting
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// Biometric authentication setting
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Authentication'**
+  String get biometricAuth;
+
+  /// Offline mode indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Offline Mode'**
+  String get offlineMode;
+
+  /// Online status
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// Offline status
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
+
+  /// Welcome message on login page
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Viernes'**
+  String get welcomeToViernes;
+
+  /// Sign in subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue'**
+  String get signInToContinue;
+
+  /// Sign in button text
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// Email field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enterYourEmail;
+
+  /// Password field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterYourPassword;
 
   /// Remember me checkbox label
   ///
@@ -353,293 +389,119 @@ abstract class AppLocalizations {
   /// **'Remember me'**
   String get rememberMe;
 
-  /// Text before sign up link
+  /// Divider text between email login and social login
   ///
   /// In en, this message translates to:
-  /// **'Don\'t have an account?'**
-  String get dontHaveAccount;
+  /// **'or continue with'**
+  String get orContinueWith;
 
-  /// Text before login link
+  /// Google sign in button text
   ///
   /// In en, this message translates to:
-  /// **'Already have an account?'**
-  String get alreadyHaveAccount;
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
 
-  /// Create account button text
+  /// Password recovery page title
   ///
   /// In en, this message translates to:
-  /// **'Create Account'**
-  String get createAccount;
+  /// **'Password Recovery'**
+  String get passwordRecovery;
 
-  /// Sign up page subtitle
+  /// Password recovery page header
   ///
   /// In en, this message translates to:
-  /// **'Sign up to get started'**
-  String get signUpToGetStarted;
+  /// **'Forgot your password?'**
+  String get forgotYourPassword;
 
-  /// Google sign up button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign up with Google'**
-  String get signUpWithGoogle;
-
-  /// First name field label
-  ///
-  /// In en, this message translates to:
-  /// **'First Name'**
-  String get firstName;
-
-  /// Last name field label
-  ///
-  /// In en, this message translates to:
-  /// **'Last Name'**
-  String get lastName;
-
-  /// Confirm password field label
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Password'**
-  String get confirmPassword;
-
-  /// Terms agreement prefix
-  ///
-  /// In en, this message translates to:
-  /// **'I agree to the'**
-  String get iAgreeToThe;
-
-  /// Terms of service link text
-  ///
-  /// In en, this message translates to:
-  /// **'Terms of Service'**
-  String get termsOfService;
-
-  /// Conjunction word
-  ///
-  /// In en, this message translates to:
-  /// **'and'**
-  String get and;
-
-  /// Privacy policy link text
-  ///
-  /// In en, this message translates to:
-  /// **'Privacy Policy'**
-  String get privacyPolicy;
-
-  /// Reset password page title
-  ///
-  /// In en, this message translates to:
-  /// **'Reset Password'**
-  String get resetPassword;
-
-  /// Password reset instructions
+  /// Password recovery instructions
   ///
   /// In en, this message translates to:
   /// **'Enter your email address and we\'ll send you a link to reset your password.'**
-  String get passwordResetInstructions;
+  String get enterEmailToResetPassword;
 
-  /// Send reset email button text
+  /// Helper text for email field on password recovery
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll send a password reset link to this email'**
+  String get resetPasswordHelperText;
+
+  /// Send password reset email button
   ///
   /// In en, this message translates to:
   /// **'Send Reset Email'**
   String get sendResetEmail;
 
-  /// Back to login link text
-  ///
-  /// In en, this message translates to:
-  /// **'Back to Login'**
-  String get backToLogin;
-
-  /// Text before back to login link
+  /// Link text to go back to sign in
   ///
   /// In en, this message translates to:
   /// **'Remember your password?'**
-  String get rememberYourPassword;
+  String get rememberPassword;
 
-  /// Email sent confirmation title
+  /// Back to sign in button text
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Sign In'**
+  String get backToSignIn;
+
+  /// Success message header for password reset
   ///
   /// In en, this message translates to:
   /// **'Check your email'**
   String get checkYourEmail;
 
-  /// Email sent confirmation message
+  /// Password reset email sent confirmation
   ///
   /// In en, this message translates to:
-  /// **'We\'ve sent password reset instructions to your email address.'**
-  String get emailSentInstructions;
+  /// **'We\'ve sent a password reset link to {email}'**
+  String passwordResetEmailSent(String email);
 
-  /// Follow instructions message
+  /// Hint to check spam folder
   ///
   /// In en, this message translates to:
-  /// **'Please follow the instructions in the email to reset your password.'**
-  String get followInstructions;
+  /// **'Don\'t see the email? Check your spam folder.'**
+  String get checkSpamFolder;
 
-  /// Send another email button text
+  /// Button to send another reset email
   ///
   /// In en, this message translates to:
   /// **'Send Another Email'**
   String get sendAnotherEmail;
 
-  /// Email sent success message
+  /// Face ID setting label
   ///
   /// In en, this message translates to:
-  /// **'Email sent successfully'**
-  String get emailSentSuccessfully;
+  /// **'Enable Face ID'**
+  String get enableFaceId;
 
-  /// Logout confirmation message
+  /// Fingerprint setting label
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to logout?'**
-  String get logoutConfirmation;
+  /// **'Enable Fingerprint'**
+  String get enableFingerprint;
 
-  /// Core features menu section
+  /// Generic biometric setting label
   ///
   /// In en, this message translates to:
-  /// **'Core Features'**
-  String get coreFeatures;
+  /// **'Enable Biometric Authentication'**
+  String get enableBiometric;
 
-  /// Business tools menu section
+  /// Face ID description
   ///
   /// In en, this message translates to:
-  /// **'Business Tools'**
-  String get businessTools;
+  /// **'Use Face ID for quick and secure access to your account'**
+  String get faceIdDescription;
 
-  /// Coming soon indicator
+  /// Fingerprint description
   ///
   /// In en, this message translates to:
-  /// **'Coming Soon'**
-  String get comingSoon;
+  /// **'Use your fingerprint for quick and secure access to your account'**
+  String get fingerprintDescription;
 
-  /// Voice agents menu item
+  /// Generic biometric description
   ///
   /// In en, this message translates to:
-  /// **'Voice Agents'**
-  String get voiceAgents;
-
-  /// Organization settings menu item
-  ///
-  /// In en, this message translates to:
-  /// **'Organization Settings'**
-  String get organizationSettings;
-
-  /// Email validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your email'**
-  String get pleaseEnterEmail;
-
-  /// Valid email validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a valid email'**
-  String get pleaseEnterValidEmail;
-
-  /// Password validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your password'**
-  String get pleaseEnterPassword;
-
-  /// First name validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your first name'**
-  String get pleaseEnterFirstName;
-
-  /// Last name validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your last name'**
-  String get pleaseEnterLastName;
-
-  /// Name validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter your name'**
-  String get pleaseEnterName;
-
-  /// Confirm password validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please confirm your password'**
-  String get pleaseConfirmPassword;
-
-  /// Password mismatch validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Passwords do not match'**
-  String get passwordsDoNotMatch;
-
-  /// Password length validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Password must be at least 6 characters'**
-  String get passwordTooShort;
-
-  /// Email format validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid email format'**
-  String get invalidEmailFormat;
-
-  /// Terms acceptance validation error
-  ///
-  /// In en, this message translates to:
-  /// **'Please accept the terms and conditions'**
-  String get pleaseAcceptTerms;
-
-  /// Login error message
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid email or password'**
-  String get invalidEmailOrPassword;
-
-  /// Email already exists error
-  ///
-  /// In en, this message translates to:
-  /// **'Email already in use'**
-  String get emailAlreadyInUse;
-
-  /// Weak password error
-  ///
-  /// In en, this message translates to:
-  /// **'Password is too weak'**
-  String get weakPassword;
-
-  /// User not found error
-  ///
-  /// In en, this message translates to:
-  /// **'User not found'**
-  String get userNotFound;
-
-  /// Too many requests error
-  ///
-  /// In en, this message translates to:
-  /// **'Too many requests. Please try again later'**
-  String get tooManyRequests;
-
-  /// Network error message
-  ///
-  /// In en, this message translates to:
-  /// **'Network error. Please check your connection'**
-  String get networkError;
-
-  /// Google sign in cancelled message
-  ///
-  /// In en, this message translates to:
-  /// **'Google sign in was cancelled'**
-  String get googleSignInCancelled;
-
-  /// Google sign in failed message
-  ///
-  /// In en, this message translates to:
-  /// **'Google sign in failed'**
-  String get googleSignInFailed;
-
-  /// Generic error message
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong. Please try again'**
-  String get somethingWentWrong;
+  /// **'Use biometric authentication for quick and secure access'**
+  String get biometricDescription;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
