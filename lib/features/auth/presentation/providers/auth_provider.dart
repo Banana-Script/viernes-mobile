@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/get_current_user_usecase.dart';
+import '../../domain/usecases/sign_in_usecase.dart';
+import '../../domain/usecases/sign_out_usecase.dart';
+import '../../domain/usecases/sign_up_usecase.dart';
+
+enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
+
+class AuthProvider extends ChangeNotifier {
+  final GetCurrentUserUseCase getCurrentUserUseCase;
+  final SignInUseCase signInUseCase;
+  final SignUpUseCase signUpUseCase;
+  final SignOutUseCase signOutUseCase;
+
+  AuthProvider({
+    required this.getCurrentUserUseCase,
+    required this.signInUseCase,
+    required this.signUpUseCase,
+    required this.signOutUseCase,
+  }) {
+    _initializeAuthState();
+  }
+
+  AuthStatus _status = AuthStatus.initial;
+  UserEntity? _user;
+  String? _errorMessage;
+
+  AuthStatus get status => _status;
+  UserEntity? get user => _user;
+  String? get errorMessage => _errorMessage;
+  bool get isAuthenticated => _status == AuthStatus.authenticated && _user != null;
+
+  void _initializeAuthState() {
+    getCurrentUserUseCase.authStateChanges.listen((user) {
+      _user = user;
+      _status = user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      _errorMessage = null;
+      notifyListeners();
+    });
+  }
+
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      _setLoading();
+
+      final user = await signInUseCase(
+        email: email,
+        password: password,
+      );
+
+      _user = user;
+      _status = AuthStatus.authenticated;
+      _errorMessage = null;
+
+      notifyListeners();
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      _user = null;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required String confirmPassword,
+  }) async {
+    try {
+      _setLoading();
+
+      final user = await signUpUseCase(
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      );
+
+      _user = user;
+      _status = AuthStatus.authenticated;
+      _errorMessage = null;
+
+      notifyListeners();
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      _user = null;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signOut() async {
+    try {
+      _setLoading();
+
+      await signOutUseCase();
+
+      _user = null;
+      _status = AuthStatus.unauthenticated;
+      _errorMessage = null;
+
+      notifyListeners();
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+    }
+  }
+
+  void clearError() {
+    _errorMessage = null;
+    if (_status == AuthStatus.error) {
+      _status = _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+    }
+    notifyListeners();
+  }
+
+  void _setLoading() {
+    _status = AuthStatus.loading;
+    _errorMessage = null;
+    notifyListeners();
+  }
+}

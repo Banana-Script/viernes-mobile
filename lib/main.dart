@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
-import 'shared/widgets/custom_app_bar.dart';
+import 'core/di/dependency_injection.dart';
+import 'features/auth/presentation/providers/auth_provider.dart' as auth_provider;
+import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/home_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase with platform-specific options
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Initialize dependency injection
+  DependencyInjection.initialize();
+
   runApp(const ViernesApp());
 }
 
@@ -12,55 +28,49 @@ class ViernesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppConstants.appName,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      home: const HomePage(),
+    return ChangeNotifierProvider<auth_provider.AuthProvider>(
+      create: (context) => DependencyInjection.authProvider,
+      child: MaterialApp(
+        title: AppConstants.appName,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        home: const AuthenticationWrapper(),
+        debugShowCheckedModeBanner: false,
+      ),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class AuthenticationWrapper extends StatelessWidget {
+  const AuthenticationWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: AppConstants.appName,
-        automaticallyImplyLeading: false,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppConstants.defaultPadding),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Hello World!',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: AppConstants.defaultPadding),
-              Text(
-                'Welcome to ${AppConstants.appName}',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: AppConstants.largePadding),
-              ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Button pressed!'),
-                    ),
-                  );
-                },
-                child: const Text('Get Started'),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return Consumer<auth_provider.AuthProvider>(
+      builder: (context, authProvider, child) {
+        // Show loading screen while checking authentication state
+        if (authProvider.status == auth_provider.AuthStatus.initial) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Navigate based on authentication status
+        switch (authProvider.status) {
+          case auth_provider.AuthStatus.authenticated:
+            return const HomePage();
+          case auth_provider.AuthStatus.unauthenticated:
+          case auth_provider.AuthStatus.error:
+            return const LoginPage();
+          case auth_provider.AuthStatus.loading:
+            // Show current screen with loading overlay
+            return authProvider.user != null ? const HomePage() : const LoginPage();
+          default:
+            return const LoginPage();
+        }
+      },
     );
   }
 }
