@@ -1,0 +1,69 @@
+{
+  "@@locale": "es",
+  "appName": "Viernes",
+
+  "welcomeBack": "¡Bienvenido de vuelta!",
+  "signInToAccount": "Inicia sesión en tu cuenta de Viernes",
+
+  "email": "Correo electrónico",
+  "enterEmail": "Ingresa tu correo electrónico",
+
+  "password": "Contraseña",
+  "enterPassword": "Ingresa tu contraseña",
+
+  "signIn": "Iniciar Sesión",
+
+  "or": "o",
+
+  "createAccount": "Crear Cuenta",
+
+  "termsAndPrivacy": "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad",
+
+  "joinViernes": "Únete a Viernes",
+  "createAccountToStart": "Crea tu cuenta para comenzar",
+
+  "createSecurePassword": "Crea una contraseña segura",
+
+  "confirmPassword": "Confirmar Contraseña",
+  "confirmYourPassword": "Confirma tu contraseña",
+
+  "alreadyHaveAccount": "¿Ya tienes una cuenta? ",
+
+  "termsAndPrivacyCreate": "Al crear una cuenta, aceptas nuestros Términos de Servicio y Política de Privacidad",
+
+  "dashboard": "Panel de Control",
+  "viernesDashboard": "Panel de Viernes",
+
+  "welcomeToViernes": "¡Bienvenido a Viernes!",
+  "aiBusinessAssistant": "Tu asistente de negocios impulsado por IA",
+
+  "accountInformation": "Información de la Cuenta",
+
+  "name": "Nombre",
+  "userId": "ID de Usuario",
+
+  "emailVerified": "Correo Verificado",
+  "emailNotVerified": "Correo No Verificado",
+
+  "quickActions": "Acciones Rápidas",
+  "exploreViernes": "Explora las funciones de Viernes y gestiona tu negocio con asistencia de IA.",
+
+  "settings": "Configuración",
+  "help": "Ayuda",
+
+  "signOut": "Cerrar Sesión",
+  "signOutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
+
+  "cancel": "Cancelar",
+
+  "loading": "Cargando...",
+
+  "pleaseEnterEmail": "Por favor ingresa tu correo electrónico",
+  "pleaseEnterValidEmail": "Por favor ingresa un correo electrónico válido",
+
+  "pleaseEnterPassword": "Por favor ingresa tu contraseña",
+  "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+
+  "pleaseConfirmPassword": "Por favor confirma tu contraseña",
+  "passwordsDoNotMatch": "Las contraseñas no coinciden"
+}

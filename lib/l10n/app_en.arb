@@ -1,0 +1,207 @@
+{
+  "@@locale": "en",
+  "appName": "Viernes",
+  "@appName": {
+    "description": "The name of the application"
+  },
+
+  "welcomeBack": "Welcome back!",
+  "@welcomeBack": {
+    "description": "Welcome back message for login"
+  },
+
+  "signInToAccount": "Sign in to your Viernes account",
+  "@signInToAccount": {
+    "description": "Sign in prompt message"
+  },
+
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+
+  "enterEmail": "Enter your email",
+  "@enterEmail": {
+    "description": "Email field hint"
+  },
+
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+
+  "enterPassword": "Enter your password",
+  "@enterPassword": {
+    "description": "Password field hint"
+  },
+
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in button text"
+  },
+
+  "or": "or",
+  "@or": {
+    "description": "Divider text between sign in and create account"
+  },
+
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Create account button text"
+  },
+
+  "termsAndPrivacy": "By signing in, you agree to our Terms of Service and Privacy Policy",
+  "@termsAndPrivacy": {
+    "description": "Terms and privacy disclaimer"
+  },
+
+  "joinViernes": "Join Viernes",
+  "@joinViernes": {
+    "description": "Join message for registration"
+  },
+
+  "createAccountToStart": "Create your account to get started",
+  "@createAccountToStart": {
+    "description": "Create account prompt message"
+  },
+
+  "createSecurePassword": "Create a secure password",
+  "@createSecurePassword": {
+    "description": "Password creation hint"
+  },
+
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+
+  "confirmYourPassword": "Confirm your password",
+  "@confirmYourPassword": {
+    "description": "Confirm password field hint"
+  },
+
+  "alreadyHaveAccount": "Already have an account? ",
+  "@alreadyHaveAccount": {
+    "description": "Already have account prompt"
+  },
+
+  "termsAndPrivacyCreate": "By creating an account, you agree to our Terms of Service and Privacy Policy",
+  "@termsAndPrivacyCreate": {
+    "description": "Terms and privacy disclaimer for registration"
+  },
+
+  "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Dashboard screen title"
+  },
+
+  "viernesDashboard": "Viernes Dashboard",
+  "@viernesDashboard": {
+    "description": "Dashboard app bar title"
+  },
+
+  "welcomeToViernes": "Welcome to Viernes!",
+  "@welcomeToViernes": {
+    "description": "Welcome message on dashboard"
+  },
+
+  "aiBusinessAssistant": "Your AI-powered business assistant",
+  "@aiBusinessAssistant": {
+    "description": "Viernes description"
+  },
+
+  "accountInformation": "Account Information",
+  "@accountInformation": {
+    "description": "Account information section title"
+  },
+
+  "name": "Name",
+  "@name": {
+    "description": "Name field label"
+  },
+
+  "userId": "User ID",
+  "@userId": {
+    "description": "User ID field label"
+  },
+
+  "emailVerified": "Email Verified",
+  "@emailVerified": {
+    "description": "Email verified status"
+  },
+
+  "emailNotVerified": "Email Not Verified",
+  "@emailNotVerified": {
+    "description": "Email not verified status"
+  },
+
+  "quickActions": "Quick Actions",
+  "@quickActions": {
+    "description": "Quick actions section title"
+  },
+
+  "exploreViernes": "Explore Viernes features and manage your business with AI assistance.",
+  "@exploreViernes": {
+    "description": "Quick actions description"
+  },
+
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings button text"
+  },
+
+  "help": "Help",
+  "@help": {
+    "description": "Help button text"
+  },
+
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign out button text"
+  },
+
+  "signOutConfirm": "Are you sure you want to sign out?",
+  "@signOutConfirm": {
+    "description": "Sign out confirmation message"
+  },
+
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading state text"
+  },
+
+  "pleaseEnterEmail": "Please enter your email",
+  "@pleaseEnterEmail": {
+    "description": "Email validation error"
+  },
+
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "@pleaseEnterValidEmail": {
+    "description": "Valid email validation error"
+  },
+
+  "pleaseEnterPassword": "Please enter your password",
+  "@pleaseEnterPassword": {
+    "description": "Password validation error"
+  },
+
+  "passwordMinLength": "Password must be at least 6 characters",
+  "@passwordMinLength": {
+    "description": "Password minimum length validation error"
+  },
+
+  "pleaseConfirmPassword": "Please confirm your password",
+  "@pleaseConfirmPassword": {
+    "description": "Confirm password validation error"
+  },
+
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password match validation error"
+  }
+}
