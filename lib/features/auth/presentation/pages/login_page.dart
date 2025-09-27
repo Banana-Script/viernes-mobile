@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       'Sign in to your account',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -132,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text(
                             'or',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       'By signing in, you agree to our Terms of Service and Privacy Policy',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       textAlign: TextAlign.center,
                     ),

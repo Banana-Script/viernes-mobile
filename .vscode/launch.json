@@ -2,44 +2,46 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "🚀 Viernes Mobile (Debug)",
+            "name": "🔧 DEV - Debug",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart"
+            "program": "lib/main_dev.dart",
+            "args": [
+                "--flavor",
+                "dev"
+            ]
         },
         {
-            "name": "🚀 Viernes Mobile (Release)",
+            "name": "🚀 PROD - Debug",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart",
-            "flutterMode": "release"
+            "program": "lib/main_prod.dart",
+            "args": [
+                "--flavor",
+                "prod"
+            ]
         },
         {
-            "name": "🌐 Viernes Web",
+            "name": "🔧 DEV - Release",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart",
-            "deviceId": "chrome"
+            "program": "lib/main_dev.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "dev"
+            ]
         },
         {
-            "name": "🍎 iOS Simulator",
+            "name": "🚀 PROD - Release",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart",
-            "deviceId": "ios"
-        },
-        {
-            "name": "🤖 Android Emulator",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main.dart",
-            "deviceId": "android"
-        },
-        {
-            "name": "📱 Any Available Device",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main.dart"
+            "program": "lib/main_prod.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "prod"
+            ]
         }
     ]
 }

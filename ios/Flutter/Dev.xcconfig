@@ -1,0 +1,10 @@
+#include "Generated.xcconfig"
+
+// Dev Environment Configuration
+FLUTTER_TARGET=lib/main_dev.dart
+PRODUCT_BUNDLE_IDENTIFIER=com.bananascript.viernesforbusiness.dev
+PRODUCT_NAME=Viernes Dev
+DISPLAY_NAME=Viernes Dev
+
+// Firebase configuration path
+FIREBASE_CONFIG_PATH=${SRCROOT}/config/dev/GoogleService-Info.plist

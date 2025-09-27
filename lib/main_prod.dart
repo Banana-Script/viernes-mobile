@@ -13,7 +13,7 @@ import 'features/auth/presentation/pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set environment to PROD (default)
+  // Set environment to PROD
   EnvironmentConfig.setEnvironment(Environment.prod);
 
   // Initialize Firebase with PROD-specific options

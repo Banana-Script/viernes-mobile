@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options_prod.dart';
+import 'firebase_options_dev.dart';
 import 'core/theme/app_theme.dart';
 import 'core/config/environment_config.dart';
 import 'core/constants/app_constants.dart';
@@ -13,12 +13,12 @@ import 'features/auth/presentation/pages/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set environment to PROD (default)
-  EnvironmentConfig.setEnvironment(Environment.prod);
+  // Set environment to DEV
+  EnvironmentConfig.setEnvironment(Environment.dev);
 
-  // Initialize Firebase with PROD-specific options
+  // Initialize Firebase with DEV-specific options
   await Firebase.initializeApp(
-    options: FirebaseOptionsProd.currentPlatform,
+    options: FirebaseOptionsDev.currentPlatform,
   );
 
   // Initialize dependency injection

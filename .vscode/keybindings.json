@@ -1,0 +1,56 @@
+[
+  {
+    "key": "cmd+shift+d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🔧 Run DEV (iOS)",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+p",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🚀 Run PROD (iOS)",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+a",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🔧 Run DEV (Android)",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+ctrl+a",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🚀 Run PROD (Android)",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🏗️ Build APK Dev",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+ctrl+b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🏗️ Build APK Prod",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🧪 Run Tests",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+l",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🔍 Flutter Analyze",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+shift+c",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🧹 Flutter Clean",
+    "when": "editorTextFocus"
+  }
+]

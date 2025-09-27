@@ -70,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Text(
                       'Create your account to get started',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -153,7 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         Text(
                           'Already have an account? ',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                         TextButton(
@@ -171,7 +171,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Text(
                       'By creating an account, you agree to our Terms of Service and Privacy Policy',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       textAlign: TextAlign.center,
                     ),

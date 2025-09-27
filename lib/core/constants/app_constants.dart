@@ -1,7 +1,9 @@
+import '../config/environment_config.dart';
+
 /// Application constants for Viernes Mobile
 class AppConstants {
-  // App Information
-  static const String appName = 'Viernes Mobile';
+  // App Information (environment-specific)
+  static String get appName => EnvironmentConfig.appDisplayName;
   static const String appVersion = '1.0.0';
 
   // UI Constants
@@ -13,4 +15,8 @@ class AppConstants {
   // Animation Durations
   static const Duration defaultAnimationDuration = Duration(milliseconds: 300);
   static const Duration fastAnimationDuration = Duration(milliseconds: 200);
+
+  // Debug Configuration
+  static bool get isDebugMode => EnvironmentConfig.enableDebugMode;
+  static bool get isVerboseLogging => EnvironmentConfig.enableVerboseLogging;
 }

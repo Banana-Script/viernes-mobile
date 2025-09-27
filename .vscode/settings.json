@@ -43,6 +43,9 @@
     "dart.env": {
         "ENVIRONMENT": "dev"
     },
+    "dart.flutterCreateIOSLanguage": "swift",
+    "dart.flutterCreateAndroidLanguage": "kotlin",
+    "dart.flutterRunLogFile": "flutter_run.log",
     "files.associations": {
         "*.arb": "json",
         "*.dart": "dart"

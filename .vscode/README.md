@@ -1,134 +1,74 @@
 # VS Code Configuration for Viernes Mobile
 
-Este directorio contiene las configuraciones de VS Code optimizadas para el desarrollo de Viernes Mobile.
+This directory contains VS Code configuration files optimized for Flutter multi-environment development.
 
-## 🚀 Configuraciones de Launch
+## Launch Configurations
 
-### Configuraciones Disponibles:
+### 🔧 Development Environment
+- **🔧 DEV - Debug** - Run development build (any available device)
+- **🔧 DEV - Release** - Run development build in release mode
 
-1. **🚀 Viernes Dev (Debug)** - Ejecuta la app en modo desarrollo con debugging
-2. **🏭 Viernes Prod (Debug)** - Ejecuta la app en modo producción con debugging
-3. **🚀 Viernes Dev (Release)** - Ejecuta la app en modo desarrollo optimizado
-4. **🏭 Viernes Prod (Release)** - Ejecuta la app en modo producción optimizado
-5. **🌐 Viernes Web Dev** - Ejecuta la app en Chrome (desarrollo)
-6. **🌐 Viernes Web Prod** - Ejecuta la app en Chrome (producción)
-7. **🍎 Viernes iOS Dev** - Ejecuta la app en simulador específico (desarrollo)
-8. **🍎 Viernes iOS Prod** - Ejecuta la app en simulador específico (producción)
-9. **🍎 iOS Simulator (Auto)** - Detecta automáticamente simulador iOS
-10. **🤖 Android Emulator** - Ejecuta en emulador Android
-11. **📱 Any Available Device** - Usa cualquier dispositivo disponible
+### 🚀 Production Environment
+- **🚀 PROD - Debug** - Run production build (any available device)
+- **🚀 PROD - Release** - Run production build in release mode
 
-### Cómo Usar:
+## Task Shortcuts
 
-1. **Presiona `F5`** o ve a `Run and Debug` (Ctrl/Cmd + Shift + D)
-2. **Selecciona la configuración** que desees usar del dropdown
-3. **Haz click en el botón play** o presiona `F5`
+### Build Tasks
+- **🧹 Flutter Clean** - Clean build artifacts
+- **📦 Flutter Pub Get** - Get dependencies
+- **🏗️ Build APK Dev** - Build development APK
+- **🏗️ Build APK Prod** - Build production APK
 
-### Atajos de Teclado:
+### Run Tasks
+- **🔧 Run DEV (iOS)** - Run development on iOS
+- **🚀 Run PROD (iOS)** - Run production on iOS
+- **🔧 Run DEV (Android)** - Run development on Android
+- **🚀 Run PROD (Android)** - Run production on Android
 
-- `F5` - Ejecutar configuración seleccionada
-- `Ctrl/Cmd + F5` - Ejecutar sin debugging
-- `Shift + F5` - Detener debugging
-- `Ctrl/Cmd + Shift + F5` - Restart debugging
+### Analysis Tasks
+- **🧪 Run Tests** - Execute all tests
+- **🔍 Flutter Analyze** - Run static analysis
+- **🩺 Flutter Doctor** - Check Flutter installation
 
-## 🛠️ Tasks Disponibles
+## Keyboard Shortcuts
 
-Accede a las tasks mediante `Ctrl/Cmd + Shift + P` y escribe `Tasks: Run Task`:
+| Shortcut | Action |
+|----------|--------|
+| `Cmd+Shift+D` | Run DEV (iOS) |
+| `Cmd+Shift+P` | Run PROD (iOS) |
+| `Cmd+Shift+A` | Run DEV (Android) |
+| `Cmd+Shift+Ctrl+A` | Run PROD (Android) |
+| `Cmd+Shift+B` | Build APK Dev |
+| `Cmd+Shift+Ctrl+B` | Build APK Prod |
+| `Cmd+Shift+T` | Run Tests |
+| `Cmd+Shift+L` | Flutter Analyze |
+| `Cmd+Shift+C` | Flutter Clean |
 
-- **🧹 Flutter Clean** - Limpia el proyecto
-- **📦 Flutter Pub Get** - Instala dependencias
-- **🔧 Build Runner (Build)** - Genera código una vez
-- **🔧 Build Runner (Watch)** - Genera código automáticamente
-- **🏗️ Build APK Dev** - Construye APK de desarrollo
-- **🏗️ Build APK Prod** - Construye APK de producción
-- **🧪 Run Tests** - Ejecuta las pruebas
-- **🔍 Flutter Analyze** - Analiza el código
-- **🩺 Flutter Doctor** - Verifica la configuración de Flutter
+## Settings Highlights
 
-## ⚙️ Configuraciones
+- **Auto Format on Save** - Automatically formats Dart code
+- **Import Organization** - Automatically organizes imports
+- **Dart Line Length** - Set to 120 characters
+- **DevTools Integration** - Opens DevTools in Flutter mode
+- **File Exclusions** - Hides build artifacts and cache files
 
-### Settings.json
-- Auto-formateo al guardar
-- Organización automática de imports
-- Exclusión de archivos de build
-- Configuraciones específicas de Dart/Flutter
+## Usage
 
-### Extensions.json
-Lista de extensiones recomendadas para el proyecto:
-- Dart y Flutter
-- Herramientas de debugging y análisis
-- Mejoras de productividad
+1. **Start Development**: Press `F5` and select a launch configuration
+2. **Quick Tasks**: Use `Cmd+Shift+P` → "Tasks: Run Task"
+3. **Keyboard Shortcuts**: Use the predefined shortcuts for quick actions
+4. **Debug**: All configurations support breakpoints and hot reload
 
-## 🔥 Tips de Productividad
+## Environment Variables
 
-1. **Hot Reload**: `r` en la terminal de debugging
-2. **Hot Restart**: `R` en la terminal de debugging
-3. **DevTools**: Se abre automáticamente con las configuraciones
-4. **Multi-dispositivo**: Puedes ejecutar múltiples configuraciones simultáneamente
-5. **Dispositivos específicos**: Usa configuraciones con ID específico para consistencia
-6. **Dispositivos automáticos**: Usa configuraciones "Auto" para flexibilidad
+The configuration includes environment variables for proper Flutter development:
+- `ENVIRONMENT=dev` - Default environment setting
+- Flutter SDK paths and debugging options are pre-configured
 
-## 📱 Solución de Problemas de Dispositivos
+## Tips
 
-### Si aparece "Device not found":
-
-1. **Verificar dispositivos disponibles**:
-   ```bash
-   ./scripts/dev.sh devices
-   # o
-   flutter devices
-   ```
-
-2. **Para iOS**:
-   - Usar configuración "🍎 iOS Simulator (Auto)"
-   - O abrir simulador manualmente antes de ejecutar
-
-3. **Para Android**:
-   - Usar configuración "🤖 Android Emulator"
-   - O iniciar emulador desde Android Studio
-
-4. **Usar script alternativo**:
-   ```bash
-   # Ver dispositivos disponibles
-   ./scripts/dev.sh devices
-
-   # Ejecutar en dispositivo específico
-   ./scripts/dev.sh dev chrome
-   ./scripts/dev.sh dev FB419AB3-DB53-4860-A812-F619AEE5D222
-   ```
-
-## 🔧 Variables de Entorno
-
-Las configuraciones automáticamente setean:
-- `ENVIRONMENT=dev` para configuraciones de desarrollo
-- `ENVIRONMENT=production` para configuraciones de producción
-
-**Nota**: Las configuraciones de VS Code no usan flavors (`--flavor`) porque el proyecto iOS no tiene esquemas personalizados configurados. Para usar flavors, ejecuta manualmente:
-```bash
-# Android con flavors
-flutter run --flavor=dev --dart-define=ENVIRONMENT=dev -t lib/main_dev.dart -d android
-
-# iOS sin flavors (automático)
-flutter run --dart-define=ENVIRONMENT=dev -t lib/main_dev.dart -d ios
-```
-
-## 📱 Dispositivos
-
-- **Android**: Usa el emulador o dispositivo conectado por defecto
-- **iOS**: Especifica dispositivo iOS (requiere macOS)
-- **Web**: Se ejecuta en Chrome
-- **Desktop**: Configuraciones disponibles según el SO
-
-### Dispositivos Actualmente Detectados:
-- **iPhone 16e**: `FB419AB3-DB53-4860-A812-F619AEE5D222`
-- **macOS**: `macos`
-- **Chrome**: `chrome`
-
-## 🐛 Debugging
-
-Todas las configuraciones de debug incluyen:
-- Breakpoints
-- Variable inspection
-- Call stack
-- Performance profiling
-- Widget inspector
+- Use different launch configurations to test both environments
+- The DEV environment connects to `viernes-for-business-dev` Firebase project
+- The PROD environment connects to `viernes-for-business` Firebase project
+- Both environments can be installed on the same device simultaneously

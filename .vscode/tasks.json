@@ -103,6 +103,94 @@
             "problemMatcher": []
         },
         {
+            "label": "🔧 Run DEV (iOS)",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "run",
+                "--flavor",
+                "dev",
+                "--target",
+                "lib/main_dev.dart",
+                "--device-id",
+                "ios"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🚀 Run PROD (iOS)",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "run",
+                "--flavor",
+                "prod",
+                "--target",
+                "lib/main_prod.dart",
+                "--device-id",
+                "ios"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🔧 Run DEV (Android)",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "run",
+                "--flavor",
+                "dev",
+                "--target",
+                "lib/main_dev.dart",
+                "--device-id",
+                "android"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "🚀 Run PROD (Android)",
+            "type": "shell",
+            "command": "flutter",
+            "args": [
+                "run",
+                "--flavor",
+                "prod",
+                "--target",
+                "lib/main_prod.dart",
+                "--device-id",
+                "android"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "🧪 Run Tests",
             "type": "shell",
             "command": "flutter",
