@@ -59,9 +59,9 @@ class EnvironmentConfig {
   static String get apiBaseUrl {
     switch (_currentEnvironment) {
       case Environment.dev:
-        return 'https://dev-api.viernes.com';
+        return 'https://bot.dev.viernes-for-business.bananascript.io';
       case Environment.prod:
-        return 'https://api.viernes.com';
+        return 'https://bot.dev.viernes-for-business.bananascript.io';
     }
   }
 

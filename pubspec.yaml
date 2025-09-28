@@ -22,6 +22,18 @@ dependencies:
   # UI
   google_fonts: ^6.2.1
 
+  # Charts and Data Visualization
+  fl_chart: ^0.68.0
+
+  # HTTP Client
+  dio: ^5.4.3+1
+
+  # Cache and Image handling
+  cached_network_image: ^3.3.1
+
+  # Pull to refresh
+  pull_to_refresh: ^2.0.0
+
   # Internationalization
   flutter_localizations:
     sdk: flutter

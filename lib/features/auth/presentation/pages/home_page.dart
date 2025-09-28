@@ -5,6 +5,7 @@ import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../shared/widgets/viernes_button.dart';
 import '../../../../shared/widgets/viernes_card.dart';
+import '../../../dashboard/presentation/pages/dashboard_page.dart';
 import '../providers/auth_provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -197,6 +198,21 @@ class HomePage extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         ViernesSpacing.spaceLg,
+
+                        // Dashboard Action
+                        ViernesButton.primary(
+                          text: 'Analytics Dashboard',
+                          icon: const Icon(Icons.analytics, size: 20),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const DashboardPage(),
+                              ),
+                            );
+                          },
+                        ),
+                        ViernesSpacing.spaceMd,
+
                         Row(
                           children: [
                             Expanded(

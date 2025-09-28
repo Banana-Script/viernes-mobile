@@ -8,7 +8,8 @@ import 'core/constants/app_constants.dart';
 import 'core/di/dependency_injection.dart';
 import 'features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 import 'features/auth/presentation/pages/login_page.dart';
-import 'features/auth/presentation/pages/home_page.dart';
+import 'features/main/presentation/pages/main_page.dart';
+import 'features/dashboard/presentation/providers/dashboard_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,8 +33,15 @@ class ViernesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<auth_provider.AuthProvider>(
-      create: (context) => DependencyInjection.authProvider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<auth_provider.AuthProvider>(
+          create: (context) => DependencyInjection.authProvider,
+        ),
+        ChangeNotifierProvider<DashboardProvider>(
+          create: (context) => DependencyInjection.dashboardProvider,
+        ),
+      ],
       child: MaterialApp(
         title: AppConstants.appName,
         theme: AppTheme.lightTheme,
@@ -64,13 +72,13 @@ class AuthenticationWrapper extends StatelessWidget {
         // Navigate based on authentication status
         switch (authProvider.status) {
           case auth_provider.AuthStatus.authenticated:
-            return const HomePage();
+            return const MainPage();
           case auth_provider.AuthStatus.unauthenticated:
           case auth_provider.AuthStatus.error:
             return const LoginPage();
           case auth_provider.AuthStatus.loading:
             // Show current screen with loading overlay
-            return authProvider.user != null ? const HomePage() : const LoginPage();
+            return authProvider.user != null ? const MainPage() : const LoginPage();
           default:
             return const LoginPage();
         }
