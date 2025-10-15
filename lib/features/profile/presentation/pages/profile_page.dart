@@ -86,11 +86,18 @@ class ProfilePage extends StatelessWidget {
 
                 // Account Information Card
                 ViernesCard.elevated(
-                  title: 'Account Information',
                   child: user != null
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              'Account Information',
+                              style: ViernesTextStyles.h5.copyWith(
+                                color: isDark ? Colors.white : ViernesColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            ViernesSpacing.spaceMd,
                             _InfoRow(
                               label: 'Email',
                               value: user.email,
@@ -162,9 +169,16 @@ class ProfilePage extends StatelessWidget {
 
                 // Actions Card
                 ViernesCard.outlined(
-                  title: 'Settings',
                   child: Column(
                     children: [
+                      Text(
+                        'Settings',
+                        style: ViernesTextStyles.h5.copyWith(
+                          color: isDark ? Colors.white : ViernesColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      ViernesSpacing.spaceSm,
                       Text(
                         'Manage your account settings and preferences.',
                         style: ViernesTextStyles.bodyText.copyWith(
@@ -181,7 +195,7 @@ class ProfilePage extends StatelessWidget {
                           Expanded(
                             child: ViernesButton.secondary(
                               text: 'Settings',
-                              icon: const Icon(Icons.settings, size: 18),
+                              icon: Icons.settings,
                               size: ViernesButtonSize.small,
                               onPressed: () {
                                 // TODO: Navigate to settings
@@ -192,7 +206,7 @@ class ProfilePage extends StatelessWidget {
                           Expanded(
                             child: ViernesButton.text(
                               text: 'Help',
-                              icon: const Icon(Icons.help, size: 18),
+                              icon: Icons.help,
                               size: ViernesButtonSize.small,
                               onPressed: () {
                                 // TODO: Navigate to help
@@ -212,7 +226,7 @@ class ProfilePage extends StatelessWidget {
                   text: 'Sign Out',
                   isLoading: authProvider.status == auth_provider.AuthStatus.loading,
                   onPressed: () => _showSignOutDialog(context),
-                  icon: const Icon(Icons.logout, size: 20),
+                  icon: Icons.logout,
                 ),
 
                 ViernesSpacing.spaceLg,

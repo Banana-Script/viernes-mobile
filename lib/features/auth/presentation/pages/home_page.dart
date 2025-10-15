@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../shared/widgets/viernes_button.dart';
 import '../../../../shared/widgets/viernes_card.dart';
 import '../../../dashboard/presentation/pages/dashboard_page.dart';
+import '../../../demo/presentation/pages/components_demo_page.dart';
 import '../providers/auth_provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -50,7 +51,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<AuthProvider>(
+      body: provider.Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
           final user = authProvider.user;
 
@@ -63,7 +64,7 @@ class HomePage extends StatelessWidget {
                   ViernesSpacing.spaceXl,
 
                   // Welcome Header Card
-                  ViernesCard.filled(
+                  ViernesCard.basic(
                     backgroundColor: isDark
                         ? ViernesColors.secondary.withValues(alpha: 0.1)
                         : ViernesColors.primary.withValues(alpha: 0.05),
@@ -109,7 +110,6 @@ class HomePage extends StatelessWidget {
 
                   // User Info Card
                   ViernesCard.elevated(
-                    title: 'Account Information',
                     child: user != null
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +185,6 @@ class HomePage extends StatelessWidget {
 
                   // Quick Actions Card
                   ViernesCard.outlined(
-                    title: 'Quick Actions',
                     child: Column(
                       children: [
                         Text(
@@ -199,10 +198,24 @@ class HomePage extends StatelessWidget {
                         ),
                         ViernesSpacing.spaceLg,
 
-                        // Dashboard Action
+                        // Components Demo Action
                         ViernesButton.primary(
+                          text: 'View Components Demo',
+                          icon: Icons.widgets,
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const ComponentsDemoPage(),
+                              ),
+                            );
+                          },
+                        ),
+                        ViernesSpacing.spaceMd,
+
+                        // Dashboard Action
+                        ViernesButton.secondary(
                           text: 'Analytics Dashboard',
-                          icon: const Icon(Icons.analytics, size: 20),
+                          icon: Icons.analytics,
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -218,7 +231,7 @@ class HomePage extends StatelessWidget {
                             Expanded(
                               child: ViernesButton.secondary(
                                 text: 'Settings',
-                                icon: const Icon(Icons.settings, size: 18),
+                                icon: Icons.settings,
                                 size: ViernesButtonSize.small,
                                 onPressed: () {
                                   // TODO: Navigate to settings
@@ -229,7 +242,7 @@ class HomePage extends StatelessWidget {
                             Expanded(
                               child: ViernesButton.text(
                                 text: 'Help',
-                                icon: const Icon(Icons.help, size: 18),
+                                icon: Icons.help,
                                 size: ViernesButtonSize.small,
                                 onPressed: () {
                                   // TODO: Navigate to help
@@ -249,7 +262,7 @@ class HomePage extends StatelessWidget {
                     text: 'Sign Out',
                     isLoading: authProvider.status == AuthStatus.loading,
                     onPressed: () => _showSignOutDialog(context),
-                    icon: const Icon(Icons.logout, size: 20),
+                    icon: Icons.logout,
                   ),
 
                   ViernesSpacing.spaceLg,
@@ -277,7 +290,7 @@ class HomePage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.read<AuthProvider>().signOut();
+                provider.Provider.of<AuthProvider>(context, listen: false).signOut();
               },
               child: const Text('Sign Out'),
             ),

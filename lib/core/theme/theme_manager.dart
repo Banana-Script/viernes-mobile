@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Theme Manager for Viernes Mobile
 ///
 /// Handles theme switching between light, dark, and system modes.
 /// Manages theme persistence and provides utilities for theme-aware development.
-class ThemeManager extends ChangeNotifier {
-  // static const String _themeKey = 'viernes_theme_mode'; // TODO: Use for SharedPreferences
+/// Now using Riverpod for state management.
+class ThemeManager extends StateNotifier<ThemeMode> {
+  static const String _themeKey = 'viernes_theme_mode';
+  final SharedPreferences _prefs;
 
-  ThemeMode _themeMode = ThemeMode.system;
+  ThemeManager(this._prefs) : super(ThemeMode.system) {
+    _loadTheme();
+    _updateSystemUI();
+    _listenToSystemChanges();
+  }
 
-  ThemeMode get themeMode => _themeMode;
+  ThemeMode get themeMode => state;
 
   /// Get the current brightness based on theme mode and system settings
   Brightness get currentBrightness {
-    switch (_themeMode) {
+    switch (state) {
       case ThemeMode.light:
         return Brightness.light;
       case ThemeMode.dark:
@@ -32,47 +40,80 @@ class ThemeManager extends ChangeNotifier {
   bool get isLight => currentBrightness == Brightness.light;
 
   /// Check if the theme is set to follow system
-  bool get isSystem => _themeMode == ThemeMode.system;
+  bool get isSystem => state == ThemeMode.system;
+
+  /// Load theme from SharedPreferences
+  void _loadTheme() {
+    final themeString = _prefs.getString(_themeKey);
+    if (themeString != null) {
+      switch (themeString) {
+        case 'ThemeMode.light':
+          state = ThemeMode.light;
+          break;
+        case 'ThemeMode.dark':
+          state = ThemeMode.dark;
+          break;
+        case 'ThemeMode.system':
+        default:
+          state = ThemeMode.system;
+          break;
+      }
+    }
+  }
+
+  /// Save theme to SharedPreferences
+  Future<void> _saveTheme(ThemeMode mode) async {
+    await _prefs.setString(_themeKey, mode.toString());
+  }
+
+  /// Listen to system theme changes
+  void _listenToSystemChanges() {
+    SchedulerBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
+      if (state == ThemeMode.system) {
+        _updateSystemUI();
+        // Trigger rebuild without changing state
+        state = state;
+      }
+    };
+  }
 
   /// Set theme to light mode
-  void setLightTheme() {
-    _setTheme(ThemeMode.light);
+  Future<void> setLightTheme() async {
+    await _setTheme(ThemeMode.light);
   }
 
   /// Set theme to dark mode
-  void setDarkTheme() {
-    _setTheme(ThemeMode.dark);
+  Future<void> setDarkTheme() async {
+    await _setTheme(ThemeMode.dark);
   }
 
   /// Set theme to follow system
-  void setSystemTheme() {
-    _setTheme(ThemeMode.system);
+  Future<void> setSystemTheme() async {
+    await _setTheme(ThemeMode.system);
   }
 
   /// Toggle between light and dark (maintains system if currently system)
-  void toggleTheme() {
-    if (_themeMode == ThemeMode.system) {
+  Future<void> toggleTheme() async {
+    if (state == ThemeMode.system) {
       // If system, switch to opposite of current system theme
       final systemBrightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
-      _setTheme(systemBrightness == Brightness.dark ? ThemeMode.light : ThemeMode.dark);
+      await _setTheme(systemBrightness == Brightness.dark ? ThemeMode.light : ThemeMode.dark);
     } else {
       // Toggle between light and dark
-      _setTheme(_themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light);
+      await _setTheme(state == ThemeMode.light ? ThemeMode.dark : ThemeMode.light);
     }
   }
 
   /// Set specific theme mode
-  void setThemeMode(ThemeMode mode) {
-    _setTheme(mode);
+  Future<void> setThemeMode(ThemeMode mode) async {
+    await _setTheme(mode);
   }
 
-  void _setTheme(ThemeMode mode) {
-    if (_themeMode != mode) {
-      _themeMode = mode;
+  Future<void> _setTheme(ThemeMode mode) async {
+    if (state != mode) {
+      state = mode;
       _updateSystemUI();
-      notifyListeners();
-      // Here you would save to SharedPreferences in a real app
-      // await _saveThemePreference(mode);
+      await _saveTheme(mode);
     }
   }
 
@@ -96,50 +137,10 @@ class ThemeManager extends ChangeNotifier {
     );
   }
 
-  /// Initialize theme manager (call this in main.dart)
-  Future<void> initialize() async {
-    // Load saved theme preference
-    // In a real app, you'd load from SharedPreferences here
-    // final savedTheme = await _loadThemePreference();
-    // _themeMode = savedTheme;
-
-    _updateSystemUI();
-
-    // Listen to system theme changes
-    SchedulerBinding.instance.platformDispatcher.onPlatformBrightnessChanged = () {
-      if (_themeMode == ThemeMode.system) {
-        _updateSystemUI();
-        notifyListeners();
-      }
-    };
-  }
-
-  // Future methods for persistence (implement with SharedPreferences)
-  /*
-  Future<void> _saveThemePreference(ThemeMode mode) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, mode.toString());
-  }
-
-  Future<ThemeMode> _loadThemePreference() async {
-    final prefs = await SharedPreferences.getInstance();
-    final themeString = prefs.getString(_themeKey);
-
-    switch (themeString) {
-      case 'ThemeMode.light':
-        return ThemeMode.light;
-      case 'ThemeMode.dark':
-        return ThemeMode.dark;
-      case 'ThemeMode.system':
-      default:
-        return ThemeMode.system;
-    }
-  }
-  */
 
   /// Get theme name as string for UI display
   String get themeDisplayName {
-    switch (_themeMode) {
+    switch (state) {
       case ThemeMode.light:
         return 'Light';
       case ThemeMode.dark:
@@ -151,7 +152,7 @@ class ThemeManager extends ChangeNotifier {
 
   /// Get current theme icon
   IconData get themeIcon {
-    switch (_themeMode) {
+    switch (state) {
       case ThemeMode.light:
         return Icons.light_mode;
       case ThemeMode.dark:
@@ -192,3 +193,33 @@ class ThemeManager extends ChangeNotifier {
     }
   }
 }
+
+/// Provider for SharedPreferences
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('SharedPreferences must be initialized in main()');
+});
+
+/// Provider for ThemeManager
+final themeManagerProvider = StateNotifierProvider<ThemeManager, ThemeMode>((ref) {
+  final prefs = ref.watch(sharedPreferencesProvider);
+  return ThemeManager(prefs);
+});
+
+/// Provider for current brightness
+final currentBrightnessProvider = Provider<Brightness>((ref) {
+  ref.watch(themeManagerProvider);
+  final themeManager = ref.read(themeManagerProvider.notifier);
+  return themeManager.currentBrightness;
+});
+
+/// Provider to check if dark mode is active
+final isDarkModeProvider = Provider<bool>((ref) {
+  final brightness = ref.watch(currentBrightnessProvider);
+  return brightness == Brightness.dark;
+});
+
+/// Provider to check if light mode is active
+final isLightModeProvider = Provider<bool>((ref) {
+  final brightness = ref.watch(currentBrightnessProvider);
+  return brightness == Brightness.light;
+});

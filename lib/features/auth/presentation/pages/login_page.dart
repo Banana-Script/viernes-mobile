@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: authProvider.status == AuthStatus.loading
                                 ? null
                                 : () => _signIn(authProvider),
-                            icon: const Icon(Icons.login, size: 20),
+                            icon: Icons.login,
                           ),
 
                           ViernesSpacing.spaceLg,
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: authProvider.status == AuthStatus.loading
                                 ? null
                                 : () => _navigateToRegister(context),
-                            icon: const Icon(Icons.person_add, size: 20),
+                            icon: Icons.person_add,
                           ),
                         ],
                       ),

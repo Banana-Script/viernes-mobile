@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viernes Components Library - 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Viernes Brand Colors */
+            --primary: #374151;
+            --secondary: #FFE61B;
+            --accent: #51f5f8;
+            --success: #16a34a;
+            --danger: #e7515a;
+            --warning: #e2a03f;
+
+            /* Light Mode */
+            --bg-light: #fafafa;
+            --panel-light: #ffffff;
+            --text-light: #374151;
+            --text-muted-light: #6b7280;
+            --border-light: #e5e7eb;
+
+            /* Dark Mode */
+            --bg-dark: #060818;
+            --panel-dark: #000000;
+            --text-dark: #E0E0E0;
+            --text-muted-dark: #9ca3af;
+            --border-dark: #374151;
+
+            /* Current theme variables */
+            --bg: var(--bg-light);
+            --panel: var(--panel-light);
+            --text: var(--text-light);
+            --text-muted: var(--text-muted-light);
+            --border: var(--border-light);
+        }
+
+        [data-theme="dark"] {
+            --bg: var(--bg-dark);
+            --panel: var(--panel-dark);
+            --text: var(--text-dark);
+            --text-muted: var(--text-muted-dark);
+            --border: var(--border-dark);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--panel);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .theme-toggle {
+            background: var(--panel);
+            border: 2px solid var(--accent);
+            border-radius: 50px;
+            width: 60px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle .toggle-ball {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle .toggle-ball {
+            transform: translateX(30px);
+        }
+
+        /* Component Showcase Sections */
+        .component-section {
+            background: var(--panel);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(81, 245, 248, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .component-demo {
+            padding: 25px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: var(--bg);
+            transition: all 0.3s ease;
+        }
+
+        .component-demo:hover {
+            border-color: var(--accent);
+            background: rgba(81, 245, 248, 0.05);
+        }
+
+        .demo-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin: 5px;
+            min-width: 44px;
+            min-height: 44px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(55, 65, 81, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--panel);
+            border-color: var(--accent);
+        }
+
+        .btn-floating {
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-floating:hover {
+            transform: scale(1.1);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            color: white;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--panel);
+            color: var(--text);
+            transition: all 0.3s ease;
+            outline: none;
+            min-height: 44px;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(81, 245, 248, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input.error {
+            border-color: var(--danger);
+        }
+
+        .form-input.success {
+            border-color: var(--success);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px 12px;
+            padding-right: 40px;
+            appearance: none;
+        }
+
+        /* Toggle Switches */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--border);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch .toggle-button {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-button {
+            transform: translateX(30px);
+        }
+
+        /* Progress Indicators */
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--secondary) 100%);
+            border-radius: 6px;
+            transition: width 0.6s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 10px;
+        }
+
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .progress-circle .bg-circle {
+            stroke: var(--border);
+        }
+
+        .progress-circle .progress-path {
+            stroke: var(--accent);
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.6s ease;
+        }
+
+        .progress-circle .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--panel);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            margin: 10px 0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(81, 245, 248, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-content {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--panel);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin: 10px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(22, 163, 74, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-warning {
+            background: rgba(226, 160, 63, 0.1);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .alert-danger {
+            background: rgba(231, 81, 90, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-info {
+            background: rgba(81, 245, 248, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .alert-content h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .alert-content p {
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .badge-outline {
+            background: transparent;
+            border: 2px solid currentColor;
+        }
+
+        /* Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border), rgba(81, 245, 248, 0.1), var(--border));
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin: 8px 0;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 60%;
+            margin: 12px 0;
+        }
+
+        .skeleton-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text);
+            color: var(--panel);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: var(--text);
+        }
+
+        .tooltip:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .component-section {
+                padding: 25px 20px;
+            }
+
+            .component-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .component-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .component-section:nth-child(1) { animation-delay: 0.1s; }
+        .component-section:nth-child(2) { animation-delay: 0.2s; }
+        .component-section:nth-child(3) { animation-delay: 0.3s; }
+        .component-section:nth-child(4) { animation-delay: 0.4s; }
+        .component-section:nth-child(5) { animation-delay: 0.5s; }
+        .component-section:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Components Library</h1>
+            <div class="header-actions">
+                <a href="index.html" class="back-btn">← Volver</a>
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Buttons Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">🔘</div>
+                <h2 class="section-title">Buttons & Actions</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Button States</h3>
+                    <button class="btn btn-primary">Primary Button</button>
+                    <button class="btn btn-secondary">Secondary</button>
+                    <button class="btn btn-success">Success</button>
+                    <button class="btn btn-danger">Danger</button>
+                    <button class="btn btn-ghost">Ghost</button>
+                    <button class="btn btn-primary" disabled>Disabled</button>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Special Buttons</h3>
+                    <button class="btn btn-primary btn-loading" id="loadingBtn">Loading</button>
+                    <button class="btn btn-primary btn-floating">+</button>
+                    <button class="btn btn-secondary">📱 Con Icono</button>
+                    <button class="btn btn-success">✓ Confirmado</button>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Touch Friendly (44px+)</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;">
+                        Todos los botones cumplen con el tamaño mínimo táctil recomendado
+                    </p>
+                    <button class="btn btn-primary">Táctil Optimizado</button>
+                    <button class="btn btn-accent" style="background: var(--accent); color: white;">Accesible</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Elements Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">📝</div>
+                <h2 class="section-title">Form Elements</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Input Fields</h3>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="tu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-input" placeholder="Tu contraseña">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mensaje</label>
+                        <textarea class="form-input form-textarea" placeholder="Escribe tu mensaje aquí..."></textarea>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Input States</h3>
+                    <div class="form-group">
+                        <label class="form-label">Campo Normal</label>
+                        <input type="text" class="form-input" placeholder="Estado normal">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Campo con Error</label>
+                        <input type="text" class="form-input error" placeholder="Email inválido" value="email-invalido">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Campo Exitoso</label>
+                        <input type="text" class="form-input success" placeholder="Verificado" value="usuario@email.com">
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Select & Toggles</h3>
+                    <div class="form-group">
+                        <label class="form-label">País</label>
+                        <select class="form-input form-select">
+                            <option>Seleccionar país</option>
+                            <option>Colombia</option>
+                            <option>México</option>
+                            <option>España</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notificaciones</label>
+                        <div style="margin-top: 10px;">
+                            <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-button"></div>
+                            </div>
+                            <span style="margin-left: 15px; color: var(--text-muted);">Activado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Indicators Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <h2 class="section-title">Progress Indicators</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Progress Bars</h3>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                            <span>Progreso General</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                            <span>Subida de Archivo</span>
+                            <span>45%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                            <span>Procesamiento IA</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Circular Progress</h3>
+                    <div style="display: flex; justify-content: space-around; align-items: center;">
+                        <div class="progress-circle">
+                            <svg>
+                                <circle class="bg-circle" cx="40" cy="40" r="30"></circle>
+                                <circle class="progress-path" cx="40" cy="40" r="30" stroke-dasharray="150.8 188.5"></circle>
+                            </svg>
+                            <div class="percentage">80%</div>
+                        </div>
+
+                        <div class="progress-circle">
+                            <svg>
+                                <circle class="bg-circle" cx="40" cy="40" r="30"></circle>
+                                <circle class="progress-path" cx="40" cy="40" r="30" stroke-dasharray="113.1 188.5"></circle>
+                            </svg>
+                            <div class="percentage">60%</div>
+                        </div>
+
+                        <div class="progress-circle">
+                            <svg>
+                                <circle class="bg-circle" cx="40" cy="40" r="30"></circle>
+                                <circle class="progress-path" cx="40" cy="40" r="30" stroke-dasharray="169.7 188.5"></circle>
+                            </svg>
+                            <div class="percentage">90%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Loading States</h3>
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px;">
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text" style="width: 60%; margin-bottom: 8px;"></div>
+                            <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">🃏</div>
+                <h2 class="section-title">Cards & Containers</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Basic Card</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon">📊</div>
+                            <h4 class="card-title">Analytics Report</h4>
+                        </div>
+                        <div class="card-content">
+                            Este es el contenido de la tarjeta con información relevante para el usuario. Incluye detalles importantes y acciones disponibles.
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-primary">Ver Reporte</button>
+                            <button class="btn btn-ghost">Compartir</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Stat Card</h3>
+                    <div class="card" style="text-align: center; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none;">
+                        <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 8px;">1,247</div>
+                        <div style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 12px;">Conversaciones Totales</div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">↗ +12.5% vs mes anterior</div>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Interactive Card</h3>
+                    <div class="card" style="cursor: pointer;" onclick="showToast('Card clickeada!')">
+                        <div class="card-header">
+                            <div class="card-icon">🤖</div>
+                            <h4 class="card-title">AI Assistant</h4>
+                        </div>
+                        <div class="card-content">
+                            Tarjeta interactiva que responde a clicks y hover. Perfecta para acciones rápidas y navegación.
+                        </div>
+                        <div style="margin-top: 15px; color: var(--accent); font-size: 0.9rem; font-weight: 600;">
+                            Click para interactuar →
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts & Notifications Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">🔔</div>
+                <h2 class="section-title">Alerts & Notifications</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Alert Types</h3>
+                    <div class="alert alert-success">
+                        <div class="alert-icon">✓</div>
+                        <div class="alert-content">
+                            <h4>¡Proceso Exitoso!</h4>
+                            <p>Tu archivo se ha subido correctamente y está siendo procesado.</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-content">
+                            <h4>Atención Requerida</h4>
+                            <p>Tu suscripción expira en 3 días. Renueva para continuar usando todas las funciones.</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-danger">
+                        <div class="alert-icon">❌</div>
+                        <div class="alert-content">
+                            <h4>Error de Conexión</h4>
+                            <p>No se pudo conectar con el servidor. Verifica tu conexión a internet.</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <div class="alert-icon">ℹ️</div>
+                        <div class="alert-content">
+                            <h4>Información</h4>
+                            <p>Nueva actualización disponible con mejoras de rendimiento.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Badges</h3>
+                    <div style="margin-bottom: 15px;">
+                        <span class="badge badge-primary">Nuevo</span>
+                        <span class="badge badge-success">Activo</span>
+                        <span class="badge badge-warning">Pendiente</span>
+                        <span class="badge badge-danger">Error</span>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <span class="badge badge-primary badge-outline">Primary</span>
+                        <span class="badge badge-success badge-outline">Success</span>
+                        <span class="badge badge-warning badge-outline">Warning</span>
+                        <span class="badge badge-danger badge-outline">Danger</span>
+                    </div>
+
+                    <div>
+                        <span class="badge" style="background: var(--accent); color: white;">Premium</span>
+                        <span class="badge" style="background: var(--text); color: var(--panel);">Pro</span>
+                        <span class="badge" style="background: rgba(81, 245, 248, 0.1); color: var(--accent); border: 1px solid var(--accent);">Beta</span>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Tooltips</h3>
+                    <div style="text-align: center; padding: 20px;">
+                        <div class="tooltip">
+                            <button class="btn btn-primary">Hover me</button>
+                            <div class="tooltip-content">¡Este es un tooltip informativo!</div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; padding: 20px;">
+                        <div class="tooltip">
+                            <span style="color: var(--accent); cursor: pointer; text-decoration: underline;">Información adicional</span>
+                            <div class="tooltip-content">Más detalles sobre esta función</div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; padding: 20px;">
+                        <div class="tooltip">
+                            <div style="display: inline-block; padding: 10px; background: var(--border); border-radius: 8px; cursor: pointer;">📊</div>
+                            <div class="tooltip-content">Ver estadísticas detalladas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modals Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">🪟</div>
+                <h2 class="section-title">Modals & Overlays</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Modal Examples</h3>
+                    <button class="btn btn-primary" onclick="showModal('confirmModal')">Modal de Confirmación</button>
+                    <button class="btn btn-secondary" onclick="showModal('infoModal')">Modal Informativo</button>
+                    <button class="btn btn-success" onclick="showModal('formModal')">Modal con Formulario</button>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Loading Overlays</h3>
+                    <button class="btn btn-primary" onclick="showLoadingOverlay()">Mostrar Loading</button>
+                    <button class="btn btn-secondary" onclick="showSuccessOverlay()">Simular Éxito</button>
+                    <button class="btn btn-warning" onclick="showErrorOverlay()">Simular Error</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Elements Section -->
+        <section class="component-section">
+            <div class="section-header">
+                <div class="section-icon">🧭</div>
+                <h2 class="section-title">Navigation Elements</h2>
+            </div>
+
+            <div class="component-grid">
+                <div class="component-demo">
+                    <h3 class="demo-title">Breadcrumbs</h3>
+                    <nav style="display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.9rem;">
+                        <a href="#" style="color: var(--accent); text-decoration: none;">Dashboard</a>
+                        <span>></span>
+                        <a href="#" style="color: var(--accent); text-decoration: none;">Analytics</a>
+                        <span>></span>
+                        <span style="color: var(--text);">Reportes</span>
+                    </nav>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Pagination</h3>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin: 20px 0;">
+                        <button class="btn btn-ghost" style="padding: 8px 12px; min-width: auto;">←</button>
+                        <button class="btn btn-primary" style="padding: 8px 12px; min-width: auto;">1</button>
+                        <button class="btn btn-ghost" style="padding: 8px 12px; min-width: auto;">2</button>
+                        <button class="btn btn-ghost" style="padding: 8px 12px; min-width: auto;">3</button>
+                        <span style="color: var(--text-muted);">...</span>
+                        <button class="btn btn-ghost" style="padding: 8px 12px; min-width: auto;">10</button>
+                        <button class="btn btn-ghost" style="padding: 8px 12px; min-width: auto;">→</button>
+                    </div>
+                </div>
+
+                <div class="component-demo">
+                    <h3 class="demo-title">Tab Navigation</h3>
+                    <div style="display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px;">
+                        <button class="tab-btn active" onclick="switchTab(this, 'tab1')">General</button>
+                        <button class="tab-btn" onclick="switchTab(this, 'tab2')">Avanzado</button>
+                        <button class="tab-btn" onclick="switchTab(this, 'tab3')">Seguridad</button>
+                    </div>
+
+                    <div id="tab1" class="tab-content active">
+                        <p style="color: var(--text-muted);">Contenido de la pestaña General con configuraciones básicas.</p>
+                    </div>
+                    <div id="tab2" class="tab-content">
+                        <p style="color: var(--text-muted);">Configuraciones avanzadas para usuarios expertos.</p>
+                    </div>
+                    <div id="tab3" class="tab-content">
+                        <p style="color: var(--text-muted);">Opciones de seguridad y privacidad de la cuenta.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmar Acción</h3>
+                <button class="modal-close" onclick="hideModal('confirmModal')">×</button>
+            </div>
+            <div class="modal-content">
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    ¿Estás seguro de que quieres realizar esta acción? Esta operación no se puede deshacer.
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button class="btn btn-ghost" onclick="hideModal('confirmModal')">Cancelar</button>
+                    <button class="btn btn-danger" onclick="confirmAction()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Información Importante</h3>
+                <button class="modal-close" onclick="hideModal('infoModal')">×</button>
+            </div>
+            <div class="modal-content">
+                <div class="alert alert-info">
+                    <div class="alert-icon">ℹ️</div>
+                    <div class="alert-content">
+                        <h4>Nueva Actualización</h4>
+                        <p>Hemos agregado nuevas funciones de IA que mejorarán tu experiencia.</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-primary" onclick="hideModal('infoModal')">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="formModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Crear Nuevo Proyecto</h3>
+                <button class="modal-close" onclick="hideModal('formModal')">×</button>
+            </div>
+            <div class="modal-content">
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Nombre del Proyecto</label>
+                        <input type="text" class="form-input" placeholder="Mi Proyecto Increíble">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-input form-textarea" placeholder="Describe tu proyecto..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoría</label>
+                        <select class="form-input form-select">
+                            <option>Seleccionar categoría</option>
+                            <option>Desarrollo</option>
+                            <option>Diseño</option>
+                            <option>Marketing</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 25px;">
+                        <button type="button" class="btn btn-ghost" onclick="hideModal('formModal')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" onclick="submitForm(event)">Crear Proyecto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('viernes-theme', newTheme);
+        }
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            const label = element.parentElement.querySelector('span');
+            label.textContent = isActive ? 'Activado' : 'Desactivado';
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function confirmAction() {
+            showToast('✓ Acción confirmada exitosamente');
+            hideModal('confirmModal');
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            showToast('🎉 Proyecto creado exitosamente');
+            hideModal('formModal');
+        }
+
+        function switchTab(tabBtn, tabId) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            tabBtn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function showLoadingOverlay() {
+            showToast('⏳ Cargando...');
+            setTimeout(() => showToast('✅ Proceso completado'), 2000);
+        }
+
+        function showSuccessOverlay() {
+            showToast('🎉 ¡Operación exitosa!');
+        }
+
+        function showErrorOverlay() {
+            showToast('❌ Error en la operación');
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--success);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 2000;
+                animation: toastSlideUp 0.3s ease;
+            `;
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastSlideDown 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('viernes-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Add CSS for tabs and toast animations
+        const style = document.createElement('style');
+        style.textContent = `
+            .tab-btn {
+                background: transparent;
+                border: none;
+                padding: 12px 20px;
+                font-weight: 600;
+                color: var(--text-muted);
+                cursor: pointer;
+                border-bottom: 2px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+            .tab-btn.active {
+                color: var(--accent);
+                border-bottom-color: var(--accent);
+            }
+
+            .tab-content {
+                display: none;
+                padding: 20px 0;
+            }
+
+            .tab-content.active {
+                display: block;
+            }
+
+            @keyframes toastSlideUp {
+                from {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+            }
+
+            @keyframes toastSlideDown {
+                from {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(20px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Animate progress bars on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+
+            progressBars.forEach((bar, index) => {
+                setTimeout(() => {
+                    const width = bar.style.width;
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = width;
+                    }, 100);
+                }, index * 300);
+            });
+
+            // Animate loading button
+            const loadingBtn = document.getElementById('loadingBtn');
+            loadingBtn.addEventListener('click', function() {
+                this.classList.add('btn-loading');
+                setTimeout(() => {
+                    this.classList.remove('btn-loading');
+                    this.textContent = 'Completado';
+                    setTimeout(() => {
+                        this.textContent = 'Loading';
+                    }, 2000);
+                }, 3000);
+            });
+        });
+
+        // Close modals when clicking overlay
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

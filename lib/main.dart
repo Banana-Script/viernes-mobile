@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options_prod.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_manager.dart';
 import 'core/config/environment_config.dart';
 import 'core/constants/app_constants.dart';
 import 'core/di/dependency_injection.dart';
@@ -21,23 +24,36 @@ void main() async {
     options: FirebaseOptionsProd.currentPlatform,
   );
 
+  // Initialize SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+
   // Initialize dependency injection
   DependencyInjection.initialize();
 
-  runApp(const ViernesApp());
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ],
+      child: const ViernesApp(),
+    ),
+  );
 }
 
-class ViernesApp extends StatelessWidget {
+class ViernesApp extends ConsumerWidget {
   const ViernesApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<auth_provider.AuthProvider>(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeManagerProvider);
+
+    return provider.ChangeNotifierProvider<auth_provider.AuthProvider>(
       create: (context) => DependencyInjection.authProvider,
       child: MaterialApp(
         title: AppConstants.appName,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
+        themeMode: themeMode,
         home: const AuthenticationWrapper(),
         debugShowCheckedModeBanner: AppConstants.isDebugMode,
       ),
@@ -50,7 +66,7 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<auth_provider.AuthProvider>(
+    return provider.Consumer<auth_provider.AuthProvider>(
       builder: (context, authProvider, child) {
         // Show loading screen while checking authentication state
         if (authProvider.status == auth_provider.AuthStatus.initial) {

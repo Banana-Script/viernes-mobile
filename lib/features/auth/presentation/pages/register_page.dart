@@ -195,7 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             onPressed: authProvider.status == AuthStatus.loading
                                 ? null
                                 : () => _signUp(authProvider),
-                            icon: const Icon(Icons.person_add, size: 20),
+                            icon: Icons.person_add,
                           ),
 
                           ViernesSpacing.spaceLg,
