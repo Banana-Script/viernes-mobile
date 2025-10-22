@@ -8,13 +8,8 @@ abstract class FirebaseAuthDataSource {
     required String email,
     required String password,
   });
-  Future<UserModel> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  });
   Future<void> signOut();
   Future<void> sendPasswordResetEmail({required String email});
-  Future<void> sendEmailVerification();
 }
 
 class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
@@ -46,35 +41,20 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
     required String email,
     required String password,
   }) async {
+    final sanitizedEmail = email.trim().toLowerCase();
+
+    if (sanitizedEmail.isEmpty || password.isEmpty) {
+      throw Exception('Email y contraseña son requeridos');
+    }
+
     try {
       final userCredential = await firebaseAuth.signInWithEmailAndPassword(
-        email: email,
+        email: sanitizedEmail,
         password: password,
       );
 
       if (userCredential.user == null) {
         throw Exception('Sign in failed');
-      }
-
-      return UserModel.fromFirebaseUser(userCredential.user!);
-    } on FirebaseAuthException catch (e) {
-      throw _handleFirebaseAuthException(e);
-    }
-  }
-
-  @override
-  Future<UserModel> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      if (userCredential.user == null) {
-        throw Exception('Account creation failed');
       }
 
       return UserModel.fromFirebaseUser(userCredential.user!);
@@ -94,20 +74,14 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
 
   @override
   Future<void> sendPasswordResetEmail({required String email}) async {
-    try {
-      await firebaseAuth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
-      throw _handleFirebaseAuthException(e);
-    }
-  }
+    final sanitizedEmail = email.trim().toLowerCase();
 
-  @override
-  Future<void> sendEmailVerification() async {
+    if (sanitizedEmail.isEmpty) {
+      throw Exception('Email es requerido');
+    }
+
     try {
-      final user = firebaseAuth.currentUser;
-      if (user != null && !user.emailVerified) {
-        await user.sendEmailVerification();
-      }
+      await firebaseAuth.sendPasswordResetEmail(email: sanitizedEmail);
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseAuthException(e);
     }
@@ -116,9 +90,8 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   Exception _handleFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':
-        return Exception('No user found with this email');
       case 'wrong-password':
-        return Exception('Wrong password provided');
+        return Exception('Email o contraseña incorrectos');
       case 'email-already-in-use':
         return Exception('An account already exists with this email');
       case 'weak-password':

@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/viernes_input.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../providers/auth_provider.dart';
-import 'register_page.dart';
 import 'forgot_password_page.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -217,52 +217,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               isLoading: authProvider.status == AuthStatus.loading,
                             ),
 
-                            const SizedBox(height: 24),
-
-                            // Divider
-                            Container(
-                              height: 1,
-                              color: isDark
-                                  ? const Color(0xFF2d2d2d)
-                                  : const Color(0xFFe5e7eb),
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            // Create account link
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '¿No tienes cuenta? ',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDark
-                                        ? ViernesColors.textDark.withValues(alpha: 0.7)
-                                        : ViernesColors.textLight.withValues(alpha: 0.7),
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: authProvider.status == AuthStatus.loading
-                                      ? null
-                                      : () => _goToRegister(),
-                                  style: TextButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(50, 30),
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  child: Text(
-                                    'CREAR CUENTA',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: isDark ? ViernesColors.accent : ViernesColors.primary,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -325,11 +279,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void _handleLogin(AuthProvider authProvider) {
-    // Validate inputs
-    if (_emailController.text.trim().isEmpty) {
+    // Validate inputs using centralized Validators
+    final emailError = Validators.email(_emailController.text);
+    if (emailError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Por favor ingresa tu email'),
+          content: Text(emailError),
           backgroundColor: ViernesColors.danger,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -340,24 +295,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       return;
     }
 
-    if (!RegExp(r'^[\w\+\-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
+    final passwordError = Validators.password(_passwordController.text);
+    if (passwordError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Por favor ingresa un email válido'),
-          backgroundColor: ViernesColors.danger,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return;
-    }
-
-    if (_passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Por favor ingresa tu contraseña'),
+          content: Text(passwordError),
           backgroundColor: ViernesColors.danger,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -378,14 +320,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const ForgotPasswordPage(),
-      ),
-    );
-  }
-
-  void _goToRegister() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const RegisterPage(),
       ),
     );
   }

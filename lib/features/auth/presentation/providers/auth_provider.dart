@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
-import '../../domain/usecases/sign_up_usecase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
@@ -11,14 +11,12 @@ enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 class AuthProvider extends ChangeNotifier {
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final SignInUseCase signInUseCase;
-  final SignUpUseCase signUpUseCase;
   final SignOutUseCase signOutUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
 
   AuthProvider({
     required this.getCurrentUserUseCase,
     required this.signInUseCase,
-    required this.signUpUseCase,
     required this.signOutUseCase,
     required this.resetPasswordUseCase,
   }) {
@@ -28,6 +26,7 @@ class AuthProvider extends ChangeNotifier {
   AuthStatus _status = AuthStatus.initial;
   UserEntity? _user;
   String? _errorMessage;
+  StreamSubscription<UserEntity?>? _authStateSubscription;
 
   AuthStatus get status => _status;
   UserEntity? get user => _user;
@@ -35,7 +34,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _status == AuthStatus.authenticated && _user != null;
 
   void _initializeAuthState() {
-    getCurrentUserUseCase.authStateChanges.listen((user) {
+    _authStateSubscription = getCurrentUserUseCase.authStateChanges.listen((user) {
       _user = user;
       _status = user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
       _errorMessage = null;
@@ -50,43 +49,12 @@ class AuthProvider extends ChangeNotifier {
     try {
       _setLoading();
 
-      final user = await signInUseCase(
+      await signInUseCase(
         email: email,
         password: password,
       );
 
-      _user = user;
-      _status = AuthStatus.authenticated;
-      _errorMessage = null;
-
-      notifyListeners();
-    } catch (e) {
-      _status = AuthStatus.error;
-      _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      _user = null;
-      notifyListeners();
-    }
-  }
-
-  Future<void> signUp({
-    required String email,
-    required String password,
-    required String confirmPassword,
-  }) async {
-    try {
-      _setLoading();
-
-      final user = await signUpUseCase(
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-      );
-
-      _user = user;
-      _status = AuthStatus.authenticated;
-      _errorMessage = null;
-
-      notifyListeners();
+      // Let the stream handle state updates
     } catch (e) {
       _status = AuthStatus.error;
       _errorMessage = e.toString().replaceFirst('Exception: ', '');
@@ -142,5 +110,11 @@ class AuthProvider extends ChangeNotifier {
     _status = AuthStatus.loading;
     _errorMessage = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authStateSubscription?.cancel();
+    super.dispose();
   }
 }

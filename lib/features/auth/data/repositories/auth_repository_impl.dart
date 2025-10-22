@@ -27,17 +27,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    return await dataSource.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
-
-  @override
   Future<void> signOut() async {
     await dataSource.signOut();
   }
@@ -45,10 +34,5 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> sendPasswordResetEmail({required String email}) async {
     await dataSource.sendPasswordResetEmail(email: email);
-  }
-
-  @override
-  Future<void> sendEmailVerification() async {
-    await dataSource.sendEmailVerification();
   }
 }

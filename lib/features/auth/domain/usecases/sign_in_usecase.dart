@@ -1,5 +1,6 @@
 import '../entities/user_entity.dart';
 import '../repositories/auth_repository.dart';
+import '../../../../core/utils/validators.dart';
 
 class SignInUseCase {
   final AuthRepository repository;
@@ -16,17 +17,16 @@ class SignInUseCase {
     if (password.isEmpty) {
       throw Exception('Password cannot be empty');
     }
-    if (!_isValidEmail(email)) {
-      throw Exception('Please enter a valid email');
+
+    // Use centralized validator
+    final emailError = Validators.email(email);
+    if (emailError != null) {
+      throw Exception(emailError);
     }
 
     return await repository.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
-  }
-
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[\w\+\-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 }
