@@ -154,13 +154,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: isDark
-            ? const Color(0xFF1a1a1a).withValues(alpha: 0.5)
-            : Colors.white.withValues(alpha: 0.5),
+            ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
+            : Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isDark
-              ? const Color(0xFF2d2d2d).withValues(alpha: 0.3)
-              : const Color(0xFFe5e7eb).withValues(alpha: 0.3),
+              ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
+              : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
           width: 1,
         ),
       ),

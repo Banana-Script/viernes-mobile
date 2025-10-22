@@ -41,11 +41,13 @@ void main() async {
   );
 }
 
-class ViernesApp extends StatelessWidget {
+class ViernesApp extends ConsumerWidget {
   const ViernesApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeManagerProvider);
+
     return provider.MultiProvider(
       providers: [
         provider.ChangeNotifierProvider<auth_provider.AuthProvider>(
@@ -59,6 +61,7 @@ class ViernesApp extends StatelessWidget {
         title: AppConstants.appName,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
+        themeMode: themeMode,
         home: const AuthenticationWrapper(),
         debugShowCheckedModeBanner: AppConstants.isDebugMode,
       ),
