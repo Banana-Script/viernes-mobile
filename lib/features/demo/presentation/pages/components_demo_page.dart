@@ -17,9 +17,9 @@ class ComponentsDemoPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Viernes Components'),
         centerTitle: true,
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.only(right: ViernesSpacing.md),
+            padding: EdgeInsets.only(right: ViernesSpacing.md),
             child: ViernesThemeToggle(
               showLabel: false,
               size: 40,
@@ -71,14 +71,14 @@ class ComponentsDemoPage extends ConsumerWidget {
   }
 
   Widget _buildThemeSection(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
         ViernesCard.outlined(
           child: Column(
             children: [
-              const ViernesThemeToggle(showLabel: true),
-              const SizedBox(height: ViernesSpacing.md),
-              const ViernesThemeSelector(),
+              ViernesThemeToggle(showLabel: true),
+              SizedBox(height: ViernesSpacing.md),
+              ViernesThemeSelector(),
             ],
           ),
         ),
@@ -208,7 +208,7 @@ class ComponentsDemoPage extends ConsumerWidget {
         const SizedBox(height: ViernesSpacing.sm),
 
         // Loading button
-        ViernesButton.primary(
+        const ViernesButton.primary(
           text: 'Loading',
           isLoading: true,
           isFullWidth: true,
@@ -219,13 +219,13 @@ class ComponentsDemoPage extends ConsumerWidget {
   }
 
   Widget _buildCardsSection(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
         Row(
           children: [
             Expanded(
               child: ViernesCard.basic(
-                child: const Column(
+                child: Column(
                   children: [
                     Icon(Icons.lightbulb_outline, size: 32),
                     SizedBox(height: ViernesSpacing.sm),
@@ -234,10 +234,10 @@ class ComponentsDemoPage extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(width: ViernesSpacing.sm),
+            SizedBox(width: ViernesSpacing.sm),
             Expanded(
               child: ViernesCard.elevated(
-                child: const Column(
+                child: Column(
                   children: [
                     Icon(Icons.layers, size: 32),
                     SizedBox(height: ViernesSpacing.sm),
@@ -249,13 +249,13 @@ class ComponentsDemoPage extends ConsumerWidget {
           ],
         ),
 
-        const SizedBox(height: ViernesSpacing.sm),
+        SizedBox(height: ViernesSpacing.sm),
 
         Row(
           children: [
             Expanded(
               child: ViernesCard.outlined(
-                child: const Column(
+                child: Column(
                   children: [
                     Icon(Icons.crop_free, size: 32),
                     SizedBox(height: ViernesSpacing.sm),
@@ -264,10 +264,10 @@ class ComponentsDemoPage extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(width: ViernesSpacing.sm),
+            SizedBox(width: ViernesSpacing.sm),
             Expanded(
               child: ViernesCard.glass(
-                child: const Column(
+                child: Column(
                   children: [
                     Icon(Icons.blur_on, size: 32),
                     SizedBox(height: ViernesSpacing.sm),
@@ -283,11 +283,11 @@ class ComponentsDemoPage extends ConsumerWidget {
   }
 
   Widget _buildMetricCardsSection(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: ViernesMetricCard(
                 title: 'Total Users',
                 value: '12.4K',
@@ -297,8 +297,8 @@ class ComponentsDemoPage extends ConsumerWidget {
                 isPositiveTrend: true,
               ),
             ),
-            const SizedBox(width: ViernesSpacing.sm),
-            const Expanded(
+            SizedBox(width: ViernesSpacing.sm),
+            Expanded(
               child: ViernesMetricCard(
                 title: 'Revenue',
                 value: '\$89.2K',
@@ -311,11 +311,11 @@ class ComponentsDemoPage extends ConsumerWidget {
           ],
         ),
 
-        const SizedBox(height: ViernesSpacing.sm),
+        SizedBox(height: ViernesSpacing.sm),
 
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: ViernesMetricCard(
                 title: 'Conversion',
                 value: '3.2%',
@@ -325,8 +325,8 @@ class ComponentsDemoPage extends ConsumerWidget {
                 isPositiveTrend: false,
               ),
             ),
-            const SizedBox(width: ViernesSpacing.sm),
-            const Expanded(
+            SizedBox(width: ViernesSpacing.sm),
+            Expanded(
               child: ViernesMetricCard(
                 title: 'Sessions',
                 value: '24.1K',

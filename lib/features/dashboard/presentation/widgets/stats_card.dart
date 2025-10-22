@@ -1,80 +1,94 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/viernes_colors.dart';
-import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 
-class StatsCard extends StatelessWidget {
+/// Viernes Stats Card
+///
+/// Unified stats card with glassmorphism effect, replacing both StatsCard and GradientStatsCard.
+/// Features:
+/// - Glassmorphism styling matching auth pages
+/// - Support for gradient accent on primary cards
+/// - Color-coded icons with subtle backgrounds
+/// - Loading state with shimmer effect
+///
+/// Usage:
+/// ```dart
+/// ViernesStatsCard(
+///   title: 'Total Interactions',
+///   value: '1,234',
+///   subtitle: 'This month',
+///   icon: Icons.chat_bubble_outline,
+///   isPrimary: true,  // Uses gradient accent
+/// )
+/// ```
+class ViernesStatsCard extends StatelessWidget {
   final String title;
   final String value;
   final String? subtitle;
-  final IconData? icon;
-  final Color? color;
-  final Color? backgroundColor;
+  final IconData icon;
+  final Color? accentColor;
   final bool isLoading;
   final VoidCallback? onTap;
+  final bool isPrimary;
 
-  const StatsCard({
+  const ViernesStatsCard({
     super.key,
     required this.title,
     required this.value,
     this.subtitle,
-    this.icon,
-    this.color,
-    this.backgroundColor,
+    required this.icon,
+    this.accentColor,
     this.isLoading = false,
     this.onTap,
+    this.isPrimary = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultColor = color ?? ViernesColors.getThemePrimary(isDark);
-    final defaultBackgroundColor = backgroundColor ?? ViernesColors.getControlBackground(isDark);
+    final defaultAccent = accentColor ??
+        (isDark ? ViernesColors.accent : ViernesColors.primary);
 
-    return Card(
-      elevation: 2,
-      color: defaultBackgroundColor,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(ViernesSpacing.md),
-          child: isLoading
-              ? _buildLoadingContent()
-              : _buildContent(context, defaultColor, isDark),
-        ),
-      ),
+    return ViernesGlassmorphismCard(
+      borderRadius: 14,
+      padding: const EdgeInsets.all(16),
+      onTap: onTap,
+      child: isLoading
+          ? _buildLoadingContent()
+          : _buildContent(isDark, defaultAccent),
     );
   }
 
   Widget _buildLoadingContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
           height: 16,
-          width: 100,
+          width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Colors.grey.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(4),
           ),
         ),
-        const SizedBox(height: ViernesSpacing.sm),
+        const SizedBox(height: 12),
         Container(
-          height: 24,
-          width: 60,
+          height: 32,
+          width: 80,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Colors.grey.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(4),
           ),
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: ViernesSpacing.sm),
+          const SizedBox(height: 8),
           Container(
-            height: 14,
-            width: 80,
+            height: 12,
+            width: 100,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Colors.grey.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -83,51 +97,80 @@ class StatsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, Color color, bool isDark) {
+  Widget _buildContent(bool isDark, Color accentColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        // Header: Title and Icon
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Text(
                 title,
                 style: ViernesTextStyles.bodySmall.copyWith(
-                  color: ViernesColors.getTextColor(isDark).withValues(alpha:0.7),
+                  color: ViernesColors.getTextColor(isDark)
+                      .withValues(alpha: 0.7),
+                  fontWeight: FontWeight.w600,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (icon != null) ...[
-              const SizedBox(width: ViernesSpacing.xs),
-              Icon(
-                icon,
-                color: color,
-                size: 16,
+            const SizedBox(width: 8),
+            // Icon with gradient background if primary
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                gradient: isPrimary
+                    ? LinearGradient(
+                        colors: [
+                          ViernesColors.secondary.withValues(alpha: 0.3),
+                          ViernesColors.accent.withValues(alpha: 0.3),
+                        ],
+                      )
+                    : null,
+                color: isPrimary ? null : accentColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
               ),
-            ],
+              child: Icon(
+                icon,
+                color: isPrimary
+                    ? (isDark
+                        ? ViernesColors.accent
+                        : ViernesColors.secondary)
+                    : accentColor,
+                size: 20,
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: ViernesSpacing.xs),
-        Flexible(
-          child: Text(
-            value,
-            style: ViernesTextStyles.h3.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+
+        const SizedBox(height: 12),
+
+        // Value
+        Text(
+          value,
+          style: ViernesTextStyles.h3.copyWith(
+            color: isPrimary
+                ? (isDark ? ViernesColors.accent : ViernesColors.primary)
+                : accentColor,
+            fontWeight: FontWeight.w700,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
+
+        // Subtitle
         if (subtitle != null) ...[
-          const SizedBox(height: ViernesSpacing.xs),
+          const SizedBox(height: 4),
           Text(
             subtitle!,
             style: ViernesTextStyles.caption.copyWith(
-              color: ViernesColors.getTextColor(isDark).withValues(alpha:0.6),
+              color: ViernesColors.getTextColor(isDark)
+                  .withValues(alpha: 0.6),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -138,134 +181,38 @@ class StatsCard extends StatelessWidget {
   }
 }
 
-class GradientStatsCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final String? subtitle;
-  final IconData? icon;
-  final LinearGradient gradient;
-  final bool isLoading;
-  final VoidCallback? onTap;
+// Keep old classes for backward compatibility (deprecated)
+@Deprecated('Use ViernesStatsCard instead')
+class StatsCard extends ViernesStatsCard {
+  const StatsCard({
+    super.key,
+    required super.title,
+    required super.value,
+    super.subtitle,
+    IconData? icon,
+    Color? color,
+    Color? backgroundColor,
+    super.isLoading,
+    super.onTap,
+  }) : super(
+          icon: icon ?? Icons.analytics,
+          accentColor: color,
+        );
+}
 
+@Deprecated('Use ViernesStatsCard with isPrimary: true instead')
+class GradientStatsCard extends ViernesStatsCard {
   const GradientStatsCard({
     super.key,
-    required this.title,
-    required this.value,
-    this.subtitle,
-    this.icon,
-    this.gradient = ViernesColors.viernesGradient,
-    this.isLoading = false,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.all(ViernesSpacing.md),
-          decoration: BoxDecoration(
-            gradient: gradient,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: isLoading
-              ? _buildLoadingContent()
-              : _buildContent(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 16,
-          width: 100,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha:0.3),
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        const SizedBox(height: ViernesSpacing.sm),
-        Container(
-          height: 24,
-          width: 60,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha:0.3),
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        if (subtitle != null) ...[
-          const SizedBox(height: ViernesSpacing.sm),
-          Container(
-            height: 14,
-            width: 80,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha:0.3),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildContent(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: ViernesTextStyles.bodySmall.copyWith(
-                  color: Colors.white.withValues(alpha:0.9),
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (icon != null) ...[
-              const SizedBox(width: ViernesSpacing.xs),
-              Icon(
-                icon,
-                color: Colors.white,
-                size: 16,
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: ViernesSpacing.xs),
-        Flexible(
-          child: Text(
-            value,
-            style: ViernesTextStyles.h3.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        if (subtitle != null) ...[
-          const SizedBox(height: ViernesSpacing.xs),
-          Text(
-            subtitle!,
-            style: ViernesTextStyles.caption.copyWith(
-              color: Colors.white.withValues(alpha:0.8),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ],
-    );
-  }
+    required super.title,
+    required super.value,
+    super.subtitle,
+    IconData? icon,
+    LinearGradient? gradient,
+    super.isLoading,
+    super.onTap,
+  }) : super(
+          icon: icon ?? Icons.analytics,
+          isPrimary: true,
+        );
 }

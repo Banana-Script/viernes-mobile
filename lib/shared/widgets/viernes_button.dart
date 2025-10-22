@@ -340,7 +340,7 @@ class ViernesButton extends ConsumerWidget {
           end: Alignment.bottomRight,
         );
       case ViernesButtonType.accent:
-        return LinearGradient(
+        return const LinearGradient(
           colors: [ViernesColors.accent, ViernesColors.accentLight],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -369,7 +369,7 @@ class ViernesButton extends ConsumerWidget {
         );
 
       case ViernesButtonType.accent:
-        return ButtonColors(
+        return const ButtonColors(
           backgroundColor: ViernesColors.accent,
           foregroundColor: Colors.black,
           borderColor: ViernesColors.accent,
@@ -393,7 +393,7 @@ class ViernesButton extends ConsumerWidget {
         );
 
       case ViernesButtonType.danger:
-        return ButtonColors(
+        return const ButtonColors(
           backgroundColor: ViernesColors.danger,
           foregroundColor: Colors.white,
           borderColor: ViernesColors.danger,
@@ -401,7 +401,7 @@ class ViernesButton extends ConsumerWidget {
         );
 
       case ViernesButtonType.success:
-        return ButtonColors(
+        return const ButtonColors(
           backgroundColor: ViernesColors.success,
           foregroundColor: Colors.white,
           borderColor: ViernesColors.success,

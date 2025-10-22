@@ -359,7 +359,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                     color: ViernesColors.success.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle_outline,
                     size: 80,
                     color: ViernesColors.success,

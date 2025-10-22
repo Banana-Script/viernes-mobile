@@ -1,134 +1,113 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider_pkg;
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/viernes_colors.dart';
-import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
-import '../../../../shared/widgets/viernes_card.dart';
-import '../../../../shared/widgets/viernes_button.dart';
+import '../../../../core/theme/theme_manager.dart';
+import '../../../../shared/widgets/viernes_background.dart';
+import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
+import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../../../auth/presentation/providers/auth_provider.dart' as auth_provider;
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = ref.watch(isDarkModeProvider);
+    final themeMode = ref.watch(themeManagerProvider);
 
     return Scaffold(
-      backgroundColor: ViernesColors.getControlBackground(isDark),
-      appBar: AppBar(
-        title: Text(
-          'Profile',
-          style: ViernesTextStyles.h3.copyWith(
-            color: ViernesColors.getTextColor(isDark),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: ViernesColors.getControlBackground(isDark),
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
-      body: Consumer<auth_provider.AuthProvider>(
-        builder: (context, authProvider, child) {
-          final user = authProvider.user;
+      body: ViernesBackground(
+        child: SafeArea(
+          child: provider_pkg.Consumer<auth_provider.AuthProvider>(
+            builder: (context, authProvider, child) {
+              final user = authProvider.user;
 
-          return SingleChildScrollView(
-            padding: ViernesSpacing.screenPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ViernesSpacing.spaceXl,
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Header
+                    _buildHeader(isDark),
 
-                // Profile Header Card
-                ViernesCard.filled(
-                  backgroundColor: isDark
-                      ? ViernesColors.secondary.withValues(alpha: 0.1)
-                      : ViernesColors.primary.withValues(alpha: 0.05),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: ViernesColors.viernesGradient,
-                          borderRadius: BorderRadius.circular(ViernesSpacing.radiusFull),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 50,
-                        ),
-                      ),
-                      ViernesSpacing.spaceLg,
-                      Text(
-                        user?.displayName ?? 'User',
-                        style: ViernesTextStyles.h2.copyWith(
-                          color: isDark ? Colors.white : ViernesColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      ViernesSpacing.spaceXs,
-                      Text(
-                        user?.email ?? '',
-                        style: ViernesTextStyles.bodyLarge.copyWith(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.7)
-                              : ViernesColors.primary.withValues(alpha: 0.7),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
+                    const SizedBox(height: 24),
 
-                ViernesSpacing.spaceXxl,
-
-                // Account Information Card
-                ViernesCard.elevated(
-                  child: user != null
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Account Information',
-                              style: ViernesTextStyles.h5.copyWith(
-                                color: isDark ? Colors.white : ViernesColors.primary,
-                                fontWeight: FontWeight.w600,
+                    // User Info Card
+                    ViernesGlassmorphismCard(
+                      borderRadius: 24,
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          // User avatar with gradient
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  ViernesColors.secondary.withValues(alpha: 0.8),
+                                  ViernesColors.accent.withValues(alpha: 0.8),
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark
+                                    ? ViernesColors.accent.withValues(alpha: 0.3)
+                                    : ViernesColors.primary.withValues(alpha: 0.3),
+                                width: 3,
                               ),
                             ),
-                            ViernesSpacing.spaceMd,
-                            _InfoRow(
-                              label: 'Email',
-                              value: user.email,
-                              icon: Icons.email,
-                            ),
-                            ViernesSpacing.spaceMd,
-
-                            if (user.displayName != null) ...[
-                              _InfoRow(
-                                label: 'Name',
-                                value: user.displayName!,
-                                icon: Icons.person,
+                            child: Center(
+                              child: Text(
+                                (user != null && user.email.isNotEmpty)
+                                    ? user.email[0].toUpperCase()
+                                    : 'U',
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black,
+                                ),
                               ),
-                              ViernesSpacing.spaceMd,
-                            ],
-
-                            _InfoRow(
-                              label: 'User ID',
-                              value: user.uid,
-                              icon: Icons.fingerprint,
                             ),
-                            ViernesSpacing.spaceMd,
+                          ),
+                          const SizedBox(height: 20),
 
-                            // Email Verification Status
+                          // User name
+                          Text(
+                            user?.displayName ?? 'User',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // User email
+                          Text(
+                            user?.email ?? 'No email',
+                            style: ViernesTextStyles.bodyText.copyWith(
+                              color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Email verification badge
+                          if (user != null)
                             Container(
-                              padding: ViernesSpacing.all(ViernesSpacing.sm),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: user.emailVerified
-                                    ? ViernesColors.success.withValues(alpha: 0.1)
-                                    : ViernesColors.warning.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+                                    ? ViernesColors.success.withValues(alpha: 0.15)
+                                    : ViernesColors.warning.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: user.emailVerified
                                       ? ViernesColors.success
@@ -137,20 +116,21 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ),
                               child: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    user.emailVerified ? Icons.verified : Icons.warning,
+                                    user.emailVerified ? Icons.verified : Icons.warning_amber,
                                     color: user.emailVerified
                                         ? ViernesColors.success
                                         : ViernesColors.warning,
-                                    size: 20,
+                                    size: 16,
                                   ),
-                                  ViernesSpacing.hSpaceSm,
+                                  const SizedBox(width: 8),
                                   Text(
                                     user.emailVerified
-                                        ? 'Email Verified'
-                                        : 'Email Not Verified',
-                                    style: ViernesTextStyles.bodyText.copyWith(
+                                        ? AppStrings.emailVerified
+                                        : AppStrings.emailNotVerified,
+                                    style: ViernesTextStyles.bodySmall.copyWith(
                                       color: user.emailVerified
                                           ? ViernesColors.success
                                           : ViernesColors.warning,
@@ -160,174 +140,385 @@ class ProfilePage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ],
-                        )
-                      : const Center(child: CircularProgressIndicator()),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Settings Card
+                    ViernesGlassmorphismCard(
+                      borderRadius: 24,
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppStrings.settings,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Theme selector
+                          _buildThemeSelector(context, ref, isDark, themeMode),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Sign out button
+                    Semantics(
+                      label: AppStrings.signOutButton,
+                      button: true,
+                      child: ViernesGradientButton(
+                        text: AppStrings.signOut,
+                        onPressed: () => _showSignOutDialog(context, authProvider),
+                        isLoading: authProvider.status == auth_provider.AuthStatus.loading,
+                        height: 56,
+                        borderRadius: 14,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
                 ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
-                ViernesSpacing.spaceXxl,
+  Widget _buildHeader(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+      child: Center(
+        child: Text(
+          AppStrings.profile,
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+            letterSpacing: 1.2,
+          ),
+        ),
+      ),
+    );
+  }
 
-                // Actions Card
-                ViernesCard.outlined(
+  Widget _buildThemeSelector(BuildContext context, WidgetRef ref, bool isDark, ThemeMode currentTheme) {
+    return Column(
+      children: [
+        // Light mode option
+        _buildThemeOption(
+          context: context,
+          ref: ref,
+          isDark: isDark,
+          themeMode: ThemeMode.light,
+          currentTheme: currentTheme,
+          icon: Icons.light_mode,
+          title: AppStrings.lightMode,
+          description: AppStrings.lightModeDesc,
+        ),
+        const SizedBox(height: 12),
+
+        // Dark mode option
+        _buildThemeOption(
+          context: context,
+          ref: ref,
+          isDark: isDark,
+          themeMode: ThemeMode.dark,
+          currentTheme: currentTheme,
+          icon: Icons.dark_mode,
+          title: AppStrings.darkMode,
+          description: AppStrings.darkModeDesc,
+        ),
+        const SizedBox(height: 12),
+
+        // System mode option
+        _buildThemeOption(
+          context: context,
+          ref: ref,
+          isDark: isDark,
+          themeMode: ThemeMode.system,
+          currentTheme: currentTheme,
+          icon: Icons.brightness_auto,
+          title: AppStrings.autoMode,
+          description: AppStrings.autoModeDesc,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildThemeOption({
+    required BuildContext context,
+    required WidgetRef ref,
+    required bool isDark,
+    required ThemeMode themeMode,
+    required ThemeMode currentTheme,
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    final isSelected = currentTheme == themeMode;
+
+    return Semantics(
+      label: '${AppStrings.themeSelectorPrefix}$title',
+      value: isSelected ? AppStrings.selected : AppStrings.notSelected,
+      button: true,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? ViernesColors.accent : ViernesColors.secondary).withValues(alpha: 0.15)
+              : (isDark ? ViernesColors.accent : ViernesColors.primary).withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? (isDark ? ViernesColors.accent : ViernesColors.secondary)
+                : (isDark ? ViernesColors.accent : ViernesColors.primary).withValues(alpha: 0.1),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () async {
+              try {
+                final themeManager = ref.read(themeManagerProvider.notifier);
+                await themeManager.setThemeMode(themeMode);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${AppStrings.themeChangeError}: $e'),
+                      backgroundColor: ViernesColors.danger,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                // Icon
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? LinearGradient(
+                            colors: [
+                              ViernesColors.secondary.withValues(alpha: 0.6),
+                              ViernesColors.accent.withValues(alpha: 0.6),
+                            ],
+                          )
+                        : null,
+                    color: isSelected
+                        ? null
+                        : (isDark ? ViernesColors.accent : ViernesColors.primary)
+                            .withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected
+                        ? Colors.black
+                        : (isDark ? ViernesColors.accent : ViernesColors.primary),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                // Title and description
+                Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Settings',
-                        style: ViernesTextStyles.h5.copyWith(
-                          color: isDark ? Colors.white : ViernesColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      ViernesSpacing.spaceSm,
-                      Text(
-                        'Manage your account settings and preferences.',
+                        title,
                         style: ViernesTextStyles.bodyText.copyWith(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.7)
-                              : ViernesColors.primary.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w600,
+                          color: ViernesColors.getTextColor(isDark),
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                      ViernesSpacing.spaceLg,
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ViernesButton.secondary(
-                              text: 'Settings',
-                              icon: Icons.settings,
-                              size: ViernesButtonSize.small,
-                              onPressed: () {
-                                // TODO: Navigate to settings
-                              },
-                            ),
-                          ),
-                          ViernesSpacing.hSpaceMd,
-                          Expanded(
-                            child: ViernesButton.text(
-                              text: 'Help',
-                              icon: Icons.help,
-                              size: ViernesButtonSize.small,
-                              onPressed: () {
-                                // TODO: Navigate to help
-                              },
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: ViernesTextStyles.bodySmall.copyWith(
+                          color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
+                        ),
                       ),
                     ],
                   ),
                 ),
 
-                ViernesSpacing.spaceXxl,
-
-                // Sign out button
-                ViernesButton.danger(
-                  text: 'Sign Out',
-                  isLoading: authProvider.status == auth_provider.AuthStatus.loading,
-                  onPressed: () => _showSignOutDialog(context),
-                  icon: Icons.logout,
-                ),
-
-                ViernesSpacing.spaceLg,
-              ],
+                // Selected indicator
+                if (isSelected)
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          ViernesColors.secondary.withValues(alpha: 0.8),
+                          ViernesColors.accent.withValues(alpha: 0.8),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                  )
+                else
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: (isDark ? ViernesColors.accent : ViernesColors.primary)
+                            .withValues(alpha: 0.3),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  void _showSignOutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.read<auth_provider.AuthProvider>().signOut();
-              },
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData? icon;
-
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  void _showSignOutDialog(BuildContext context, auth_provider.AuthProvider authProvider) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      padding: ViernesSpacing.all(ViernesSpacing.sm),
-      decoration: BoxDecoration(
-        color: isDark
-            ? ViernesColors.primary.withValues(alpha: 0.05)
-            : ViernesColors.primaryLight.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
-      ),
-      child: Row(
-        children: [
-          if (icon != null) ...[
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: (isDark ? ViernesColors.secondary : ViernesColors.primary).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(ViernesSpacing.radiusSm),
-              ),
-              child: Icon(
-                icon!,
-                size: 16,
-                color: isDark ? ViernesColors.secondary : ViernesColors.primary,
-              ),
-            ),
-            ViernesSpacing.hSpaceSm,
-          ],
-          Expanded(
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      builder: (context) => provider_pkg.Consumer<auth_provider.AuthProvider>(
+        builder: (context, provider, child) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: ViernesGlassmorphismCard(
+            borderRadius: 24,
+            padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  label,
-                  style: ViernesTextStyles.bodySmall.copyWith(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.7)
-                        : ViernesColors.primary.withValues(alpha: 0.7),
-                    fontWeight: FontWeight.w600,
+                // Icon
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        ViernesColors.danger.withValues(alpha: 0.3),
+                        ViernesColors.warning.withValues(alpha: 0.3),
+                      ],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    size: 32,
+                    color: ViernesColors.danger,
                   ),
                 ),
-                ViernesSpacing.spaceXs,
+                const SizedBox(height: 20),
+
+                // Title
                 Text(
-                  value,
-                  style: ViernesTextStyles.bodyText.copyWith(
-                    color: isDark ? Colors.white : ViernesColors.primary,
+                  AppStrings.signOutConfirmTitle,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: ViernesColors.getTextColor(isDark),
                   ),
+                ),
+                const SizedBox(height: 12),
+
+                // Message
+                Text(
+                  AppStrings.signOutConfirmMessage,
+                  style: ViernesTextStyles.bodyText.copyWith(
+                    color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                              .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                                .withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => Navigator.of(context).pop(),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Center(
+                              child: Text(
+                                AppStrings.cancel,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: ViernesColors.getTextColor(isDark),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ViernesGradientButton(
+                        text: AppStrings.confirm,
+                        onPressed: provider.status == auth_provider.AuthStatus.loading
+                            ? null
+                            : () {
+                                Navigator.of(context).pop();
+                                provider.signOut();
+                              },
+                        isLoading: provider.status == auth_provider.AuthStatus.loading,
+                        height: 48,
+                        borderRadius: 12,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

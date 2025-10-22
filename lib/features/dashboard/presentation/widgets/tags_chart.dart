@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 
 class TagsChart extends StatelessWidget {
   final Map<String, int> tags;
@@ -18,42 +19,47 @@ class TagsChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Card(
-      elevation: 2,
-      color: ViernesColors.getControlBackground(isDark),
-      child: Padding(
-        padding: const EdgeInsets.all(ViernesSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Conversation Tags',
-              style: ViernesTextStyles.h3.copyWith(
-                color: ViernesColors.getTextColor(isDark),
-                fontWeight: FontWeight.bold,
-              ),
+    return ViernesGlassmorphismCard(
+      borderRadius: 24,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Conversation Tags',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+              letterSpacing: 0.5,
             ),
-            const SizedBox(height: ViernesSpacing.md),
-            SizedBox(
-              height: 200,
-              child: isLoading
-                  ? _buildLoadingChart()
-                  : tags.isEmpty
-                      ? _buildEmptyChart(isDark)
-                      : _buildChart(isDark),
-            ),
-            const SizedBox(height: ViernesSpacing.md),
-            if (!isLoading && tags.isNotEmpty) _buildLegend(isDark),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 200,
+            child: isLoading
+                ? _buildLoadingChart(context)
+                : tags.isEmpty
+                    ? _buildEmptyChart(isDark)
+                    : _buildChart(isDark),
+          ),
+          const SizedBox(height: 20),
+          if (!isLoading && tags.isNotEmpty) _buildLegend(isDark),
+        ],
       ),
     );
   }
 
-  Widget _buildLoadingChart() {
-    return const Center(
-      child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(ViernesColors.primary),
+  Widget _buildLoadingChart(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Center(
+      child: SizedBox(
+        width: 32,
+        height: 32,
+        child: CircularProgressIndicator(
+          color: isDark ? ViernesColors.accent : ViernesColors.primary,
+          strokeWidth: 3,
+        ),
       ),
     );
   }
