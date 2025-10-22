@@ -71,3 +71,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  assets:
+    - assets/images/auth/logo.png
+    - assets/images/auth/powered-by-2.png

@@ -4,6 +4,7 @@ import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
+import '../../domain/usecases/reset_password_usecase.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
@@ -12,12 +13,14 @@ class AuthProvider extends ChangeNotifier {
   final SignInUseCase signInUseCase;
   final SignUpUseCase signUpUseCase;
   final SignOutUseCase signOutUseCase;
+  final ResetPasswordUseCase resetPasswordUseCase;
 
   AuthProvider({
     required this.getCurrentUserUseCase,
     required this.signInUseCase,
     required this.signUpUseCase,
     required this.signOutUseCase,
+    required this.resetPasswordUseCase,
   }) {
     _initializeAuthState();
   }
@@ -99,6 +102,23 @@ class AuthProvider extends ChangeNotifier {
       await signOutUseCase();
 
       _user = null;
+      _status = AuthStatus.unauthenticated;
+      _errorMessage = null;
+
+      notifyListeners();
+    } catch (e) {
+      _status = AuthStatus.error;
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      notifyListeners();
+    }
+  }
+
+  Future<void> resetPassword({required String email}) async {
+    try {
+      _setLoading();
+
+      await resetPasswordUseCase(email: email);
+
       _status = AuthStatus.unauthenticated;
       _errorMessage = null;
 

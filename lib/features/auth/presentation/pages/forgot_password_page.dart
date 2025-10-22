@@ -3,29 +3,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/viernes_input.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../providers/auth_provider.dart';
-import 'register_page.dart';
-import 'forgot_password_page.dart';
 
-class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+class ForgotPasswordPage extends ConsumerStatefulWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
-  ConsumerState<LoginPage> createState() => _LoginPageState();
+  ConsumerState<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  bool _emailSent = false;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
+  }
+
+  /// Masks email for security (e.g., "user@example.com" -> "u***@example.com")
+  String _maskEmail(String email) {
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+
+    final username = parts[0];
+    final domain = parts[1];
+
+    if (username.isEmpty) return email;
+
+    final maskedUsername = username.length > 1
+        ? '${username[0]}${'*' * (username.length - 1)}'
+        : username;
+
+    return '$maskedUsername@$domain';
   }
 
   @override
@@ -33,22 +48,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final isDark = ref.watch(isDarkModeProvider);
     final authProvider = provider_pkg.Provider.of<AuthProvider>(context);
 
-    // Show error message if there's an error
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (authProvider.status == AuthStatus.error && authProvider.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authProvider.errorMessage!),
-            backgroundColor: ViernesColors.danger,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-        authProvider.clearError();
-      }
-    });
+    // Show success message when email is sent
+    if (_emailSent) {
+      return _buildSuccessScreen(isDark);
+    }
 
     return Scaffold(
       body: Container(
@@ -97,7 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                     const SizedBox(height: 24),
 
-                    // Auth card with glassmorphism
+                    // Forgot Password Card with glassmorphism
                     Container(
                       decoration: BoxDecoration(
                         color: isDark
@@ -128,7 +131,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           children: [
                             // Title
                             Text(
-                              'INICIAR SESIÓN',
+                              'RECUPERAR CONTRASEÑA',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w700,
@@ -141,7 +144,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                             // Subtitle
                             Text(
-                              'Ingresa tu email y contraseña para continuar',
+                              'Ingresa tu email y te enviaremos instrucciones para restablecer tu contraseña',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -164,56 +167,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 size: 20,
                               ),
                               enabled: authProvider.status != AuthStatus.loading,
+                              validator: Validators.email,
                             ),
 
-                            const SizedBox(height: 20),
-
-                            // Password input
-                            ViernesInput.password(
-                              controller: _passwordController,
-                              labelText: 'Contraseña',
-                              hintText: 'Tu contraseña',
-                              prefixIcon: Icon(
-                                Icons.lock_outline,
-                                color: isDark ? ViernesColors.accent : ViernesColors.primary,
-                                size: 20,
-                              ),
-                              enabled: authProvider.status != AuthStatus.loading,
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            // Forgot password link
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: authProvider.status == AuthStatus.loading
-                                    ? null
-                                    : () => _handleForgotPassword(),
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: const Size(50, 30),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: Text(
-                                  '¿Olvidaste tu contraseña?',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDark ? ViernesColors.accent : ViernesColors.primary,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 24),
 
                             // Submit button with gradient
                             ViernesGradientButton(
-                              text: 'INICIAR SESIÓN',
+                              text: 'ENVIAR INSTRUCCIONES',
                               onPressed: authProvider.status == AuthStatus.loading
                                   ? null
-                                  : () => _handleLogin(authProvider),
+                                  : () async => await _handleForgotPassword(authProvider),
                               isLoading: authProvider.status == AuthStatus.loading,
                             ),
 
@@ -229,12 +193,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                             const SizedBox(height: 24),
 
-                            // Create account link
+                            // Back to login link
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '¿No tienes cuenta? ',
+                                  '¿Recordaste tu contraseña? ',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: isDark
@@ -245,14 +209,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 TextButton(
                                   onPressed: authProvider.status == AuthStatus.loading
                                       ? null
-                                      : () => _goToRegister(),
+                                      : () => Navigator.of(context).pop(),
                                   style: TextButton.styleFrom(
                                     padding: EdgeInsets.zero,
                                     minimumSize: const Size(50, 30),
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: Text(
-                                    'CREAR CUENTA',
+                                    'INICIAR SESIÓN',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
@@ -270,6 +234,49 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                     const SizedBox(height: 40),
                   ],
+                ),
+              ),
+
+              // Back button (top-left)
+              Positioned(
+                top: 16,
+                left: 16,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
+                        : Colors.white.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
+                          : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Center(
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
 
@@ -324,69 +331,167 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  void _handleLogin(AuthProvider authProvider) {
-    // Validate inputs
-    if (_emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Por favor ingresa tu email'),
-          backgroundColor: ViernesColors.danger,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildSuccessScreen(bool isDark) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [const Color(0xFF060818), const Color(0xFF0a0f1e)]
+                : [const Color(0xFFfafafa), const Color(0xFFffffff)],
           ),
         ),
-      );
-      return;
-    }
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Success icon
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: ViernesColors.success.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.check_circle_outline,
+                    size: 80,
+                    color: ViernesColors.success,
+                  ),
+                ),
 
-    if (!RegExp(r'^[\w\+\-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text.trim())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Por favor ingresa un email válido'),
-          backgroundColor: ViernesColors.danger,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 32),
+
+                // Success title
+                Text(
+                  '¡Email Enviado!',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Success message
+                Text(
+                  'Hemos enviado las instrucciones para restablecer tu contraseña a:',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDark
+                        ? ViernesColors.textDark.withValues(alpha: 0.7)
+                        : ViernesColors.textLight.withValues(alpha: 0.7),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  _maskEmail(_emailController.text.trim()),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 32),
+
+                // Info box
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
+                        : Colors.white.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
+                          : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 32,
+                        color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isDark
+                              ? ViernesColors.textDark.withValues(alpha: 0.7)
+                              : ViernesColors.textLight.withValues(alpha: 0.7),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Si no recibes el email en unos minutos, revisa tu carpeta de spam.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? ViernesColors.textDark.withValues(alpha: 0.5)
+                              : ViernesColors.textLight.withValues(alpha: 0.5),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 32),
+
+                // Back to login button
+                ViernesGradientButton(
+                  text: 'VOLVER AL LOGIN',
+                  onPressed: () => Navigator.of(context).pop(),
+                  isLoading: false,
+                ),
+              ],
+            ),
           ),
         ),
-      );
-      return;
-    }
-
-    if (_passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Por favor ingresa tu contraseña'),
-          backgroundColor: ViernesColors.danger,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-      return;
-    }
-
-    authProvider.signIn(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
-  }
-
-  void _handleForgotPassword() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const ForgotPasswordPage(),
       ),
     );
   }
 
-  void _goToRegister() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const RegisterPage(),
-      ),
-    );
+  Future<void> _handleForgotPassword(AuthProvider authProvider) async {
+    // Dismiss keyboard
+    FocusScope.of(context).unfocus();
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    await authProvider.resetPassword(email: _emailController.text.trim());
+
+    // SECURITY: Always show success screen to prevent user enumeration
+    // This prevents attackers from discovering which emails are registered
+    if (mounted) {
+      setState(() {
+        _emailSent = true;
+      });
+    }
+
+    // Clear any errors silently
+    if (authProvider.status == AuthStatus.error) {
+      authProvider.clearError();
+    }
   }
 }

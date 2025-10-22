@@ -38,6 +38,8 @@ class ViernesSpacing {
   static const double radiusLg = 8.0;     // Large radius
   static const double radiusXl = 12.0;    // Extra large radius
   static const double radiusXxl = 16.0;   // 2X large radius
+  static const double radius14 = 14.0;    // Input/Button radius (Figma spec)
+  static const double radius24 = 24.0;    // Card radius (Figma spec)
   static const double radiusFull = 50.0;  // Circular/pill shape
 
   // Component-specific spacing
@@ -59,6 +61,8 @@ class ViernesSpacing {
   );
 
   // Input field spacing
+  static const double inputPrefixIconSpace = 52.0; // Space for prefix icon (Figma spec)
+
   static const EdgeInsets inputPadding = EdgeInsets.symmetric(
     horizontal: md,
     vertical: md,

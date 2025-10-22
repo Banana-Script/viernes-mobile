@@ -258,25 +258,41 @@ class _ViernesInputState extends State<ViernesInput> {
           ),
           ViernesSpacing.spaceXs,
         ],
-        TextFormField(
-          controller: widget.controller,
-          focusNode: _focusNode,
-          enabled: widget.enabled,
-          readOnly: widget.readOnly,
-          autofocus: widget.autofocus,
-          maxLines: widget.isPassword ? 1 : widget.maxLines,
-          maxLength: widget.maxLength,
-          keyboardType: widget.keyboardType,
-          textInputAction: widget.textInputAction,
-          textCapitalization: widget.textCapitalization,
-          inputFormatters: widget.inputFormatters,
-          validator: widget.validator,
-          onChanged: widget.onChanged,
-          onTap: widget.onTap,
-          onFieldSubmitted: widget.onSubmitted,
-          obscureText: widget.isPassword && !_isPasswordVisible,
-          style: _getTextStyle(isDark),
-          decoration: _buildInputDecoration(theme, isDark),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(_getBorderRadius()),
+            boxShadow: _hasFocus
+                ? [
+                    BoxShadow(
+                      color: isDark
+                          ? const Color(0x1A51f5f8) // rgba(81, 245, 248, 0.1)
+                          : const Color(0x14374151), // rgba(55, 65, 81, 0.08)
+                      blurRadius: 0,
+                      spreadRadius: 4,
+                    ),
+                  ]
+                : null,
+          ),
+          child: TextFormField(
+            controller: widget.controller,
+            focusNode: _focusNode,
+            enabled: widget.enabled,
+            readOnly: widget.readOnly,
+            autofocus: widget.autofocus,
+            maxLines: widget.isPassword ? 1 : widget.maxLines,
+            maxLength: widget.maxLength,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
+            textCapitalization: widget.textCapitalization,
+            inputFormatters: widget.inputFormatters,
+            validator: widget.validator,
+            onChanged: widget.onChanged,
+            onTap: widget.onTap,
+            onFieldSubmitted: widget.onSubmitted,
+            obscureText: widget.isPassword && !_isPasswordVisible,
+            style: _getTextStyle(isDark),
+            decoration: _buildInputDecoration(theme, isDark),
+          ),
         ),
         if (widget.helperText != null || widget.errorText != null) ...[
           ViernesSpacing.spaceXs,
@@ -316,7 +332,15 @@ class _ViernesInputState extends State<ViernesInput> {
       ),
       filled: widget.variant == ViernesInputVariant.filled,
       fillColor: fillColor,
-      prefixIcon: widget.prefixIcon,
+      prefixIcon: widget.prefixIcon != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 16, right: 0),
+              child: widget.prefixIcon,
+            )
+          : null,
+      prefixIconConstraints: widget.prefixIcon != null
+          ? const BoxConstraints(minWidth: 36, minHeight: 20)
+          : null,
       suffixIcon: _buildSuffixIcon(),
       prefixText: widget.prefixText,
       suffixText: widget.suffixText,
@@ -364,7 +388,7 @@ class _ViernesInputState extends State<ViernesInput> {
           borderRadius: radius,
           borderSide: BorderSide(
             color: color,
-            width: focused ? 2.0 : 1.0,
+            width: 2.0, // Always 2px to match Figma design
           ),
         );
       case ViernesInputVariant.underlined:
@@ -385,25 +409,21 @@ class _ViernesInputState extends State<ViernesInput> {
   }
 
   EdgeInsets _getPadding() {
-    switch (widget.size) {
-      case ViernesInputSize.small:
-        return ViernesSpacing.inputPaddingSmall;
-      case ViernesInputSize.medium:
-        return ViernesSpacing.inputPadding;
-      case ViernesInputSize.large:
-        return ViernesSpacing.inputPaddingLarge;
+    // Match Figma design: space for prefix icon on left, standard padding elsewhere
+    if (widget.prefixIcon != null) {
+      return const EdgeInsets.only(
+        left: ViernesSpacing.inputPrefixIconSpace,
+        right: ViernesSpacing.md,
+        top: ViernesSpacing.md,
+        bottom: ViernesSpacing.md,
+      );
     }
+    return const EdgeInsets.all(ViernesSpacing.md);
   }
 
   double _getBorderRadius() {
-    switch (widget.size) {
-      case ViernesInputSize.small:
-        return ViernesSpacing.radiusSm;
-      case ViernesInputSize.medium:
-        return ViernesSpacing.radiusMd;
-      case ViernesInputSize.large:
-        return ViernesSpacing.radiusLg;
-    }
+    // Always use 14px radius to match Figma design
+    return ViernesSpacing.radius14;
   }
 
   TextStyle _getTextStyle(bool isDark) {

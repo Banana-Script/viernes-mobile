@@ -45,6 +45,10 @@ class ViernesColors {
   static const Color backgroundDark = Color(0xFF060818);     // Page background
   static const Color panelDark = Color(0xFF000000);          // Panel/card background
 
+  // Text Colors
+  static const Color textLight = Color(0xFF374151);          // Light theme text
+  static const Color textDark = Color(0xFFE0E0E0);           // Dark theme text
+
   // Gradient Colors
   /// Viernes brand gradient: from dark gray to bright yellow
   static const LinearGradient viernesGradient = LinearGradient(
