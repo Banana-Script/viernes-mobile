@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../features/auth/data/datasources/firebase_auth_datasource.dart';
+import '../../features/auth/data/datasources/user_remote_datasource.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/data/repositories/user_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/repositories/user_repository.dart';
 import '../../features/auth/domain/usecases/get_current_user_usecase.dart';
 import '../../features/auth/domain/usecases/sign_in_usecase.dart';
 import '../../features/auth/domain/usecases/sign_out_usecase.dart';
 import '../../features/auth/domain/usecases/reset_password_usecase.dart';
+import '../../features/auth/domain/usecases/get_user_profile_usecase.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 
 // Dashboard imports
@@ -23,11 +27,14 @@ class DependencyInjection {
   // Auth dependencies
   static late final FirebaseAuth _firebaseAuth;
   static late final FirebaseAuthDataSource _authDataSource;
+  static late final UserRemoteDataSource _userRemoteDataSource;
   static late final AuthRepository _authRepository;
+  static late final UserRepository _userRepository;
   static late final GetCurrentUserUseCase _getCurrentUserUseCase;
   static late final SignInUseCase _signInUseCase;
   static late final SignOutUseCase _signOutUseCase;
   static late final ResetPasswordUseCase _resetPasswordUseCase;
+  static late final GetUserProfileUseCase _getUserProfileUseCase;
   static late final auth_provider.AuthProvider _authProvider;
 
   // Shared dependencies
@@ -54,17 +61,23 @@ class DependencyInjection {
   }
 
   static void _initializeAuth() {
+    // Shared services (needed for user remote data source)
+    _httpClient = HttpClient();
+
     // Data sources
     _authDataSource = FirebaseAuthDataSourceImpl(firebaseAuth: _firebaseAuth);
+    _userRemoteDataSource = UserRemoteDataSourceImpl(httpClient: _httpClient);
 
     // Repositories
     _authRepository = AuthRepositoryImpl(dataSource: _authDataSource);
+    _userRepository = UserRepositoryImpl(remoteDataSource: _userRemoteDataSource);
 
     // Use cases
     _getCurrentUserUseCase = GetCurrentUserUseCase(_authRepository);
     _signInUseCase = SignInUseCase(_authRepository);
     _signOutUseCase = SignOutUseCase(_authRepository);
     _resetPasswordUseCase = ResetPasswordUseCase(repository: _authRepository);
+    _getUserProfileUseCase = GetUserProfileUseCase(_userRepository);
 
     // Providers
     _authProvider = auth_provider.AuthProvider(
@@ -72,12 +85,12 @@ class DependencyInjection {
       signInUseCase: _signInUseCase,
       signOutUseCase: _signOutUseCase,
       resetPasswordUseCase: _resetPasswordUseCase,
+      getUserProfileUseCase: _getUserProfileUseCase,
     );
   }
 
   static void _initializeDashboard() {
-    // Shared services
-    _httpClient = HttpClient();
+    // HttpClient is already initialized in _initializeAuth()
 
     // Data sources
     _dashboardRemoteDataSource = DashboardRemoteDataSourceImpl(httpClient: _httpClient);
