@@ -6,6 +6,7 @@ import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
 import '../../domain/usecases/get_user_profile_usecase.dart';
+import '../../domain/usecases/change_agent_availability_usecase.dart';
 import '../../../../core/utils/logger.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
@@ -16,6 +17,7 @@ class AuthProvider extends ChangeNotifier {
   final SignOutUseCase signOutUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
   final GetUserProfileUseCase getUserProfileUseCase;
+  final ChangeAgentAvailabilityUseCase changeAgentAvailabilityUseCase;
 
   AuthProvider({
     required this.getCurrentUserUseCase,
@@ -23,6 +25,7 @@ class AuthProvider extends ChangeNotifier {
     required this.signOutUseCase,
     required this.resetPasswordUseCase,
     required this.getUserProfileUseCase,
+    required this.changeAgentAvailabilityUseCase,
   }) {
     _initializeAuthState();
   }
@@ -32,12 +35,14 @@ class AuthProvider extends ChangeNotifier {
   String? _errorMessage;
   StreamSubscription<UserEntity?>? _authStateSubscription;
   bool _isLoadingProfile = false;
+  bool _isTogglingAvailability = false;
 
   AuthStatus get status => _status;
   UserEntity? get user => _user;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _status == AuthStatus.authenticated && _user != null;
   bool get isLoadingProfile => _isLoadingProfile;
+  bool get isTogglingAvailability => _isTogglingAvailability;
 
   void _initializeAuthState() {
     _authStateSubscription = getCurrentUserUseCase.authStateChanges.listen((user) async {
@@ -60,10 +65,10 @@ class AuthProvider extends ChangeNotifier {
       _status = AuthStatus.loading;
       notifyListeners();
 
-      AppLogger.info('Loading user profile from backend for uid: ${firebaseUser.uid}', tag: 'AuthProvider');
+      AppLogger.info('Loading user profile from backend', tag: 'AuthProvider');
 
-      // Fetch complete profile from backend
-      final completeProfile = await getUserProfileUseCase.call(firebaseUser.uid);
+      // Fetch complete profile from backend (no UID needed, uses token)
+      final completeProfile = await getUserProfileUseCase.call();
 
       _user = completeProfile;
       _status = AuthStatus.authenticated;
@@ -80,6 +85,58 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = 'Could not load complete profile. Some features may be limited.';
     } finally {
       _isLoadingProfile = false;
+      notifyListeners();
+    }
+  }
+
+  /// Toggles the agent's availability status
+  /// This updates the status on the backend and refreshes the user profile
+  Future<void> toggleAvailability() async {
+    if (_user == null) {
+      AppLogger.warning('Cannot toggle availability: No user logged in', tag: 'AuthProvider');
+      return;
+    }
+
+    // Determine the current status and calculate the new one
+    final currentStatus = _user!.organizationalStatus;
+    if (currentStatus == null) {
+      AppLogger.warning('Cannot toggle availability: User has no organizational status', tag: 'AuthProvider');
+      _errorMessage = 'Unable to change availability. Profile incomplete.';
+      notifyListeners();
+      return;
+    }
+
+    // Current status "010" = Active, "020" = Inactive
+    // Toggle to the opposite
+    final isCurrentlyActive = currentStatus.isActive;
+    final newAvailability = !isCurrentlyActive;
+
+    try {
+      _isTogglingAvailability = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      AppLogger.info(
+        'Toggling availability from ${isCurrentlyActive ? "active" : "inactive"} to ${newAvailability ? "active" : "inactive"}',
+        tag: 'AuthProvider',
+      );
+
+      // Call the use case to change availability
+      await changeAgentAvailabilityUseCase.call(newAvailability);
+
+      // After successful change, refresh the user profile to get updated status
+      AppLogger.info('Availability changed successfully, refreshing profile', tag: 'AuthProvider');
+      final updatedProfile = await getUserProfileUseCase.call();
+
+      _user = updatedProfile;
+      _errorMessage = null;
+
+      AppLogger.info('Profile refreshed after availability change', tag: 'AuthProvider');
+    } catch (e) {
+      AppLogger.error('Failed to toggle availability: $e', tag: 'AuthProvider');
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      _isTogglingAvailability = false;
       notifyListeners();
     }
   }

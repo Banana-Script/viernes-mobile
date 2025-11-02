@@ -12,6 +12,7 @@ import 'core/di/dependency_injection.dart';
 import 'features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/home_page.dart';
+import 'features/dashboard/presentation/providers/dashboard_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,8 +48,15 @@ class ViernesApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeManagerProvider);
 
-    return provider.ChangeNotifierProvider<auth_provider.AuthProvider>(
-      create: (context) => DependencyInjection.authProvider,
+    return provider.MultiProvider(
+      providers: [
+        provider.ChangeNotifierProvider<auth_provider.AuthProvider>(
+          create: (context) => DependencyInjection.authProvider,
+        ),
+        provider.ChangeNotifierProvider<DashboardProvider>(
+          create: (context) => DependencyInjection.dashboardProvider,
+        ),
+      ],
       child: MaterialApp(
         title: AppConstants.appName,
         theme: AppTheme.lightTheme,

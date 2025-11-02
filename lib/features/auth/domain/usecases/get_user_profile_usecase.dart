@@ -6,11 +6,9 @@ class GetUserProfileUseCase {
 
   GetUserProfileUseCase(this._repository);
 
-  Future<UserEntity> call(String uid) async {
-    if (uid.isEmpty) {
-      throw Exception('User ID cannot be empty');
-    }
-
-    return await _repository.getUserProfile(uid);
+  /// Fetches the user profile from the backend
+  /// Uses the Firebase token for authentication (no UID needed)
+  Future<UserEntity> call() async {
+    return await _repository.getUserProfile();
   }
 }

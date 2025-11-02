@@ -4,8 +4,13 @@ import '../models/user_model.dart';
 
 abstract class UserRemoteDataSource {
   /// Fetches the complete user profile from the backend
-  /// Uses the Firebase UID to get the user data
-  Future<UserModel> getUserProfile(String uid);
+  /// Uses the Firebase token to identify the user via /users/me endpoint
+  Future<UserModel> getUserProfile();
+
+  /// Changes the agent availability status
+  /// userId: The database user ID (e.g., 660, NOT the organization_users.id)
+  /// isAvailable: true for active (010), false for inactive (020)
+  Future<void> changeAgentAvailability(int userId, bool isAvailable);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -15,13 +20,14 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       : _httpClient = httpClient ?? HttpClient();
 
   @override
-  Future<UserModel> getUserProfile(String uid) async {
+  Future<UserModel> getUserProfile() async {
     try {
-      // Using /users/{uid} endpoint as specified in the migration guide
-      final response = await _httpClient.dio.get('/users/$uid');
+      // Using /users/me endpoint - it uses the Bearer token to identify the user
+      final response = await _httpClient.dio.get('/users/me');
 
       if (response.statusCode == 200) {
-        return UserModel.fromJson(response.data);
+        // Parse the backend response with nested structure
+        return UserModel.fromBackendJson(response.data);
       } else {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -33,6 +39,31 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw _handleDioError(e, 'Failed to fetch user profile');
     } catch (e) {
       throw Exception('Unexpected error occurred while fetching user profile: $e');
+    }
+  }
+
+  @override
+  Future<void> changeAgentAvailability(int userId, bool isAvailable) async {
+    try {
+      // Endpoint: POST /organization_users/change_agent_availability/{userId}/{isAvailable}
+      // userId: The user.id from the database (e.g., 660)
+      // isAvailable: boolean (true/false)
+      final response = await _httpClient.dio.post(
+        '/organization_users/change_agent_availability/$userId/$isAvailable',
+        data: {}, // Empty body as specified
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201 && response.statusCode != 204) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          message: 'Failed to change agent availability',
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e, 'Failed to change agent availability');
+    } catch (e) {
+      throw Exception('Unexpected error occurred while changing agent availability: $e');
     }
   }
 

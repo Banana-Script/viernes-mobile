@@ -8,6 +8,7 @@ import '../../../../core/theme/theme_manager.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
+import '../../../../shared/widgets/viernes_availability_toggle.dart';
 import '../../../auth/presentation/providers/auth_provider.dart' as auth_provider;
 
 class ProfilePage extends ConsumerWidget {
@@ -77,7 +78,7 @@ class ProfilePage extends ConsumerWidget {
 
                           // User name
                           Text(
-                            user?.displayName ?? 'User',
+                            user?.fullname ?? user?.displayName ?? 'User',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
@@ -140,9 +141,62 @@ class ProfilePage extends ConsumerWidget {
                                 ],
                               ),
                             ),
+
+                          // Organizational Info (if available)
+                          if (user?.organizationalRole != null || user?.organizationalStatus != null) ...[
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            const SizedBox(height: 16),
+
+                            // Role badge
+                            if (user?.organizationalRole != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: ViernesColors.primary.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: ViernesColors.primary,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.badge,
+                                      color: ViernesColors.primary,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      user!.organizationalRole!.description,
+                                      style: ViernesTextStyles.bodySmall.copyWith(
+                                        color: ViernesColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
                         ],
                       ),
                     ),
+
+                    const SizedBox(height: 16),
+
+                    // Availability Toggle Card (only show if user has organizational status)
+                    if (user?.organizationalStatus != null)
+                      ViernesAvailabilityCard(
+                        isAvailable: user!.organizationalStatus!.isActive,
+                        isLoading: authProvider.isTogglingAvailability,
+                        onToggle: (_) => authProvider.toggleAvailability(),
+                        errorMessage: authProvider.errorMessage,
+                      ),
 
                     const SizedBox(height: 16),
 
