@@ -16,6 +16,8 @@ import '../widgets/customer_empty_state.dart';
 import '../widgets/customer_loading_skeleton.dart';
 import '../widgets/customer_error_state.dart';
 import '../widgets/customer_view_toggle.dart';
+import 'customer_detail_page.dart';
+import 'customer_form_page.dart';
 
 /// Customer List Page
 ///
@@ -30,6 +32,7 @@ import '../widgets/customer_view_toggle.dart';
 /// - Infinite scroll pagination
 /// - Loading, empty, and error states
 /// - FAB for adding new customer
+/// - Navigation to customer detail and forms
 ///
 /// Design Philosophy:
 /// - Follows Viernes glassmorphism aesthetic
@@ -90,33 +93,36 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   }
 
   void _onCustomerTap(CustomerEntity customer) {
-    // Navigate to customer detail page
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('View details for ${customer.name}'),
-        backgroundColor: ViernesColors.info,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomerDetailPage(
+          customerId: customer.id,
+          customer: customer, // For hero animation
         ),
-        margin: const EdgeInsets.all(ViernesSpacing.md),
       ),
-    );
+    ).then((result) {
+      // Refresh list if customer was updated or deleted
+      if (result == true) {
+        _onRefresh();
+      }
+    });
   }
 
   void _onAddCustomer() {
-    // Navigate to add customer page
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Add customer functionality coming soon'),
-        backgroundColor: ViernesColors.info,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CustomerFormPage(
+          mode: CustomerFormMode.add,
         ),
-        margin: const EdgeInsets.all(ViernesSpacing.md),
       ),
-    );
+    ).then((result) {
+      // Refresh list if customer was added
+      if (result == true) {
+        _onRefresh();
+      }
+    });
   }
 
   @override

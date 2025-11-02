@@ -19,4 +19,12 @@ class AppConstants {
   // Debug Configuration
   static bool get isDebugMode => EnvironmentConfig.enableDebugMode;
   static bool get isVerboseLogging => EnvironmentConfig.enableVerboseLogging;
+
+  // User Roles
+  static const int customerRoleId = 2; // Customer role
+  static const int agentRoleId = 1; // Agent role
+
+  // User Status
+  static const int activeStatusId = 1; // Active status
+  static const int inactiveStatusId = 2; // Inactive status
 }

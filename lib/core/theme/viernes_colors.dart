@@ -21,6 +21,7 @@ class ViernesColors {
   // Brand Accent Colors (Cyan Scale)
   static const Color accent = Color(0xFF51F5F8);             // Main cyan
   static const Color accentLight = Color(0xFF7DF8FC);        // Light cyan
+  static const Color accentDark = Color(0xFF0891B2);         // Dark cyan for light mode
 
   // Semantic Colors (Status Indicators)
   static const Color success = Color(0xFF16A34A);            // Green
@@ -32,9 +33,11 @@ class ViernesColors {
 
   static const Color warning = Color(0xFFE2A03F);            // Orange
   static const Color warningLight = Color(0xFFFFF9ED);       // Light orange background
+  static const Color warningDark = Color(0xFFB8831E);        // Dark orange for light mode
 
   static const Color info = Color(0xFF2196F3);               // Blue
   static const Color infoLight = Color(0xFFE7F7FF);          // Light blue background
+  static const Color infoDark = Color(0xFF1976D2);           // Dark blue for light mode
 
   // Background Colors
   // Light Theme Backgrounds
@@ -98,6 +101,7 @@ class ViernesColors {
     // Accent colors
     'accent': accent,
     'accentLight': accentLight,
+    'accentDark': accentDark,
 
     // Status colors
     'success': success,
@@ -107,8 +111,10 @@ class ViernesColors {
     'dangerLight': dangerLight,
     'warning': warning,
     'warningLight': warningLight,
+    'warningDark': warningDark,
     'info': info,
     'infoLight': infoLight,
+    'infoDark': infoDark,
 
     // Background colors
     'backgroundLight': backgroundLight,

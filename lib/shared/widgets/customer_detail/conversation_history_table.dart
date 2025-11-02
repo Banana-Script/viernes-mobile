@@ -1,0 +1,388 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../../core/theme/viernes_colors.dart';
+import '../../../core/theme/viernes_text_styles.dart';
+import '../../../core/theme/viernes_spacing.dart';
+import '../../../features/customers/domain/entities/conversation_entity.dart';
+import '../viernes_glassmorphism_card.dart';
+import 'section_header.dart';
+import 'insight_badge.dart';
+
+/// Conversation History Table Widget
+///
+/// Mobile-friendly conversation history display using cards instead of DataTable.
+/// Shows customer's previous consultations (CHAT and CALL conversations).
+///
+/// Features:
+/// - Card-based layout optimized for mobile
+/// - Type indicators (chat/call icons)
+/// - Status badges
+/// - Agent assignment display
+/// - Last activity timestamps
+/// - Pull-to-refresh support
+/// - Pagination (load more)
+/// - Empty state handling
+/// - Loading skeleton
+///
+/// Example:
+/// ```dart
+/// ConversationHistoryTable(
+///   conversations: conversations,
+///   isDark: isDark,
+///   isLoading: false,
+///   hasMorePages: true,
+///   onRefresh: () async => await loadConversations(),
+///   onLoadMore: () => loadMoreConversations(),
+///   onViewConversation: (conversation) => navigateToConversation(conversation),
+/// )
+/// ```
+class ConversationHistoryTable extends StatelessWidget {
+  final List<ConversationEntity> conversations;
+  final bool isDark;
+  final bool isLoading;
+  final bool hasMorePages;
+  final Future<void> Function()? onRefresh;
+  final VoidCallback? onLoadMore;
+  final Function(ConversationEntity)? onViewConversation;
+
+  const ConversationHistoryTable({
+    super.key,
+    required this.conversations,
+    required this.isDark,
+    this.isLoading = false,
+    this.hasMorePages = false,
+    this.onRefresh,
+    this.onLoadMore,
+    this.onViewConversation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ViernesGlassmorphismCard(
+      borderRadius: ViernesSpacing.radius24,
+      padding: const EdgeInsets.all(ViernesSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section Header
+          SectionHeader(
+            icon: Icons.history_rounded,
+            title: 'Conversation History',
+            isDark: isDark,
+          ),
+          const SizedBox(height: ViernesSpacing.lg),
+
+          // Content
+          if (isLoading && conversations.isEmpty)
+            _buildLoadingSkeleton()
+          else if (conversations.isEmpty)
+            _buildEmptyState()
+          else
+            _buildConversationsList(),
+        ],
+      ),
+    );
+  }
+
+  /// Build conversations list
+  Widget _buildConversationsList() {
+    return Column(
+      children: [
+        // Conversation cards
+        ...conversations.map((conversation) => Padding(
+            padding: const EdgeInsets.only(bottom: ViernesSpacing.md),
+            child: _buildConversationCard(conversation),
+          )),
+
+        // Load more button
+        if (hasMorePages) ...[
+          const SizedBox(height: ViernesSpacing.sm),
+          _buildLoadMoreButton(),
+        ],
+
+        // Loading indicator for load more
+        if (isLoading && conversations.isNotEmpty) ...[
+          const SizedBox(height: ViernesSpacing.md),
+          Center(
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isDark ? ViernesColors.accent : ViernesColors.primary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  /// Build individual conversation card
+  Widget _buildConversationCard(ConversationEntity conversation) {
+    return Container(
+      decoration: BoxDecoration(
+        color: (isDark ? ViernesColors.panelDark : ViernesColors.panelLight)
+            .withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+        border: Border.all(
+          color: (isDark ? ViernesColors.primaryLight : ViernesColors.primaryLight)
+              .withValues(alpha: 0.2),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onViewConversation?.call(conversation),
+          borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.all(ViernesSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header: Type Icon + Date
+                Row(
+                  children: [
+                    // Type icon
+                    _buildTypeIcon(conversation.type),
+                    const SizedBox(width: ViernesSpacing.sm),
+
+                    // Date
+                    Expanded(
+                      child: Text(
+                        _formatDate(conversation.createdAt),
+                        style: ViernesTextStyles.bodyText.copyWith(
+                          color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+
+                    // View button
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                          .withValues(alpha: 0.4),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: ViernesSpacing.sm),
+
+                // Agent
+                if (conversation.agent != null)
+                  _buildInfoRow(
+                    'Agent',
+                    conversation.agent!.fullname,
+                  ),
+
+                const SizedBox(height: ViernesSpacing.xs),
+
+                // Status
+                if (conversation.status != null)
+                  Row(
+                    children: [
+                      Text(
+                        'Status: ',
+                        style: ViernesTextStyles.labelSmall.copyWith(
+                          color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                              .withValues(alpha: 0.6),
+                        ),
+                      ),
+                      InsightBadge(
+                        text: conversation.status!.description,
+                        isDark: isDark,
+                        color: _getStatusColor(conversation.status!.description),
+                      ),
+                    ],
+                  ),
+
+                const SizedBox(height: ViernesSpacing.xs),
+
+                // Last activity
+                _buildInfoRow(
+                  'Last activity',
+                  _formatRelativeTime(conversation.updatedAt),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build type icon
+  Widget _buildTypeIcon(ConversationType type) {
+    final IconData icon;
+    final Color color;
+
+    if (type == ConversationType.call) {
+      icon = Icons.phone_rounded;
+      color = ViernesColors.success;
+    } else {
+      icon = Icons.chat_bubble_rounded;
+      color = ViernesColors.info;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(ViernesSpacing.xs),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(ViernesSpacing.radiusSm),
+      ),
+      child: Icon(
+        icon,
+        size: 18,
+        color: color,
+      ),
+    );
+  }
+
+  /// Build info row (label + value)
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      children: [
+        Text(
+          '$label: ',
+          style: ViernesTextStyles.labelSmall.copyWith(
+            color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                .withValues(alpha: 0.6),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: ViernesTextStyles.labelSmall.copyWith(
+              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build load more button
+  Widget _buildLoadMoreButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: isLoading ? null : onLoadMore,
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: ViernesSpacing.md),
+          side: BorderSide(
+            color: (isDark ? ViernesColors.accent : ViernesColors.primary)
+                .withValues(alpha: 0.3),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+          ),
+        ),
+        child: Text(
+          'Load More',
+          style: ViernesTextStyles.label.copyWith(
+            color: isDark ? ViernesColors.accent : ViernesColors.primary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build empty state
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(ViernesSpacing.xl),
+        child: Column(
+          children: [
+            Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 64,
+              color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                  .withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: ViernesSpacing.md),
+            Text(
+              'No conversations yet',
+              style: ViernesTextStyles.bodyLarge.copyWith(
+                color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                    .withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: ViernesSpacing.sm),
+            Text(
+              'Conversation history will appear here',
+              style: ViernesTextStyles.bodySmall.copyWith(
+                color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                    .withValues(alpha: 0.4),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Build loading skeleton
+  Widget _buildLoadingSkeleton() {
+    return Column(
+      children: List.generate(3, (index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: ViernesSpacing.md),
+          child: Container(
+            height: 120,
+            decoration: BoxDecoration(
+              color: (isDark ? ViernesColors.panelDark : ViernesColors.panelLight)
+                  .withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  /// Get status color
+  Color _getStatusColor(String status) {
+    final statusLower = status.toLowerCase();
+    if (statusLower.contains('resolved') || statusLower.contains('closed')) {
+      return ViernesColors.success;
+    } else if (statusLower.contains('pending') || statusLower.contains('open')) {
+      return ViernesColors.warning;
+    } else if (statusLower.contains('active') || statusLower.contains('in progress')) {
+      return ViernesColors.info;
+    }
+    return ViernesColors.primary;
+  }
+
+  /// Format date to readable string
+  String _formatDate(DateTime date) {
+    return DateFormat('MMM d, yyyy').format(date);
+  }
+
+  /// Format relative time
+  String _formatRelativeTime(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inDays < 30) {
+      return '${(difference.inDays / 7).floor()}w ago';
+    } else {
+      return DateFormat('MMM d, yyyy').format(date);
+    }
+  }
+}

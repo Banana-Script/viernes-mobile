@@ -2,6 +2,7 @@ import '../../../../core/errors/exceptions.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../domain/entities/customer_filters.dart';
 import '../../domain/repositories/customer_repository.dart';
+import '../../domain/usecases/get_customer_conversations_usecase.dart';
 import '../datasources/customer_remote_datasource.dart';
 
 /// Customer Repository Implementation
@@ -169,6 +170,38 @@ class CustomerRepositoryImpl implements CustomerRepository {
 
       throw NetworkException(
         'Failed to get purchase intentions: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<ConversationsResponse> getCustomerConversations({
+    required int userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    try {
+      final response = await _remoteDataSource.getCustomerConversations(
+        userId: userId,
+        page: page,
+        pageSize: pageSize,
+      );
+
+      return ConversationsResponse(
+        conversations: response.conversations,
+        totalCount: response.totalCount,
+        currentPage: response.currentPage,
+        totalPages: response.totalPages,
+      );
+    } catch (e, stackTrace) {
+      if (e is ViernesException) {
+        rethrow;
+      }
+
+      throw NetworkException(
+        'Failed to get customer conversations: ${e.toString()}',
         stackTrace: stackTrace,
         originalError: e,
       );

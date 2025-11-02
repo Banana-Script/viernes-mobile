@@ -1,0 +1,1061 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider_pkg;
+import '../../../../core/theme/viernes_colors.dart';
+import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../core/theme/viernes_spacing.dart';
+import '../../../../core/theme/viernes_dimensions.dart';
+import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/utils/customer_insight_helper.dart';
+import '../../../../core/utils/date_formatters.dart';
+import '../../../../core/constants/insight_features.dart';
+import '../../../../shared/widgets/viernes_background.dart';
+import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
+import '../../../../shared/widgets/customer_detail/section_header.dart';
+import '../../../../shared/widgets/customer_detail/info_row.dart';
+import '../../../../shared/widgets/customer_detail/metric_card.dart';
+import '../../../../shared/widgets/customer_detail/insight_badge.dart';
+import '../../../../shared/widgets/customer_detail/summary_panel.dart';
+import '../../../../shared/widgets/customer_detail/insights_panel.dart';
+import '../../../../shared/widgets/customer_detail/sentiment_analysis_panel.dart';
+import '../../../../shared/widgets/customer_detail/purchase_intention_chart.dart';
+import '../../../../shared/widgets/customer_detail/main_interest_panel.dart';
+import '../../../../shared/widgets/customer_detail/interactions_panel.dart';
+import '../../../../shared/widgets/customer_detail/conversation_history_table.dart';
+import '../../domain/entities/customer_entity.dart';
+import '../providers/customer_provider.dart';
+import '../widgets/delete_customer_dialog.dart';
+import 'customer_form_page.dart';
+
+/// Customer Detail Page
+///
+/// Displays comprehensive customer information across 3 tabs:
+/// - Overview: Essential customer info, summary, and insights
+/// - Analysis: Deep insights including sentiment, purchase intention, and NPS
+/// - Activity: Interactions, metrics, and conversation history
+///
+/// Improvements:
+/// - Uses CustomerInsightHelper for insight extraction
+/// - Uses InsightFeatures constants for feature names
+/// - Uses ViernesDimensions for sizing
+/// - Uses DateFormatters for date formatting
+/// - Proper disposal handling to prevent setState after dispose
+class CustomerDetailPage extends ConsumerStatefulWidget {
+  final int customerId;
+  final CustomerEntity? customer; // Optional - for hero animation
+
+  const CustomerDetailPage({
+    super.key,
+    required this.customerId,
+    this.customer,
+  });
+
+  @override
+  ConsumerState<CustomerDetailPage> createState() => _CustomerDetailPageState();
+}
+
+class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
+    with SingleTickerProviderStateMixin {
+  bool _isLoading = true;
+  String? _errorMessage;
+  late TabController _tabController;
+  bool _isDisposed = false; // Disposal flag to prevent setState after dispose
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _loadCustomerDetail();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true; // Set flag before disposing
+    _tabController.dispose();
+    super.dispose();
+  }
+
+
+  Future<void> _loadCustomerDetail() async {
+    if (_isDisposed) return; // Check before setState
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
+      await provider.getCustomerById(widget.customerId);
+    } catch (e) {
+      if (!_isDisposed) {
+        setState(() {
+          _errorMessage = e.toString();
+        });
+      }
+    } finally {
+      // Avoid return in finally - use if statement instead
+      if (!_isDisposed) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _onRefresh() async {
+    await _loadCustomerDetail();
+  }
+
+  void _showOptionsMenu(CustomerEntity customer, bool isDark) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: isDark ? ViernesColors.panelDark : ViernesColors.panelLight,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(ViernesSpacing.radius24),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: ViernesSpacing.sm),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                      .withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: ViernesSpacing.md),
+              _buildMenuItem(
+                icon: Icons.edit_rounded,
+                title: 'Edit Customer',
+                isDark: isDark,
+                onTap: () {
+                  Navigator.pop(context);
+                  _navigateToEditForm(customer);
+                },
+              ),
+              _buildMenuItem(
+                icon: Icons.chat_bubble_rounded,
+                title: 'New Chat',
+                isDark: isDark,
+                onTap: () {
+                  Navigator.pop(context);
+                  _startNewChat(customer);
+                },
+              ),
+              _buildMenuItem(
+                icon: Icons.delete_rounded,
+                title: 'Delete Customer',
+                isDark: isDark,
+                isDestructive: true,
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete(customer, isDark);
+                },
+              ),
+              const SizedBox(height: ViernesSpacing.md),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    required bool isDark,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: ViernesSpacing.lg,
+            vertical: ViernesSpacing.md,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: isDestructive
+                    ? ViernesColors.danger
+                    : (isDark ? ViernesColors.accent : ViernesColors.primary),
+                size: ViernesDimensions.iconSizeRegular,
+              ),
+              const SizedBox(width: ViernesSpacing.md),
+              Text(
+                title,
+                style: ViernesTextStyles.bodyText.copyWith(
+                  color: isDestructive
+                      ? ViernesColors.danger
+                      : (isDark ? ViernesColors.textDark : ViernesColors.textLight),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(CustomerEntity customer, bool isDark) async {
+    final confirmed = await DeleteCustomerDialog.show(
+      context,
+      customerName: customer.name,
+      isDark: isDark,
+    );
+
+    if (confirmed && mounted) {
+      final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
+      final success = await provider.deleteCustomer(customer.id);
+
+      if (success && mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${customer.name} deleted successfully'),
+            backgroundColor: ViernesColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+            ),
+            margin: const EdgeInsets.all(ViernesSpacing.md),
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to delete customer'),
+            backgroundColor: ViernesColors.danger,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+            ),
+            margin: const EdgeInsets.all(ViernesSpacing.md),
+          ),
+        );
+      }
+    }
+  }
+
+  void _navigateToEditForm(CustomerEntity customer) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomerFormPage(
+          mode: CustomerFormMode.edit,
+          customer: customer,
+        ),
+      ),
+    ).then((result) {
+      if (result == true) {
+        _onRefresh();
+      }
+    });
+  }
+
+  void _startNewChat(CustomerEntity customer) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Starting chat with ${customer.name}...'),
+        backgroundColor: ViernesColors.info,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+        ),
+        margin: const EdgeInsets.all(ViernesSpacing.md),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = ref.watch(isDarkModeProvider);
+
+    return Scaffold(
+      body: ViernesBackground(
+        child: SafeArea(
+          child: provider_pkg.Consumer<CustomerProvider>(
+            builder: (context, provider, _) {
+              final customer = provider.selectedCustomer;
+
+              if (_isLoading && customer == null) {
+                return _buildLoadingState(isDark);
+              }
+
+              if (_errorMessage != null && customer == null) {
+                return _buildErrorState(isDark);
+              }
+
+              if (customer == null) {
+                return _buildNotFoundState(isDark);
+              }
+
+              return _buildContent(customer, isDark);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(CustomerEntity customer, bool isDark) {
+    return Column(
+      children: [
+        // App Bar with customer name
+        _buildAppBar(customer, isDark),
+        // Hero Section (always visible)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            ViernesSpacing.md,
+            ViernesSpacing.sm,
+            ViernesSpacing.md,
+            ViernesSpacing.sm,
+          ),
+          child: _buildHeroSection(customer, isDark),
+        ),
+        // Tab Bar
+        _buildTabBar(isDark),
+        // Tab Content
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            color: isDark ? ViernesColors.accent : ViernesColors.primary,
+            backgroundColor: isDark ? ViernesColors.panelDark : ViernesColors.panelLight,
+            child: TabBarView(
+              controller: _tabController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                _buildOverviewTab(customer, isDark),
+                _buildAnalysisTab(customer, isDark),
+                _buildActivityTab(customer, isDark),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppBar(CustomerEntity customer, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: ViernesSpacing.sm,
+        vertical: ViernesSpacing.xs,
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          Expanded(
+            child: Text(
+              customer.name,
+              style: ViernesTextStyles.h5.copyWith(
+                color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                fontWeight: FontWeight.w700,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.more_vert,
+              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+            ),
+            onPressed: () => _showOptionsMenu(customer, isDark),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(CustomerEntity customer, bool isDark) {
+    return ViernesGlassmorphismCard(
+      borderRadius: ViernesSpacing.radius24,
+      padding: const EdgeInsets.all(ViernesSpacing.lg),
+      child: Column(
+        children: [
+          // Avatar with hero animation
+          Hero(
+            tag: 'customer_avatar_${customer.id}',
+            child: Container(
+              width: ViernesDimensions.avatarSize,
+              height: ViernesDimensions.avatarSize,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    ViernesColors.secondary.withValues(alpha: 0.9),
+                    ViernesColors.accent.withValues(alpha: 0.9),
+                  ],
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  customer.name.isNotEmpty ? customer.name[0].toUpperCase() : '?',
+                  style: ViernesTextStyles.h2.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: ViernesSpacing.md),
+          // Name
+          Text(
+            customer.name,
+            style: ViernesTextStyles.h4.copyWith(
+              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: ViernesSpacing.xs),
+          // Email
+          Text(
+            customer.email,
+            style: ViernesTextStyles.bodyText.copyWith(
+              color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                  .withValues(alpha: 0.7),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: ViernesSpacing.sm),
+          // Member since
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: ViernesSpacing.sm,
+              vertical: ViernesSpacing.xs,
+            ),
+            decoration: BoxDecoration(
+              color: (isDark ? ViernesColors.accent : ViernesColors.primary)
+                  .withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+            ),
+            child: Text(
+              'Member since ${DateFormatters.monthYear.format(customer.createdAt)}',
+              style: ViernesTextStyles.labelSmall.copyWith(
+                color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar(bool isDark) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: ViernesSpacing.md,
+        vertical: ViernesSpacing.xs,
+      ),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: (isDark ? ViernesColors.panelDark : ViernesColors.panelLight)
+            .withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+        border: Border.all(
+          color: (isDark ? ViernesColors.primaryLight : ViernesColors.primaryLight)
+              .withValues(alpha: 0.1),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        // Custom indicator with gradient and shadow
+        indicator: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? [
+                    ViernesColors.accent,
+                    ViernesColors.accent.withValues(alpha: 0.8),
+                  ]
+                : [
+                    ViernesColors.primary,
+                    ViernesColors.primary.withValues(alpha: 0.9),
+                  ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+          boxShadow: [
+            BoxShadow(
+              color: (isDark ? ViernesColors.accent : ViernesColors.primary)
+                  .withValues(alpha: 0.4),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        // Smooth animation
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        // Selected tab styling
+        labelColor: Colors.white,
+        labelStyle: ViernesTextStyles.bodySmall.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: 11,
+          letterSpacing: 0.3,
+        ),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+        // Unselected tab styling
+        unselectedLabelColor: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+            .withValues(alpha: 0.5),
+        unselectedLabelStyle: ViernesTextStyles.bodySmall.copyWith(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
+        // Tabs
+        tabs: [
+          _buildTab(
+            icon: Icons.person_rounded,
+            label: 'Overview',
+            isDark: isDark,
+          ),
+          _buildTab(
+            icon: Icons.analytics_rounded,
+            label: 'Analysis',
+            isDark: isDark,
+          ),
+          _buildTab(
+            icon: Icons.history_rounded,
+            label: 'Activity',
+            isDark: isDark,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build individual tab with consistent sizing using ViernesDimensions
+  Widget _buildTab({
+    required IconData icon,
+    required String label,
+    required bool isDark,
+  }) {
+    return Tab(
+      height: ViernesDimensions.tabHeight,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: ViernesDimensions.tabIconSize),
+          const SizedBox(height: ViernesDimensions.tabIconSpacing),
+          Text(label),
+        ],
+      ),
+    );
+  }
+
+  // ==================== TAB 1: OVERVIEW ====================
+  Widget _buildOverviewTab(CustomerEntity customer, bool isDark) {
+    return ListView(
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        // Personal Information Section
+        _buildContactSection(customer, isDark),
+        const SizedBox(height: ViernesSpacing.md),
+        // Segment Section
+        _buildSegmentSection(customer, isDark),
+        const SizedBox(height: ViernesSpacing.md),
+        // Summary Panel - no longer passes languageCode, accesses context internally
+        _buildSummaryPanel(customer, isDark),
+        const SizedBox(height: ViernesSpacing.md),
+        // Insights Panel - no longer passes languageCode, accesses context internally
+        _buildInsightsPanel(customer, isDark),
+        const SizedBox(height: ViernesSpacing.xl),
+      ],
+    );
+  }
+
+  Widget _buildContactSection(CustomerEntity customer, bool isDark) {
+    return ViernesGlassmorphismCard(
+      borderRadius: ViernesSpacing.radius14,
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            icon: Icons.contact_phone_rounded,
+            title: 'Contact Information',
+            isDark: isDark,
+          ),
+          const SizedBox(height: ViernesSpacing.sm),
+          InfoRow(
+            icon: Icons.email_rounded,
+            label: 'Email',
+            value: customer.email,
+            isDark: isDark,
+          ),
+          InfoRow(
+            icon: Icons.phone_rounded,
+            label: 'Phone',
+            value: customer.phoneNumber,
+            isDark: isDark,
+          ),
+          InfoRow(
+            icon: Icons.calendar_today_rounded,
+            label: 'Created',
+            value: DateFormatters.fullDate.format(customer.createdAt),
+            isDark: isDark,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSegmentSection(CustomerEntity customer, bool isDark) {
+    if (customer.segment == null && customer.segmentSummary == null) {
+      return const SizedBox.shrink();
+    }
+
+    // Get current locale for multilingual support
+    final locale = Localizations.localeOf(context);
+    final languageCode = locale.languageCode;
+
+    return ViernesGlassmorphismCard(
+      borderRadius: ViernesSpacing.radius14,
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            icon: Icons.category_rounded,
+            title: 'Customer Segment',
+            isDark: isDark,
+          ),
+          const SizedBox(height: ViernesSpacing.sm),
+          if (customer.segment != null)
+            InsightBadge(
+              text: customer.segment!,
+              isDark: isDark,
+              color: isDark ? ViernesColors.secondary : ViernesColors.secondaryDark,
+            ),
+          if (customer.segmentSummary != null) ...[
+            const SizedBox(height: ViernesSpacing.sm),
+            Text(
+              CustomerInsightHelper.getInsightValue(
+                customer,
+                'segment_summary',
+                languageCode: languageCode,
+              ),
+              style: ViernesTextStyles.bodyText.copyWith(
+                color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                    .withValues(alpha: 0.8),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryPanel(CustomerEntity customer, bool isDark) {
+    return SummaryPanel(
+      customer: customer,
+      isDark: isDark,
+    );
+  }
+
+  Widget _buildInsightsPanel(CustomerEntity customer, bool isDark) {
+    return InsightsPanel(
+      customer: customer,
+      isDark: isDark,
+    );
+  }
+
+  // ==================== TAB 2: ANALYSIS ====================
+  Widget _buildAnalysisTab(CustomerEntity customer, bool isDark) {
+    final locale = Localizations.localeOf(context);
+    final languageCode = locale.languageCode;
+
+    return ListView(
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        // Sentiment Analysis Panel
+        _buildSentimentAnalysisPanel(customer, isDark),
+        const SizedBox(height: ViernesSpacing.md),
+        // Purchase Intention Chart
+        _buildPurchaseIntentionChart(customer, isDark, languageCode),
+        const SizedBox(height: ViernesSpacing.md),
+        // Main Interest Panel (includes NPS)
+        _buildMainInterestPanel(customer, isDark, languageCode),
+        const SizedBox(height: ViernesSpacing.xl),
+      ],
+    );
+  }
+
+  Widget _buildSentimentAnalysisPanel(CustomerEntity customer, bool isDark) {
+    return SentimentAnalysisPanel(
+      customer: customer,
+      isDark: isDark,
+    );
+  }
+
+  Widget _buildPurchaseIntentionChart(CustomerEntity customer, bool isDark, String languageCode) {
+    // Use CustomerInsightHelper with constant
+    final purchaseIntention = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.purchaseIntention,
+      languageCode: languageCode,
+    );
+
+    if (purchaseIntention.isEmpty || purchaseIntention == 'N/A') {
+      return const SizedBox.shrink();
+    }
+
+    return ViernesGlassmorphismCard(
+      borderRadius: ViernesSpacing.radius14,
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            icon: Icons.shopping_bag_rounded,
+            title: 'Purchase Intention',
+            isDark: isDark,
+          ),
+          const SizedBox(height: ViernesSpacing.md),
+          PurchaseIntentionChart(
+            currentIntention: purchaseIntention,
+            isDark: isDark,
+            languageCode: languageCode,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainInterestPanel(CustomerEntity customer, bool isDark, String languageCode) {
+    // Use CustomerInsightHelper with constants
+    final mainInterest = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.mainInterest,
+      languageCode: languageCode,
+    );
+    final otherTopics = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.otherTopics,
+      languageCode: languageCode,
+    );
+    // Try both NPS field names
+    final nps = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.nps,
+      languageCode: languageCode,
+    ).isNotEmpty
+        ? CustomerInsightHelper.getInsightValue(
+            customer,
+            InsightFeatures.nps,
+            languageCode: languageCode,
+          )
+        : CustomerInsightHelper.getInsightValue(
+            customer,
+            InsightFeatures.netPromoterScore,
+            languageCode: languageCode,
+          );
+
+    if (mainInterest.isEmpty && otherTopics.isEmpty && nps.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return ViernesGlassmorphismCard(
+      borderRadius: ViernesSpacing.radius14,
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            icon: Icons.interests_rounded,
+            title: 'Main Interest & NPS',
+            isDark: isDark,
+          ),
+          const SizedBox(height: ViernesSpacing.md),
+          MainInterestPanel(
+            mainInterest: mainInterest.isNotEmpty ? mainInterest : null,
+            otherTopics: otherTopics.isNotEmpty ? otherTopics : null,
+            npsValue: nps.isNotEmpty ? nps : null,
+            isDark: isDark,
+            languageCode: languageCode,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ==================== TAB 3: ACTIVITY ====================
+  Widget _buildActivityTab(CustomerEntity customer, bool isDark) {
+    final locale = Localizations.localeOf(context);
+    final languageCode = locale.languageCode;
+
+    return ListView(
+      padding: const EdgeInsets.all(ViernesSpacing.md),
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        // Metrics Grid
+        _buildMetricsGrid(customer, isDark, languageCode),
+        const SizedBox(height: ViernesSpacing.md),
+        // Interactions Panel
+        _buildInteractionsPanel(customer, isDark, languageCode),
+        const SizedBox(height: ViernesSpacing.md),
+        // Conversation History Table
+        _buildConversationHistoryTable(customer, isDark),
+        const SizedBox(height: ViernesSpacing.xl),
+      ],
+    );
+  }
+
+  Widget _buildMetricsGrid(CustomerEntity customer, bool isDark, String languageCode) {
+    // Use CustomerInsightHelper with constant
+    final purchaseIntention = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.purchaseIntention,
+      languageCode: languageCode,
+    );
+
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: ViernesSpacing.sm,
+      crossAxisSpacing: ViernesSpacing.sm,
+      childAspectRatio: ViernesDimensions.metricCardAspectRatio,
+      children: [
+        MetricCard(
+          icon: Icons.chat_bubble_rounded,
+          label: 'Conversations',
+          value: customer.lastConversation != null ? '1+' : '0',
+          isDark: isDark,
+          iconColor: ViernesColors.info,
+        ),
+        MetricCard(
+          icon: Icons.access_time_rounded,
+          label: 'Last Interaction',
+          value: customer.lastInteraction != null
+              ? DateFormatters.formatRelative(customer.lastInteraction!)
+              : 'Never',
+          isDark: isDark,
+          iconColor: ViernesColors.warning,
+        ),
+        MetricCard(
+          icon: Icons.insights_rounded,
+          label: 'Insights',
+          value: customer.insightsInfo.length.toString(),
+          isDark: isDark,
+          iconColor: ViernesColors.accent,
+        ),
+        MetricCard(
+          icon: Icons.shopping_bag_rounded,
+          label: 'Purchase Intent',
+          value: purchaseIntention.isNotEmpty ? purchaseIntention : 'Unknown',
+          isDark: isDark,
+          iconColor: ViernesColors.success,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInteractionsPanel(CustomerEntity customer, bool isDark, String languageCode) {
+    // Use CustomerInsightHelper with constants
+    final interactionsPerMonth = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.interactionsPerMonth,
+      languageCode: languageCode,
+    );
+    final lastInteractionReasons = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.lastInteractionsReason,
+      languageCode: languageCode,
+    );
+    final actionsToCall = CustomerInsightHelper.getInsightValue(
+      customer,
+      InsightFeatures.actionsToCall,
+      languageCode: languageCode,
+    );
+
+    return InteractionsPanel(
+      interactionsPerMonth: interactionsPerMonth.isNotEmpty ? interactionsPerMonth : null,
+      lastInteractionReasons: lastInteractionReasons.isNotEmpty ? lastInteractionReasons : null,
+      actionsToCall: actionsToCall.isNotEmpty ? actionsToCall : null,
+      isDark: isDark,
+      languageCode: languageCode,
+    );
+  }
+
+  /// Build conversation history table
+  ///
+  /// Future enhancement: Connect to actual conversation data API
+  /// For now shows empty state with proper placeholder structure
+  Widget _buildConversationHistoryTable(CustomerEntity customer, bool isDark) {
+    return ConversationHistoryTable(
+      conversations: const [], // TODO: Load actual conversation data from API
+      isDark: isDark,
+      isLoading: false,
+      hasMorePages: false,
+      onRefresh: () async {
+        // TODO: Implement conversation data refresh
+        // This will call the conversation API endpoint when available
+        await Future.delayed(const Duration(milliseconds: 500));
+      },
+      onLoadMore: () {
+        // TODO: Implement pagination for conversation history
+        // Load next page of conversations when user scrolls to bottom
+      },
+      onViewConversation: (conversation) {
+        // TODO: Navigate to conversation detail page
+        // Will show full conversation thread with messages
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Viewing conversation #${conversation.id}'),
+            backgroundColor: ViernesColors.info,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+            ),
+            margin: const EdgeInsets.all(ViernesSpacing.md),
+          ),
+        );
+      },
+    );
+  }
+
+  // ==================== STATE WIDGETS ====================
+  Widget _buildLoadingState(bool isDark) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            color: isDark ? ViernesColors.accent : ViernesColors.primary,
+          ),
+          const SizedBox(height: ViernesSpacing.md),
+          Text(
+            'Loading customer details...',
+            style: ViernesTextStyles.bodyText.copyWith(
+              color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                  .withValues(alpha: 0.6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(bool isDark) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(ViernesSpacing.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: ViernesDimensions.iconSizeXLarge + 16,
+              color: ViernesColors.danger.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: ViernesSpacing.md),
+            Text(
+              'Error Loading Customer',
+              style: ViernesTextStyles.h5.copyWith(
+                color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+              ),
+            ),
+            const SizedBox(height: ViernesSpacing.sm),
+            Text(
+              _errorMessage ?? 'An error occurred',
+              style: ViernesTextStyles.bodyText.copyWith(
+                color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                    .withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: ViernesSpacing.lg),
+            ElevatedButton.icon(
+              onPressed: _onRefresh,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? ViernesColors.accent : ViernesColors.primary,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotFoundState(bool isDark) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(ViernesSpacing.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.person_off_rounded,
+              size: ViernesDimensions.iconSizeXLarge + 16,
+              color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                  .withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: ViernesSpacing.md),
+            Text(
+              'Customer Not Found',
+              style: ViernesTextStyles.h5.copyWith(
+                color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+              ),
+            ),
+            const SizedBox(height: ViernesSpacing.sm),
+            Text(
+              'The customer you are looking for does not exist.',
+              style: ViernesTextStyles.bodyText.copyWith(
+                color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
+                    .withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: ViernesSpacing.lg),
+            ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Go Back'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isDark ? ViernesColors.accent : ViernesColors.primary,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

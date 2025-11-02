@@ -5,6 +5,7 @@ import '../../../../core/utils/logger.dart';
 import '../../domain/entities/customer_filters.dart';
 import '../models/customer_model.dart';
 import '../models/customers_response_model.dart';
+import '../models/conversation_model.dart';
 
 /// Customer Remote Data Source
 ///
@@ -45,6 +46,13 @@ abstract class CustomerRemoteDataSource {
 
   /// Get purchase intentions statistics
   Future<Map<String, int>> getPurchaseIntentions();
+
+  /// Get customer conversations (CHAT and CALL history)
+  Future<ConversationsResponseModel> getCustomerConversations({
+    required int userId,
+    int page = 1,
+    int pageSize = 10,
+  });
 }
 
 /// Customer Remote Data Source Implementation
@@ -578,6 +586,75 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
       AppLogger.apiError(endpoint, e, stackTrace);
       throw ParseException(
         'Error parsing purchase intentions response: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<ConversationsResponseModel> getCustomerConversations({
+    required int userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    const endpoint = '/conversations/';
+
+    try {
+      final queryParams = {
+        'page': page.toString(),
+        'page_size': pageSize.toString(),
+        'filters': '[user_id=$userId]',
+      };
+
+      AppLogger.apiRequest('GET', endpoint, params: queryParams);
+
+      final response = await _httpClient.dio.get(
+        endpoint,
+        queryParameters: queryParams,
+      );
+
+      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
+
+      if (response.statusCode == 200) {
+        return ConversationsResponseModel.fromJson(response.data as Map<String, dynamic>);
+      } else {
+        throw NetworkException(
+          'Failed to load conversations',
+          statusCode: response.statusCode,
+          endpoint: endpoint,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException(
+          'Authentication required',
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else if (e.response?.statusCode == 404) {
+        // Return empty response instead of throwing error
+        return const ConversationsResponseModel(
+          conversations: [],
+          totalCount: 0,
+          currentPage: 1,
+          totalPages: 1,
+        );
+      } else {
+        throw NetworkException(
+          'Network error while fetching conversations',
+          statusCode: e.response?.statusCode,
+          endpoint: endpoint,
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      }
+    } catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace);
+      throw ParseException(
+        'Error parsing conversations response: ${e.toString()}',
         stackTrace: stackTrace,
         originalError: e,
       );
