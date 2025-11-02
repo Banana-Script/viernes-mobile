@@ -24,6 +24,7 @@ dependencies:
   # UI & Theming
   google_fonts: ^6.2.1
   material_design_icons_flutter: ^7.0.0
+  date_picker_plus: ^3.0.2
 
   # Charts and Data Visualization
   fl_chart: ^0.68.0

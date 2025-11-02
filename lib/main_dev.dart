@@ -13,6 +13,7 @@ import 'features/auth/presentation/providers/auth_provider.dart' as auth_provide
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/main/presentation/pages/main_page.dart';
 import 'features/dashboard/presentation/providers/dashboard_provider.dart';
+import 'features/customers/presentation/providers/customer_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,9 @@ class ViernesApp extends ConsumerWidget {
         ),
         provider.ChangeNotifierProvider<DashboardProvider>(
           create: (context) => DependencyInjection.dashboardProvider,
+        ),
+        provider.ChangeNotifierProvider<CustomerProvider>(
+          create: (context) => DependencyInjection.customerProvider,
         ),
       ],
       child: MaterialApp(

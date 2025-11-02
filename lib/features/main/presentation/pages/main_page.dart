@@ -4,6 +4,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../shared/widgets/animated_status_badge.dart';
 import '../../../dashboard/presentation/pages/dashboard_page.dart';
+import '../../../customers/presentation/pages/customer_list_page.dart';
 import '../../../conversations/presentation/pages/conversations_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -20,6 +21,7 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = [
     const DashboardPage(),
+    const CustomerListPage(),
     const ConversationsPage(),
     const ProfilePage(),
   ];
@@ -60,12 +62,18 @@ class _MainPageState extends State<MainPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              _currentIndex == 1 ? Icons.chat : Icons.chat_outlined,
+              _currentIndex == 1 ? Icons.people : Icons.people_outline,
+            ),
+            label: 'Customers',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex == 2 ? Icons.chat : Icons.chat_outlined,
             ),
             label: 'Conversations',
           ),
           BottomNavigationBarItem(
-            icon: _ProfileIconWithBadge(isSelected: _currentIndex == 2),
+            icon: _ProfileIconWithBadge(isSelected: _currentIndex == 3),
             label: 'Profile',
           ),
         ],

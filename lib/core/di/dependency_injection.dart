@@ -22,6 +22,19 @@ import '../../features/dashboard/domain/usecases/get_ai_human_stats_usecase.dart
 import '../../features/dashboard/domain/usecases/get_customer_summary_usecase.dart';
 import '../../features/dashboard/domain/usecases/export_conversation_stats_usecase.dart';
 import '../../features/dashboard/presentation/providers/dashboard_provider.dart';
+
+// Customer imports
+import '../../features/customers/data/datasources/customer_remote_datasource.dart';
+import '../../features/customers/data/repositories/customer_repository_impl.dart';
+import '../../features/customers/domain/repositories/customer_repository.dart';
+import '../../features/customers/domain/usecases/get_customers_usecase.dart';
+import '../../features/customers/domain/usecases/get_customer_by_id_usecase.dart';
+import '../../features/customers/domain/usecases/get_filter_options_usecase.dart';
+import '../../features/customers/domain/usecases/create_customer_usecase.dart';
+import '../../features/customers/domain/usecases/update_customer_usecase.dart';
+import '../../features/customers/domain/usecases/delete_customer_usecase.dart';
+import '../../features/customers/presentation/providers/customer_provider.dart';
+
 import '../services/http_client.dart';
 
 class DependencyInjection {
@@ -51,6 +64,17 @@ class DependencyInjection {
   static late final ExportConversationStatsUseCase _exportConversationStatsUseCase;
   static late final DashboardProvider _dashboardProvider;
 
+  // Customer dependencies
+  static late final CustomerRemoteDataSource _customerRemoteDataSource;
+  static late final CustomerRepository _customerRepository;
+  static late final GetCustomersUseCase _getCustomersUseCase;
+  static late final GetCustomerByIdUseCase _getCustomerByIdUseCase;
+  static late final GetFilterOptionsUseCase _getFilterOptionsUseCase;
+  static late final CreateCustomerUseCase _createCustomerUseCase;
+  static late final UpdateCustomerUseCase _updateCustomerUseCase;
+  static late final DeleteCustomerUseCase _deleteCustomerUseCase;
+  static late final CustomerProvider _customerProvider;
+
   static void initialize() {
     // Firebase
     _firebaseAuth = FirebaseAuth.instance;
@@ -60,6 +84,9 @@ class DependencyInjection {
 
     // Dashboard setup
     _initializeDashboard();
+
+    // Customer setup
+    _initializeCustomers();
   }
 
   static void _initializeAuth() {
@@ -119,6 +146,34 @@ class DependencyInjection {
     );
   }
 
+  static void _initializeCustomers() {
+    // HttpClient is already initialized in _initializeAuth()
+
+    // Data sources
+    _customerRemoteDataSource = CustomerRemoteDataSourceImpl(_httpClient);
+
+    // Repositories
+    _customerRepository = CustomerRepositoryImpl(_customerRemoteDataSource);
+
+    // Use cases
+    _getCustomersUseCase = GetCustomersUseCase(_customerRepository);
+    _getCustomerByIdUseCase = GetCustomerByIdUseCase(_customerRepository);
+    _getFilterOptionsUseCase = GetFilterOptionsUseCase(_customerRepository);
+    _createCustomerUseCase = CreateCustomerUseCase(_customerRepository);
+    _updateCustomerUseCase = UpdateCustomerUseCase(_customerRepository);
+    _deleteCustomerUseCase = DeleteCustomerUseCase(_customerRepository);
+
+    // Providers
+    _customerProvider = CustomerProvider(
+      getCustomersUseCase: _getCustomersUseCase,
+      getCustomerByIdUseCase: _getCustomerByIdUseCase,
+      getFilterOptionsUseCase: _getFilterOptionsUseCase,
+      createCustomerUseCase: _createCustomerUseCase,
+      updateCustomerUseCase: _updateCustomerUseCase,
+      deleteCustomerUseCase: _deleteCustomerUseCase,
+    );
+  }
+
   // Getters
   static auth_provider.AuthProvider get authProvider => _authProvider;
   static AuthRepository get authRepository => _authRepository;
@@ -127,4 +182,8 @@ class DependencyInjection {
   // Dashboard getters
   static DashboardProvider get dashboardProvider => _dashboardProvider;
   static DashboardRepository get dashboardRepository => _dashboardRepository;
+
+  // Customer getters
+  static CustomerProvider get customerProvider => _customerProvider;
+  static CustomerRepository get customerRepository => _customerRepository;
 }
