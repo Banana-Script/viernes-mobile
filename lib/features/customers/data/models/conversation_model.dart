@@ -1,4 +1,5 @@
 import '../../domain/entities/conversation_entity.dart';
+import 'customer_detail_model.dart';
 
 /// Conversation Model
 ///
@@ -38,7 +39,9 @@ class ConversationModel extends ConversationEntity {
     return ConversationModel(
       id: json['id'] as int,
       userId: json['user_id'] as int,
-      user: null, // Simplified - not needed for conversation history display
+      user: json['user'] != null
+          ? CustomerDetailModel.fromJson(json['user'] as Map<String, dynamic>)
+          : null,
       agent: json['agent'] != null
           ? ConversationAgentModel.fromJson(json['agent'] as Map<String, dynamic>)
           : null,
@@ -85,6 +88,7 @@ class ConversationModel extends ConversationEntity {
     return {
       'id': id,
       'user_id': userId,
+      'user': user != null ? (user as CustomerDetailModel).toJson() : null,
       'agent': agent != null ? (agent as ConversationAgentModel).toJson() : null,
       'status': status != null ? (status as ConversationStatusModel).toJson() : null,
       'tags': tags.map((t) => (t as ConversationTagModel).toJson()).toList(),
