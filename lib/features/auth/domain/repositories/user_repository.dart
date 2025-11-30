@@ -1,3 +1,4 @@
+import '../entities/organization_entity.dart';
 import '../entities/user_entity.dart';
 
 abstract class UserRepository {
@@ -8,4 +9,7 @@ abstract class UserRepository {
   /// Changes the agent availability status
   /// isAvailable: true for active, false for inactive
   Future<void> changeAgentAvailability(bool isAvailable);
+
+  /// Fetches the organization info for the logged user
+  Future<OrganizationEntity> getOrganizationInfo();
 }

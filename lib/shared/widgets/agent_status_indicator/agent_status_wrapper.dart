@@ -32,21 +32,15 @@ class AgentStatusWrapper extends StatelessWidget {
         final user = authProvider.user;
         final organizationalStatus = user?.organizationalStatus;
 
-        // DEBUG: Print status
-        print('[AgentStatusWrapper] User: ${user != null ? "logged in" : "null"}');
-        print('[AgentStatusWrapper] OrgStatus: ${organizationalStatus != null ? "exists (${organizationalStatus.valueDefinition})" : "null"}');
-
         // Don't show indicator if:
         // - showIndicator is false
         // - No user is logged in
         // - User has no organizational status
         if (!showIndicator || user == null || organizationalStatus == null) {
-          print('[AgentStatusWrapper] Not showing indicator - showIndicator=$showIndicator, user=${user != null}, orgStatus=${organizationalStatus != null}');
           return child;
         }
 
         final isActive = organizationalStatus.isActive;
-        print('[AgentStatusWrapper] Showing indicator - isActive=$isActive');
 
         // For topBar variant, we need to structure differently
         if (variant == AgentStatusVariant.topBar) {

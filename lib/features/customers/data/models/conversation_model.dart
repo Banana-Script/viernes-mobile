@@ -1,4 +1,5 @@
 import '../../domain/entities/conversation_entity.dart';
+import 'customer_detail_model.dart';
 
 /// Conversation Model
 ///
@@ -38,7 +39,9 @@ class ConversationModel extends ConversationEntity {
     return ConversationModel(
       id: json['id'] as int,
       userId: json['user_id'] as int,
-      user: null, // Simplified - not needed for conversation history display
+      user: json['user'] != null
+          ? CustomerDetailModel.fromJson(json['user'] as Map<String, dynamic>)
+          : null,
       agent: json['agent'] != null
           ? ConversationAgentModel.fromJson(json['agent'] as Map<String, dynamic>)
           : null,
@@ -70,7 +73,9 @@ class ConversationModel extends ConversationEntity {
       integrationId: json['integration_id'] as int?,
       readed: json['readed'] as bool? ?? false,
       locked: json['locked'] as bool? ?? false,
-      memory: json['memory'] as String?,
+      memory: json['memory'] is Map
+          ? null // If it's a Map, we can't use it as a String, so set to null
+          : json['memory'] as String?,
       unreaded: json['unreaded'] as int? ?? 0,
       callId: json['call_id'] as int?,
       campaignId: json['campaign_id'] as int?,
@@ -85,6 +90,7 @@ class ConversationModel extends ConversationEntity {
     return {
       'id': id,
       'user_id': userId,
+      'user': user != null ? (user as CustomerDetailModel).toJson() : null,
       'agent': agent != null ? (agent as ConversationAgentModel).toJson() : null,
       'status': status != null ? (status as ConversationStatusModel).toJson() : null,
       'tags': tags.map((t) => (t as ConversationTagModel).toJson()).toList(),

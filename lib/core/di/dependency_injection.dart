@@ -11,6 +11,7 @@ import '../../features/auth/domain/usecases/sign_out_usecase.dart';
 import '../../features/auth/domain/usecases/reset_password_usecase.dart';
 import '../../features/auth/domain/usecases/get_user_profile_usecase.dart';
 import '../../features/auth/domain/usecases/change_agent_availability_usecase.dart';
+import '../../features/auth/domain/usecases/get_organization_info_usecase.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 
 // Dashboard imports
@@ -35,6 +36,20 @@ import '../../features/customers/domain/usecases/update_customer_usecase.dart';
 import '../../features/customers/domain/usecases/delete_customer_usecase.dart';
 import '../../features/customers/presentation/providers/customer_provider.dart';
 
+// Conversation imports
+import '../../features/conversations/data/datasources/conversation_remote_datasource.dart';
+import '../../features/conversations/data/repositories/conversation_repository_impl.dart';
+import '../../features/conversations/domain/repositories/conversation_repository.dart';
+import '../../features/conversations/domain/usecases/get_conversations_usecase.dart';
+import '../../features/conversations/domain/usecases/get_conversation_detail_usecase.dart';
+import '../../features/conversations/domain/usecases/get_messages_usecase.dart';
+import '../../features/conversations/domain/usecases/send_message_usecase.dart';
+import '../../features/conversations/domain/usecases/send_media_usecase.dart';
+import '../../features/conversations/domain/usecases/update_conversation_status_usecase.dart';
+import '../../features/conversations/domain/usecases/assign_conversation_usecase.dart';
+import '../../features/conversations/domain/usecases/get_filter_options_usecase.dart' as conversation_filters;
+import '../../features/conversations/presentation/providers/conversation_provider.dart';
+
 import '../services/http_client.dart';
 
 class DependencyInjection {
@@ -50,6 +65,7 @@ class DependencyInjection {
   static late final ResetPasswordUseCase _resetPasswordUseCase;
   static late final GetUserProfileUseCase _getUserProfileUseCase;
   static late final ChangeAgentAvailabilityUseCase _changeAgentAvailabilityUseCase;
+  static late final GetOrganizationInfoUseCase _getOrganizationInfoUseCase;
   static late final auth_provider.AuthProvider _authProvider;
 
   // Shared dependencies
@@ -75,6 +91,19 @@ class DependencyInjection {
   static late final DeleteCustomerUseCase _deleteCustomerUseCase;
   static late final CustomerProvider _customerProvider;
 
+  // Conversation dependencies
+  static late final ConversationRemoteDataSource _conversationRemoteDataSource;
+  static late final ConversationRepository _conversationRepository;
+  static late final GetConversationsUseCase _getConversationsUseCase;
+  static late final GetConversationDetailUseCase _getConversationDetailUseCase;
+  static late final GetMessagesUseCase _getMessagesUseCase;
+  static late final SendMessageUseCase _sendMessageUseCase;
+  static late final SendMediaUseCase _sendMediaUseCase;
+  static late final UpdateConversationStatusUseCase _updateConversationStatusUseCase;
+  static late final AssignConversationUseCase _assignConversationUseCase;
+  static late final conversation_filters.GetFilterOptionsUseCase _getConversationFilterOptionsUseCase;
+  static late final ConversationProvider _conversationProvider;
+
   static void initialize() {
     // Firebase
     _firebaseAuth = FirebaseAuth.instance;
@@ -87,6 +116,9 @@ class DependencyInjection {
 
     // Customer setup
     _initializeCustomers();
+
+    // Conversation setup
+    _initializeConversations();
   }
 
   static void _initializeAuth() {
@@ -108,6 +140,7 @@ class DependencyInjection {
     _resetPasswordUseCase = ResetPasswordUseCase(repository: _authRepository);
     _getUserProfileUseCase = GetUserProfileUseCase(_userRepository);
     _changeAgentAvailabilityUseCase = ChangeAgentAvailabilityUseCase(_userRepository);
+    _getOrganizationInfoUseCase = GetOrganizationInfoUseCase(_userRepository);
 
     // Providers
     _authProvider = auth_provider.AuthProvider(
@@ -117,6 +150,7 @@ class DependencyInjection {
       resetPasswordUseCase: _resetPasswordUseCase,
       getUserProfileUseCase: _getUserProfileUseCase,
       changeAgentAvailabilityUseCase: _changeAgentAvailabilityUseCase,
+      getOrganizationInfoUseCase: _getOrganizationInfoUseCase,
     );
   }
 
@@ -174,6 +208,38 @@ class DependencyInjection {
     );
   }
 
+  static void _initializeConversations() {
+    // HttpClient is already initialized in _initializeAuth()
+
+    // Data sources
+    _conversationRemoteDataSource = ConversationRemoteDataSourceImpl(_httpClient);
+
+    // Repositories
+    _conversationRepository = ConversationRepositoryImpl(_conversationRemoteDataSource);
+
+    // Use cases
+    _getConversationsUseCase = GetConversationsUseCase(_conversationRepository);
+    _getConversationDetailUseCase = GetConversationDetailUseCase(_conversationRepository);
+    _getMessagesUseCase = GetMessagesUseCase(_conversationRepository);
+    _sendMessageUseCase = SendMessageUseCase(_conversationRepository);
+    _sendMediaUseCase = SendMediaUseCase(_conversationRepository);
+    _updateConversationStatusUseCase = UpdateConversationStatusUseCase(_conversationRepository);
+    _assignConversationUseCase = AssignConversationUseCase(_conversationRepository);
+    _getConversationFilterOptionsUseCase = conversation_filters.GetFilterOptionsUseCase(_conversationRepository);
+
+    // Providers
+    _conversationProvider = ConversationProvider(
+      getConversationsUseCase: _getConversationsUseCase,
+      getConversationDetailUseCase: _getConversationDetailUseCase,
+      getMessagesUseCase: _getMessagesUseCase,
+      sendMessageUseCase: _sendMessageUseCase,
+      sendMediaUseCase: _sendMediaUseCase,
+      updateConversationStatusUseCase: _updateConversationStatusUseCase,
+      assignConversationUseCase: _assignConversationUseCase,
+      getFilterOptionsUseCase: _getConversationFilterOptionsUseCase,
+    );
+  }
+
   // Getters
   static auth_provider.AuthProvider get authProvider => _authProvider;
   static AuthRepository get authRepository => _authRepository;
@@ -186,4 +252,8 @@ class DependencyInjection {
   // Customer getters
   static CustomerProvider get customerProvider => _customerProvider;
   static CustomerRepository get customerRepository => _customerRepository;
+
+  // Conversation getters
+  static ConversationProvider get conversationProvider => _conversationProvider;
+  static ConversationRepository get conversationRepository => _conversationRepository;
 }

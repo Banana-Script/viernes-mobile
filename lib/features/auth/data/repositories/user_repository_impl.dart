@@ -1,3 +1,4 @@
+import '../../domain/entities/organization_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_remote_datasource.dart';
@@ -35,6 +36,16 @@ class UserRepositoryImpl implements UserRepository {
 
       // Call the remote data source with the user ID
       await _remoteDataSource.changeAgentAvailability(userId, isAvailable);
+    } catch (e) {
+      // Re-throw the exception to be handled by the use case/provider
+      rethrow;
+    }
+  }
+
+  @override
+  Future<OrganizationEntity> getOrganizationInfo() async {
+    try {
+      return await _remoteDataSource.getOrganizationInfo();
     } catch (e) {
       // Re-throw the exception to be handled by the use case/provider
       rethrow;

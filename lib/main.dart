@@ -14,6 +14,7 @@ import 'features/auth/presentation/pages/login_page.dart';
 import 'features/auth/presentation/pages/home_page.dart';
 import 'features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'features/customers/presentation/providers/customer_provider.dart';
+import 'features/conversations/presentation/providers/conversation_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,6 +61,9 @@ class ViernesApp extends ConsumerWidget {
         provider.ChangeNotifierProvider<CustomerProvider>(
           create: (context) => DependencyInjection.customerProvider,
         ),
+        provider.ChangeNotifierProvider<ConversationProvider>(
+          create: (context) => DependencyInjection.conversationProvider,
+        ),
       ],
       child: MaterialApp(
         title: AppConstants.appName,
@@ -97,7 +101,6 @@ class AuthenticationWrapper extends StatelessWidget {
           case auth_provider.AuthStatus.error:
             return const LoginPage();
           case auth_provider.AuthStatus.loading:
-            // Show current screen with loading overlay
             return authProvider.user != null ? const HomePage() : const LoginPage();
           default:
             return const LoginPage();
