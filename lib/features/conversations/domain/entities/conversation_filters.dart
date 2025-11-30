@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../customers/domain/entities/conversation_entity.dart';
+import '../repositories/conversation_repository.dart';
 
 /// Conversation Filters
 ///
@@ -89,40 +90,42 @@ class ConversationFilters {
 
   /// Convert to API filter string format
   /// Format: [filter1=value1,filter2=value2,...]
+  /// Multiple values use pipe separator: status_id=1|2|3
   String toApiString() {
     final filters = <String>[];
 
-    // Status filter
-    for (final statusId in statusIds) {
-      filters.add('status_id=$statusId');
+    // Status filter - use pipe for multiple values
+    if (statusIds.isNotEmpty) {
+      filters.add('status_id=${statusIds.join('|')}');
     }
 
-    // Priority filter
-    for (final priority in priorities) {
-      filters.add('priority=$priority');
+    // Priority filter - use pipe for multiple values
+    if (priorities.isNotEmpty) {
+      filters.add('priority=${priorities.join('|')}');
     }
 
-    // Agent filter
-    for (final agentId in agentIds) {
-      filters.add('agent_id=$agentId');
+    // Agent filter - use pipe, convert -1 to "null|-1" for Viernes (unassigned)
+    if (agentIds.isNotEmpty) {
+      final agentValues = agentIds.map((id) => id == -1 ? 'null|-1' : '$id').join('|');
+      filters.add('agent_id=$agentValues');
     }
 
-    // Tag filter
-    for (final tagId in tagIds) {
-      filters.add('tag_id=$tagId');
+    // Tag filter - use pipe for multiple values
+    if (tagIds.isNotEmpty) {
+      filters.add('tag_id=${tagIds.join('|')}');
     }
 
-    // Date range filters
+    // Date range filters - use >= and <= with correct format
     if (dateFrom != null) {
-      filters.add('created_at_from=${dateFrom!.toIso8601String()}');
+      filters.add('created_at>=${_formatDateForApi(dateFrom!)}');
     }
     if (dateTo != null) {
-      filters.add('created_at_to=${dateTo!.toIso8601String()}');
+      filters.add('created_at<=${_formatDateForApi(dateTo!, endOfDay: true)}');
     }
 
     // Unread filter
     if (unreadOnly == true) {
-      filters.add('readed=false');
+      filters.add('readed=0');
     }
 
     // Locked filter
@@ -138,14 +141,35 @@ class ConversationFilters {
     return filters.isEmpty ? '' : '[${filters.join(',')}]';
   }
 
+  /// Format date for API: YYYY-MM-DD HH:MM:SS
+  String _formatDateForApi(DateTime date, {bool endOfDay = false}) {
+    final d = endOfDay
+        ? DateTime(date.year, date.month, date.day, 23, 59, 59)
+        : DateTime(date.year, date.month, date.day, 0, 0, 0);
+    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')} '
+        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}:${d.second.toString().padLeft(2, '0')}';
+  }
+
   /// Get active filter labels for display
-  List<ActiveFilter> getActiveFilterLabels() {
+  List<ActiveFilter> getActiveFilterLabels({
+    List<ConversationStatusOption>? availableStatuses,
+    List<AgentOption>? availableAgents,
+  }) {
     final labels = <ActiveFilter>[];
 
     // Status filters
     for (final statusId in statusIds) {
+      String statusLabel = statusId;
+      try {
+        final statusOption = availableStatuses?.firstWhere(
+          (s) => s.id.toString() == statusId,
+        );
+        statusLabel = statusOption?.description ?? statusId;
+      } catch (_) {
+        // Status not found, use ID as fallback
+      }
       labels.add(ActiveFilter(
-        label: _getStatusLabel(statusId),
+        label: statusLabel,
         color: _getStatusColor(statusId),
         type: FilterType.status,
         value: statusId,
@@ -162,10 +186,26 @@ class ConversationFilters {
       ));
     }
 
-    // Agent filters (show count if multiple)
+    // Agent filters - show name if single, count if multiple
     if (agentIds.isNotEmpty) {
+      String agentLabel;
+      if (agentIds.length == 1) {
+        final agentId = agentIds.first;
+        if (agentId == -1) {
+          agentLabel = 'Viernes';
+        } else {
+          try {
+            final agent = availableAgents?.firstWhere((a) => a.id == agentId);
+            agentLabel = agent?.name ?? 'Agent';
+          } catch (_) {
+            agentLabel = 'Agent';
+          }
+        }
+      } else {
+        agentLabel = '${agentIds.length} Agents';
+      }
       labels.add(ActiveFilter(
-        label: agentIds.length == 1 ? 'Agent' : '${agentIds.length} Agents',
+        label: agentLabel,
         color: const Color(0xFF51F5F8), // Accent cyan
         type: FilterType.agent,
         value: agentIds.join(','),
@@ -213,26 +253,6 @@ class ConversationFilters {
     }
 
     return labels;
-  }
-
-  String _getStatusLabel(String statusId) {
-    // Map status IDs to labels - adjust based on your API
-    switch (statusId.toLowerCase()) {
-      case '1':
-      case 'open':
-        return 'OPEN';
-      case '2':
-      case 'pending':
-        return 'PENDING';
-      case '3':
-      case 'resolved':
-        return 'RESOLVED';
-      case '4':
-      case 'abandoned':
-        return 'ABANDONED';
-      default:
-        return statusId.toUpperCase();
-    }
   }
 
   Color _getStatusColor(String statusId) {

@@ -236,7 +236,10 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   Widget _buildActiveFilters(BuildContext context, bool isDark) {
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
-        final activeFilters = provider.filters.getActiveFilterLabels();
+        final activeFilters = provider.filters.getActiveFilterLabels(
+          availableStatuses: provider.availableStatuses,
+          availableAgents: provider.availableAgents,
+        );
 
         if (activeFilters.isEmpty) {
           return const SizedBox.shrink();

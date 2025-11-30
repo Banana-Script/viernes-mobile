@@ -7,6 +7,7 @@ import '../providers/conversation_provider.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/status_badge.dart';
 import '../widgets/priority_badge.dart';
+import '../widgets/message_composer/message_composer.dart';
 
 /// Conversation Detail Page
 ///
@@ -24,9 +25,7 @@ class ConversationDetailPage extends StatefulWidget {
 }
 
 class _ConversationDetailPageState extends State<ConversationDetailPage> {
-  final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final FocusNode _messageFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -44,15 +43,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
 
   @override
   void dispose() {
-    _messageController.dispose();
     _scrollController.dispose();
-    _messageFocusNode.dispose();
-
-    // Note: We don't clear the selected conversation here because:
-    // 1. We can't safely access context in dispose()
-    // 2. The provider will handle state when a new conversation is selected
-    // 3. Keeping the state allows for better back navigation UX
-
     super.dispose();
   }
 
@@ -64,29 +55,6 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
       if (!provider.isLoadingMoreMessages && provider.hasMoreMessages) {
         provider.loadMoreMessages(widget.conversationId);
       }
-    }
-  }
-
-  void _sendMessage() async {
-    final text = _messageController.text.trim();
-    if (text.isEmpty) return;
-
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
-
-    // Clear input immediately
-    _messageController.clear();
-
-    // Send message
-    final success = await provider.sendMessage(widget.conversationId, text);
-
-    if (!success && mounted) {
-      // Show error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(provider.messageErrorMessage ?? 'Failed to send message'),
-          backgroundColor: ViernesColors.danger,
-        ),
-      );
     }
   }
 
@@ -318,101 +286,37 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
   Widget _buildMessageInput(BuildContext context, bool isDark) {
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
-        final isSending = provider.isSendingMessage;
-
-        return Container(
-          padding: const EdgeInsets.all(ViernesSpacing.md),
-          decoration: BoxDecoration(
-            color: ViernesColors.getControlBackground(isDark),
-            border: Border(
-              top: BorderSide(
-                color: ViernesColors.getBorderColor(isDark).withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-          ),
-          child: SafeArea(
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: [
-                // Message input field with integrated buttons
-                Container(
-                  constraints: const BoxConstraints(
-                    minHeight: 44,
-                    maxHeight: 120,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF1b2e4b)
-                        : const Color(0xFFf4f4f4),
-                    borderRadius: BorderRadius.circular(9999),
-                  ),
-                  padding: const EdgeInsets.only(
-                    left: 112,
-                    right: 48,
-                    top: 12,
-                    bottom: 8,
-                  ),
-                  child: TextField(
-                    controller: _messageController,
-                    focusNode: _messageFocusNode,
-                    enabled: !isSending,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.newline,
-                    style: ViernesTextStyles.bodyText.copyWith(
-                      color: ViernesColors.getTextColor(isDark),
-                      height: 1.714,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: ViernesTextStyles.bodyText.copyWith(
-                        color: ViernesColors.getTextColor(isDark)
-                            .withValues(alpha: 0.5),
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
+        return MessageComposer(
+          conversationId: widget.conversationId,
+          isSending: provider.isSendingMessage,
+          quickReplies: const [], // TODO: Integrate with quick replies API
+          isLoadingQuickReplies: false,
+          hasMoreQuickReplies: false,
+          onSendMessage: (text) async {
+            final success = await provider.sendMessage(widget.conversationId, text);
+            if (!success && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(provider.messageErrorMessage ?? 'Failed to send message'),
+                  backgroundColor: ViernesColors.danger,
                 ),
-
-                // File upload button (positioned absolutely on left)
-                Positioned(
-                  left: 16,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.attach_file,
-                      color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
-                    ),
-                    onPressed: isSending ? null : () {
-                      // TODO: Show file picker
-                    },
-                  ),
-                ),
-
-                // Send button (positioned absolutely on right)
-                Positioned(
-                  right: 16,
-                  child: isSending
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : IconButton(
-                          icon: Icon(
-                            Icons.send,
-                            color: ViernesColors.getTextColor(isDark),
-                          ),
-                          onPressed: _sendMessage,
-                        ),
-                ),
-              ],
-            ),
-          ),
+              );
+            }
+            return success;
+          },
+          onSendMedia: (attachments, caption) async {
+            // TODO: Implement media upload and send
+            // For now, just send caption as text if provided
+            if (caption != null && caption.isNotEmpty) {
+              await provider.sendMessage(widget.conversationId, caption);
+            }
+          },
+          onSearchQuickReplies: (query) {
+            // TODO: Integrate with quick replies API
+          },
+          onLoadMoreQuickReplies: () {
+            // TODO: Integrate with quick replies API
+          },
         );
       },
     );

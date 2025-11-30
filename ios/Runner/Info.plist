@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Viernes necesita acceso a la cámara para tomar fotos y enviarlas en los chats.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Viernes necesita acceso a tu galería para seleccionar imágenes y enviarlas en los chats.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Viernes necesita acceso al micrófono para grabar mensajes de audio.</string>
 </dict>
 </plist>

@@ -74,7 +74,7 @@ class TagOptionModel extends TagOption {
   factory TagOptionModel.fromJson(Map<String, dynamic> json) {
     return TagOptionModel(
       id: json['id'] as int,
-      name: json['tag_name'] as String? ?? '',
+      name: json['tag_name'] as String? ?? json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
     );
   }
@@ -99,7 +99,7 @@ class AgentOptionModel extends AgentOption {
   factory AgentOptionModel.fromJson(Map<String, dynamic> json) {
     return AgentOptionModel(
       id: json['id'] as int,
-      name: json['fullname'] as String? ?? '',
+      name: json['name'] as String? ?? json['fullname'] as String? ?? '',
       email: json['email'] as String? ?? '',
     );
   }
