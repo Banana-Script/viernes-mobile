@@ -107,8 +107,13 @@ class AttachmentModel {
   /// Check if has error
   bool get hasError => status == AttachmentStatus.error;
 
-  /// Max file size in bytes (5MB)
-  static const int maxFileSize = 5 * 1024 * 1024;
+  /// Max file sizes in bytes
+  static const int maxImageSize = 5 * 1024 * 1024;       // 5MB for images
+  static const int maxDocumentSize = 100 * 1024 * 1024;  // 100MB for documents
+  static const int maxTextFileSize = 1 * 1024 * 1024;    // 1MB for text files
+
+  /// Max message length (WhatsApp limit)
+  static const int maxMessageLength = 4096;
 
   /// Allowed image extensions
   static const List<String> allowedImageExtensions = ['jpg', 'jpeg', 'png'];
@@ -118,8 +123,52 @@ class AttachmentModel {
     'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'
   ];
 
-  /// Validate file size
-  static bool isValidSize(int size) => size <= maxFileSize;
+  /// Text file extensions (special 1MB limit)
+  static const List<String> textFileExtensions = ['txt'];
+
+  /// Check if extension is a text file
+  static bool isTextFile(String extension) {
+    return textFileExtensions.contains(extension.toLowerCase());
+  }
+
+  /// Validate file size (backwards compatible - uses image size as default)
+  static bool isValidSize(int size) => size <= maxImageSize;
+
+  /// Validate file size based on type and extension
+  static bool isValidSizeForType(int size, AttachmentType type, String? extension) {
+    switch (type) {
+      case AttachmentType.image:
+        return size <= maxImageSize;
+      case AttachmentType.document:
+        // Text files have a special 1MB limit
+        if (extension != null && isTextFile(extension)) {
+          return size <= maxTextFileSize;
+        }
+        return size <= maxDocumentSize;
+    }
+  }
+
+  /// Get max size for type and extension
+  static int getMaxSizeForType(AttachmentType type, String? extension) {
+    switch (type) {
+      case AttachmentType.image:
+        return maxImageSize;
+      case AttachmentType.document:
+        if (extension != null && isTextFile(extension)) {
+          return maxTextFileSize;
+        }
+        return maxDocumentSize;
+    }
+  }
+
+  /// Get formatted max size for type
+  static String getFormattedMaxSizeForType(AttachmentType type, String? extension) {
+    final maxSize = getMaxSizeForType(type, extension);
+    if (maxSize >= 1024 * 1024) {
+      return '${maxSize ~/ (1024 * 1024)}MB';
+    }
+    return '${maxSize ~/ 1024}KB';
+  }
 
   /// Get MIME type from extension
   static String? getMimeType(String extension) {

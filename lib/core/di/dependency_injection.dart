@@ -47,6 +47,7 @@ import '../../features/conversations/domain/usecases/send_message_usecase.dart';
 import '../../features/conversations/domain/usecases/send_media_usecase.dart';
 import '../../features/conversations/domain/usecases/update_conversation_status_usecase.dart';
 import '../../features/conversations/domain/usecases/assign_conversation_usecase.dart';
+import '../../features/conversations/domain/usecases/assign_agent_usecase.dart';
 import '../../features/conversations/domain/usecases/get_filter_options_usecase.dart' as conversation_filters;
 import '../../features/conversations/presentation/providers/conversation_provider.dart';
 
@@ -101,6 +102,7 @@ class DependencyInjection {
   static late final SendMediaUseCase _sendMediaUseCase;
   static late final UpdateConversationStatusUseCase _updateConversationStatusUseCase;
   static late final AssignConversationUseCase _assignConversationUseCase;
+  static late final AssignAgentUseCase _assignAgentUseCase;
   static late final conversation_filters.GetFilterOptionsUseCase _getConversationFilterOptionsUseCase;
   static late final ConversationProvider _conversationProvider;
 
@@ -225,6 +227,7 @@ class DependencyInjection {
     _sendMediaUseCase = SendMediaUseCase(_conversationRepository);
     _updateConversationStatusUseCase = UpdateConversationStatusUseCase(_conversationRepository);
     _assignConversationUseCase = AssignConversationUseCase(_conversationRepository);
+    _assignAgentUseCase = AssignAgentUseCase(_conversationRepository);
     _getConversationFilterOptionsUseCase = conversation_filters.GetFilterOptionsUseCase(_conversationRepository);
 
     // Providers
@@ -236,6 +239,7 @@ class DependencyInjection {
       sendMediaUseCase: _sendMediaUseCase,
       updateConversationStatusUseCase: _updateConversationStatusUseCase,
       assignConversationUseCase: _assignConversationUseCase,
+      assignAgentUseCase: _assignAgentUseCase,
       getFilterOptionsUseCase: _getConversationFilterOptionsUseCase,
     );
   }

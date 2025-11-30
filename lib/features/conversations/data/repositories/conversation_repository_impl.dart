@@ -337,4 +337,29 @@ class ConversationRepositoryImpl implements ConversationRepository {
       );
     }
   }
+
+  @override
+  Future<void> assignAgent({
+    required int conversationId,
+    required int userId,
+    bool reopen = false,
+  }) async {
+    try {
+      await _remoteDataSource.assignAgent(
+        conversationId: conversationId,
+        userId: userId,
+        reopen: reopen,
+      );
+    } catch (e, stackTrace) {
+      if (e is ViernesException) {
+        rethrow;
+      }
+
+      throw NetworkException(
+        'Failed to assign agent: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
 }

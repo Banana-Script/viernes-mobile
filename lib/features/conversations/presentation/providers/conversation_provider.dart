@@ -10,6 +10,7 @@ import '../../domain/usecases/send_message_usecase.dart';
 import '../../domain/usecases/send_media_usecase.dart';
 import '../../domain/usecases/update_conversation_status_usecase.dart';
 import '../../domain/usecases/assign_conversation_usecase.dart';
+import '../../domain/usecases/assign_agent_usecase.dart';
 import '../../domain/usecases/get_filter_options_usecase.dart';
 import '../../../customers/domain/entities/conversation_entity.dart';
 
@@ -30,6 +31,7 @@ class ConversationProvider extends ChangeNotifier {
   final SendMediaUseCase _sendMediaUseCase;
   final UpdateConversationStatusUseCase _updateConversationStatusUseCase;
   final AssignConversationUseCase _assignConversationUseCase;
+  final AssignAgentUseCase _assignAgentUseCase;
   final GetFilterOptionsUseCase _getFilterOptionsUseCase;
 
   // Current user's agent ID (for "My Conversations" filter)
@@ -43,6 +45,7 @@ class ConversationProvider extends ChangeNotifier {
     required SendMediaUseCase sendMediaUseCase,
     required UpdateConversationStatusUseCase updateConversationStatusUseCase,
     required AssignConversationUseCase assignConversationUseCase,
+    required AssignAgentUseCase assignAgentUseCase,
     required GetFilterOptionsUseCase getFilterOptionsUseCase,
   })  : _getConversationsUseCase = getConversationsUseCase,
         _getConversationDetailUseCase = getConversationDetailUseCase,
@@ -51,6 +54,7 @@ class ConversationProvider extends ChangeNotifier {
         _sendMediaUseCase = sendMediaUseCase,
         _updateConversationStatusUseCase = updateConversationStatusUseCase,
         _assignConversationUseCase = assignConversationUseCase,
+        _assignAgentUseCase = assignAgentUseCase,
         _getFilterOptionsUseCase = getFilterOptionsUseCase;
 
   // Conversations list state
@@ -624,6 +628,53 @@ class ConversationProvider extends ChangeNotifier {
       _errorMessage = 'Failed to assign conversation: $e';
       AppLogger.error(
         'Error assigning conversation: $e',
+        tag: 'ConversationProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Assign conversation to current user (self-assignment)
+  ///
+  /// Uses the dedicated /assign_agent endpoint for self-assignment.
+  /// Returns true on success, false on failure.
+  Future<bool> assignConversationToMe(int conversationId) async {
+    if (_currentUserAgentId == null) {
+      _errorMessage = 'No se pudo identificar el usuario actual';
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      await _assignAgentUseCase(
+        conversationId: conversationId,
+        userId: _currentUserAgentId!,
+        reopen: false,
+      );
+
+      // Reload conversation to get updated assignment
+      final updated = await _getConversationDetailUseCase(conversationId);
+
+      // Update in list if present
+      final index = _conversations.indexWhere((c) => c.id == conversationId);
+      if (index != -1) {
+        _conversations[index] = updated;
+      }
+
+      // Update selected conversation
+      if (_selectedConversation?.id == conversationId) {
+        _selectedConversation = updated;
+      }
+
+      notifyListeners();
+      return true;
+    } catch (e, stackTrace) {
+      _errorMessage = 'Failed to assign conversation: $e';
+      AppLogger.error(
+        'Error assigning conversation to self: $e',
         tag: 'ConversationProvider',
         error: e,
         stackTrace: stackTrace,

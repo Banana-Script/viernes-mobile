@@ -6,6 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
+import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../auth/domain/entities/user_entity.dart';
+import '../../../../customers/domain/entities/conversation_entity.dart';
 import '../../../domain/entities/quick_reply_entity.dart';
 import 'models/attachment_model.dart';
 import 'components/composer_toolbar.dart';
@@ -18,8 +21,12 @@ import 'components/quick_reply_selector.dart';
 /// Message Composer Widget
 ///
 /// Complete message input with emoji picker, quick replies, and file attachments.
+/// Handles business rules for conversation state, agent assignment, and locked status.
 class MessageComposer extends StatefulWidget {
   final int conversationId;
+  final ConversationEntity? conversation;
+  final UserEntity? currentUser;
+  final bool allowDirectChat;
   final bool isSending;
   final List<QuickReplyEntity> quickReplies;
   final bool isLoadingQuickReplies;
@@ -28,10 +35,14 @@ class MessageComposer extends StatefulWidget {
   final Future<void> Function(List<AttachmentModel> attachments, String? caption)? onSendMedia;
   final void Function(String query)? onSearchQuickReplies;
   final VoidCallback? onLoadMoreQuickReplies;
+  final Future<bool> Function()? onAssignToMe;
 
   const MessageComposer({
     super.key,
     required this.conversationId,
+    this.conversation,
+    this.currentUser,
+    this.allowDirectChat = false,
     this.isSending = false,
     this.quickReplies = const [],
     this.isLoadingQuickReplies = false,
@@ -40,6 +51,7 @@ class MessageComposer extends StatefulWidget {
     this.onSendMedia,
     this.onSearchQuickReplies,
     this.onLoadMoreQuickReplies,
+    this.onAssignToMe,
   });
 
   @override
@@ -55,6 +67,7 @@ class _MessageComposerState extends State<MessageComposer> {
   bool _showEmojiPicker = false;
   bool _showQuickReplies = false;
   bool _isSending = false;
+  bool _isAssigning = false;
 
   @override
   void dispose() {
@@ -95,9 +108,86 @@ class _MessageComposerState extends State<MessageComposer> {
     );
   }
 
+  /// Check if message is too long (exceeds WhatsApp limit)
+  bool get _isMessageTooLong =>
+      _textController.text.length > AttachmentModel.maxMessageLength;
+
+  /// Check if input is enabled based on conversation state and agent assignment
+  bool get _isInputEnabled {
+    final conversation = widget.conversation;
+    final currentUser = widget.currentUser;
+
+    // If no conversation data yet, allow input (loading state)
+    if (conversation == null) return true;
+    // If no user data yet, allow input (loading state)
+    if (currentUser == null) return true;
+
+    // 1. Status must be active ('010' = Started, '020' = In Progress)
+    final statusValue = conversation.status?.valueDefinition ?? '';
+    final isActiveStatus = statusValue == '010' || statusValue == '020';
+    if (!isActiveStatus) return false;
+
+    // 2. Must not be locked (or allowDirectChat overrides)
+    final isUnlocked = !conversation.locked || widget.allowDirectChat;
+    if (!isUnlocked) return false;
+
+    // 3. Current user must be the assigned agent
+    final isAssignedAgent = conversation.agentId == currentUser.databaseId;
+    return isAssignedAgent;
+  }
+
+  /// Get message explaining why input is disabled
+  String? get _disabledMessage {
+    final conversation = widget.conversation;
+    final currentUser = widget.currentUser;
+
+    if (conversation == null) return null;
+
+    // Check locked status first (before status check)
+    if (conversation.locked && !widget.allowDirectChat) {
+      return 'Conversación bloqueada. Usa una plantilla para reabrir.';
+    }
+
+    // Check conversation status
+    final statusValue = conversation.status?.valueDefinition ?? '';
+    if (statusValue == '030') {
+      return 'Esta conversación ha sido cerrada exitosamente.';
+    }
+    if (statusValue == '040') {
+      return 'Esta conversación fue cerrada sin éxito.';
+    }
+
+    // Check agent assignment
+    if (conversation.agentId == null) {
+      return 'Conversación sin asignar. Asígnala primero.';
+    }
+
+    // Check if assigned to another agent
+    if (currentUser != null && conversation.agentId != currentUser.databaseId) {
+      return 'Conversación asignada a: ${conversation.agent?.fullname ?? 'otro agente'}';
+    }
+
+    return null;
+  }
+
+  /// Check if conversation needs a template message (24h rule)
+  bool get _needsTemplateSelection {
+    final conversation = widget.conversation;
+    if (conversation == null) return false;
+
+    // If explicitly locked, needs template
+    if (conversation.locked) return true;
+
+    // Check if 24 hours have passed since last update
+    final diffInHours = DateTime.now().difference(conversation.updatedAt).inHours;
+    return diffInHours >= 24;
+  }
+
   bool get _canSend {
     return !_isSending &&
         !widget.isSending &&
+        _isInputEnabled &&
+        !_isMessageTooLong &&
         (_textController.text.trim().isNotEmpty || _attachments.isNotEmpty);
   }
 
@@ -225,8 +315,10 @@ class _MessageComposerState extends State<MessageComposer> {
       if (result == null || result.files.single.path == null) return;
 
       final file = result.files.single;
-      if (!AttachmentModel.isValidSize(file.size)) {
-        _showErrorSnackBar('Archivo muy grande. El máximo es 5MB.');
+      final extension = file.extension;
+      if (!AttachmentModel.isValidSizeForType(file.size, AttachmentType.document, extension)) {
+        final maxSize = AttachmentModel.getFormattedMaxSizeForType(AttachmentType.document, extension);
+        _showErrorSnackBar('Archivo muy grande. El máximo es $maxSize.');
         return;
       }
 
@@ -315,6 +407,11 @@ class _MessageComposerState extends State<MessageComposer> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isLoading = _isSending || widget.isSending;
 
+    // If input is disabled, show the disabled banner instead
+    if (!_isInputEnabled && _disabledMessage != null) {
+      return _buildDisabledBanner(context, _disabledMessage!, isDark);
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -335,6 +432,9 @@ class _MessageComposerState extends State<MessageComposer> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Character counter when approaching limit
+                if (_textController.text.length >= 3800)
+                  _buildCharacterCounter(isDark),
                 // File preview bar
                 if (_hasAttachments)
                   FilePreviewBar(
@@ -351,6 +451,150 @@ class _MessageComposerState extends State<MessageComposer> {
           ),
         ),
       ],
+    );
+  }
+
+  /// Handle self-assignment
+  Future<void> _handleAssignToMe() async {
+    if (widget.onAssignToMe == null || _isAssigning) return;
+
+    setState(() => _isAssigning = true);
+
+    try {
+      final success = await widget.onAssignToMe!();
+      if (!success && mounted) {
+        _showErrorSnackBar('Error al asignarte la conversación');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isAssigning = false);
+      }
+    }
+  }
+
+  /// Build banner shown when input is disabled
+  Widget _buildDisabledBanner(BuildContext context, String message, bool isDark) {
+    // Check if this is an unassigned conversation
+    final isUnassigned = widget.conversation?.agentId == null;
+
+    // Determine icon based on message type
+    IconData icon = Icons.lock_outline;
+    if (message.contains('asignar') || message.contains('asignada')) {
+      icon = Icons.person_off_outlined;
+    } else if (message.contains('cerrada')) {
+      icon = Icons.check_circle_outline;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: ViernesColors.getControlBackground(isDark),
+        border: Border(
+          top: BorderSide(
+            color: ViernesColors.getBorderColor(isDark).withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(ViernesSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: ViernesColors.warning.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Icon(
+                  icon,
+                  color: ViernesColors.warning,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: ViernesSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isUnassigned) ...[
+                      Text(
+                        'Conversación sin asignar',
+                        style: ViernesTextStyles.bodySmall.copyWith(
+                          color: ViernesColors.getTextColor(isDark),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'Asígnala para poder responder',
+                        style: ViernesTextStyles.caption.copyWith(
+                          color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ] else
+                      Text(
+                        message,
+                        style: ViernesTextStyles.bodySmall.copyWith(
+                          color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              // Show "Asignar a mí" button for unassigned conversations
+              if (isUnassigned && widget.onAssignToMe != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: ViernesSpacing.sm),
+                  child: ElevatedButton(
+                    onPressed: _isAssigning ? null : _handleAssignToMe,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ViernesColors.primary,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(0, 36),
+                      padding: const EdgeInsets.symmetric(horizontal: ViernesSpacing.md),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    child: _isAssigning
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text('Asignar a mí'),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build character counter shown when approaching the limit
+  Widget _buildCharacterCounter(bool isDark) {
+    final length = _textController.text.length;
+    final isOverLimit = length > AttachmentModel.maxMessageLength;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: ViernesSpacing.md,
+        vertical: ViernesSpacing.xs,
+      ),
+      alignment: Alignment.centerRight,
+      child: Text(
+        '$length / ${AttachmentModel.maxMessageLength}',
+        style: ViernesTextStyles.caption.copyWith(
+          color: isOverLimit ? ViernesColors.danger : ViernesColors.warning,
+          fontWeight: isOverLimit ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
     );
   }
 

@@ -86,6 +86,13 @@ abstract class ConversationRemoteDataSource {
 
   /// Get available agents
   Future<List<AgentOptionModel>> getAgents();
+
+  /// Assign a single agent to a conversation (self-assignment)
+  Future<void> assignAgent({
+    required int conversationId,
+    required int userId,
+    bool reopen = false,
+  });
 }
 
 /// Conversation Remote Data Source Implementation
@@ -918,5 +925,45 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
       stackTrace: stackTrace,
       originalError: e,
     );
+  }
+
+  @override
+  Future<void> assignAgent({
+    required int conversationId,
+    required int userId,
+    bool reopen = false,
+  }) async {
+    const endpoint = '/assign_agent';
+
+    try {
+      final queryParams = {
+        'conversation_id': conversationId.toString(),
+        'user_id': userId.toString(),
+        'reopen': reopen ? '1' : '0',
+      };
+
+      AppLogger.apiRequest('POST', endpoint, params: queryParams);
+
+      final response = await _httpClient.dio.post(
+        endpoint,
+        queryParameters: queryParams,
+      );
+
+      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw NetworkException(
+          'Failed to assign agent',
+          statusCode: response.statusCode,
+          endpoint: endpoint,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+      _handleDioException(e, stackTrace, endpoint, conversationId);
+    } catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace);
+      _handleGenericException(e, stackTrace, endpoint);
+    }
   }
 }

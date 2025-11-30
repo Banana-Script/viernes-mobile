@@ -83,6 +83,13 @@ abstract class ConversationRepository {
 
   /// Get available agents for filtering
   Future<List<AgentOption>> getAgents();
+
+  /// Assign a single agent to a conversation (self-assignment)
+  Future<void> assignAgent({
+    required int conversationId,
+    required int userId,
+    bool reopen = false,
+  });
 }
 
 /// Conversations List Response
