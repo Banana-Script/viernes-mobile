@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../domain/entities/organization_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
@@ -7,6 +8,7 @@ import '../../domain/usecases/sign_out_usecase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
 import '../../domain/usecases/get_user_profile_usecase.dart';
 import '../../domain/usecases/change_agent_availability_usecase.dart';
+import '../../domain/usecases/get_organization_info_usecase.dart';
 import '../../../../core/utils/logger.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
@@ -18,6 +20,7 @@ class AuthProvider extends ChangeNotifier {
   final ResetPasswordUseCase resetPasswordUseCase;
   final GetUserProfileUseCase getUserProfileUseCase;
   final ChangeAgentAvailabilityUseCase changeAgentAvailabilityUseCase;
+  final GetOrganizationInfoUseCase getOrganizationInfoUseCase;
 
   AuthProvider({
     required this.getCurrentUserUseCase,
@@ -26,12 +29,14 @@ class AuthProvider extends ChangeNotifier {
     required this.resetPasswordUseCase,
     required this.getUserProfileUseCase,
     required this.changeAgentAvailabilityUseCase,
+    required this.getOrganizationInfoUseCase,
   }) {
     _initializeAuthState();
   }
 
   AuthStatus _status = AuthStatus.initial;
   UserEntity? _user;
+  OrganizationEntity? _organization;
   String? _errorMessage;
   StreamSubscription<UserEntity?>? _authStateSubscription;
   bool _isLoadingProfile = false;
@@ -39,6 +44,8 @@ class AuthProvider extends ChangeNotifier {
 
   AuthStatus get status => _status;
   UserEntity? get user => _user;
+  OrganizationEntity? get organization => _organization;
+  String? get organizationName => _organization?.name;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _status == AuthStatus.authenticated && _user != null;
   bool get isLoadingProfile => _isLoadingProfile;
@@ -75,6 +82,9 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = null;
 
       AppLogger.info('User profile loaded successfully', tag: 'AuthProvider');
+
+      // Load organization info in parallel (non-blocking)
+      _loadOrganizationInfo();
     } catch (e) {
       AppLogger.error('Failed to load user profile: $e', tag: 'AuthProvider');
 
@@ -86,6 +96,19 @@ class AuthProvider extends ChangeNotifier {
     } finally {
       _isLoadingProfile = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> _loadOrganizationInfo() async {
+    try {
+      AppLogger.info('Loading organization info', tag: 'AuthProvider');
+      final organizationInfo = await getOrganizationInfoUseCase.call();
+      _organization = organizationInfo;
+      AppLogger.info('Organization info loaded: ${organizationInfo.name}', tag: 'AuthProvider');
+      notifyListeners();
+    } catch (e) {
+      AppLogger.error('Failed to load organization info: $e', tag: 'AuthProvider');
+      // Organization info is optional, don't set error message
     }
   }
 
@@ -169,6 +192,7 @@ class AuthProvider extends ChangeNotifier {
       await signOutUseCase();
 
       _user = null;
+      _organization = null;
       _status = AuthStatus.unauthenticated;
       _errorMessage = null;
 

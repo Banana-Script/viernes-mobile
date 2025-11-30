@@ -73,7 +73,9 @@ class ConversationModel extends ConversationEntity {
       integrationId: json['integration_id'] as int?,
       readed: json['readed'] as bool? ?? false,
       locked: json['locked'] as bool? ?? false,
-      memory: json['memory'] as String?,
+      memory: json['memory'] is Map
+          ? null // If it's a Map, we can't use it as a String, so set to null
+          : json['memory'] as String?,
       unreaded: json['unreaded'] as int? ?? 0,
       callId: json['call_id'] as int?,
       campaignId: json['campaign_id'] as int?,

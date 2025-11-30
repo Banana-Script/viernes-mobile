@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../../core/services/http_client.dart';
+import '../models/organization_model.dart';
 import '../models/user_model.dart';
 
 abstract class UserRemoteDataSource {
@@ -11,6 +12,10 @@ abstract class UserRemoteDataSource {
   /// userId: The database user ID (e.g., 660, NOT the organization_users.id)
   /// isAvailable: true for active (010), false for inactive (020)
   Future<void> changeAgentAvailability(int userId, bool isAvailable);
+
+  /// Fetches the organization info for the logged user
+  /// Uses the /organizations/logged/user endpoint
+  Future<OrganizationModel> getOrganizationInfo();
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -64,6 +69,27 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       throw _handleDioError(e, 'Failed to change agent availability');
     } catch (e) {
       throw Exception('Unexpected error occurred while changing agent availability: $e');
+    }
+  }
+
+  @override
+  Future<OrganizationModel> getOrganizationInfo() async {
+    try {
+      final response = await _httpClient.dio.get('/organizations/logged/user');
+
+      if (response.statusCode == 200) {
+        return OrganizationModel.fromJson(response.data);
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          message: 'Failed to fetch organization info',
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e, 'Failed to fetch organization info');
+    } catch (e) {
+      throw Exception('Unexpected error occurred while fetching organization info: $e');
     }
   }
 

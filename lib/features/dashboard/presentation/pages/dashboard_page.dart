@@ -10,6 +10,7 @@ import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_circular_icon_button.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../widgets/stats_card.dart';
 import '../widgets/sentiment_chart.dart';
@@ -105,47 +106,55 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   }
 
   Widget _buildHeader(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-      child: Stack(
-        children: [
-          // Centered title
-          Center(
-            child: Text(
-              AppStrings.dashboard,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
-                letterSpacing: 1.2,
-              ),
-            ),
-          ),
+    return provider_pkg.Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        final organizationName = authProvider.organizationName ?? AppStrings.dashboard;
 
-          // Right-side buttons
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Row(
-              children: [
-                // Export button
-                Semantics(
-                  label: AppStrings.exportDataButton,
-                  button: true,
-                  child: ViernesCircularIconButton(
-                    onTap: () => _showExportDialog(context),
-                    child: Icon(
-                      Icons.download,
-                      color: isDark ? ViernesColors.accent : ViernesColors.primary,
-                      size: 20,
-                    ),
+        return Container(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+          child: Stack(
+            children: [
+              // Centered title - Organization name
+              Center(
+                child: Text(
+                  organizationName,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                    letterSpacing: 1.2,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ],
-            ),
+              ),
+
+              // Right-side buttons
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Row(
+                  children: [
+                    // Export button
+                    Semantics(
+                      label: AppStrings.exportDataButton,
+                      button: true,
+                      child: ViernesCircularIconButton(
+                        onTap: () => _showExportDialog(context),
+                        child: Icon(
+                          Icons.download,
+                          color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

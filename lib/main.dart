@@ -101,7 +101,6 @@ class AuthenticationWrapper extends StatelessWidget {
           case auth_provider.AuthStatus.error:
             return const LoginPage();
           case auth_provider.AuthStatus.loading:
-            // Show current screen with loading overlay
             return authProvider.user != null ? const HomePage() : const LoginPage();
           default:
             return const LoginPage();

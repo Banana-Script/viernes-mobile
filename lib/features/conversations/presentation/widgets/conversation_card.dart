@@ -233,7 +233,8 @@ class _ConversationCardState extends State<ConversationCard> {
   }
 
   Widget _buildAvatar(BuildContext context) {
-    final initial = (widget.conversation.user?.fullname ?? '?')[0].toUpperCase();
+    final fullname = widget.conversation.user?.fullname ?? '';
+    final initial = fullname.isNotEmpty ? fullname[0].toUpperCase() : '?';
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -320,7 +321,9 @@ class _ConversationCardState extends State<ConversationCard> {
     }
 
     // Capitalize first letter of instance as fallback
-    return instance[0].toUpperCase() + instance.substring(1).toLowerCase();
+    if (instance.isEmpty) return 'Unknown';
+    return instance[0].toUpperCase() +
+           (instance.length > 1 ? instance.substring(1).toLowerCase() : '');
   }
 
   String _getAgentName() {

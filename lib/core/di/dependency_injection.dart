@@ -11,6 +11,7 @@ import '../../features/auth/domain/usecases/sign_out_usecase.dart';
 import '../../features/auth/domain/usecases/reset_password_usecase.dart';
 import '../../features/auth/domain/usecases/get_user_profile_usecase.dart';
 import '../../features/auth/domain/usecases/change_agent_availability_usecase.dart';
+import '../../features/auth/domain/usecases/get_organization_info_usecase.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 
 // Dashboard imports
@@ -64,6 +65,7 @@ class DependencyInjection {
   static late final ResetPasswordUseCase _resetPasswordUseCase;
   static late final GetUserProfileUseCase _getUserProfileUseCase;
   static late final ChangeAgentAvailabilityUseCase _changeAgentAvailabilityUseCase;
+  static late final GetOrganizationInfoUseCase _getOrganizationInfoUseCase;
   static late final auth_provider.AuthProvider _authProvider;
 
   // Shared dependencies
@@ -138,6 +140,7 @@ class DependencyInjection {
     _resetPasswordUseCase = ResetPasswordUseCase(repository: _authRepository);
     _getUserProfileUseCase = GetUserProfileUseCase(_userRepository);
     _changeAgentAvailabilityUseCase = ChangeAgentAvailabilityUseCase(_userRepository);
+    _getOrganizationInfoUseCase = GetOrganizationInfoUseCase(_userRepository);
 
     // Providers
     _authProvider = auth_provider.AuthProvider(
@@ -147,6 +150,7 @@ class DependencyInjection {
       resetPasswordUseCase: _resetPasswordUseCase,
       getUserProfileUseCase: _getUserProfileUseCase,
       changeAgentAvailabilityUseCase: _changeAgentAvailabilityUseCase,
+      getOrganizationInfoUseCase: _getOrganizationInfoUseCase,
     );
   }
 
