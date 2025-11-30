@@ -3,12 +3,10 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
-import '../../../../shared/widgets/viernes_circular_icon_button.dart';
+import '../../../../shared/widgets/list_components/index.dart';
 import '../providers/conversation_provider.dart';
 import '../widgets/conversation_card.dart';
 import '../widgets/conversation_filter_modal.dart';
-import '../widgets/conversation_search_bar.dart';
-import '../widgets/conversation_loading_skeleton.dart';
 import '../widgets/conversation_view_toggle.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import 'conversation_detail_page.dart';
@@ -51,6 +49,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -64,11 +63,6 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
         provider.loadMoreConversations();
       }
     }
-  }
-
-  void _applySearch() {
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
-    provider.applySearch();
   }
 
   void _clearSearch() {
@@ -101,99 +95,131 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   }
 
   Widget _buildHeader(BuildContext context, bool isDark) {
-    return Container(
-      height: 80,
-      padding: const EdgeInsets.fromLTRB(
-        ViernesSpacing.md,
-        ViernesSpacing.lg,
-        ViernesSpacing.md,
-        ViernesSpacing.md,
-      ),
-      child: Stack(
-        children: [
-          // Center: Title
-          Center(
-            child: Text(
-              'CONVERSATIONS',
-              style: ViernesTextStyles.h5.copyWith(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-                color: ViernesColors.getTextColor(isDark),
-              ),
-            ),
-          ),
+    return const ViernesPageHeader(title: 'Conversations');
+  }
 
-          // Right: Filter button
-          Positioned(
-            right: 0,
-            child: Consumer<ConversationProvider>(
-              builder: (context, provider, _) {
-                final isDark = Theme.of(context).brightness == Brightness.dark;
-                return Stack(
-                  children: [
-                    ViernesCircularIconButton(
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => ConversationFilterModal(
-                            initialFilters: provider.filters,
-                          ),
-                        );
-                      },
-                      child: Icon(
-                        Icons.filter_list,
-                        color: isDark ? ViernesColors.accent : ViernesColors.primary,
-                        size: 20,
-                      ),
-                    ),
-                    if (provider.filters.activeFilterCount > 0)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: ViernesColors.accent,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 18,
-                            minHeight: 18,
-                          ),
-                          child: Text(
-                            '${provider.filters.activeFilterCount}',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                  ],
-                );
+  Widget _buildSearchBar(BuildContext context, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: ViernesSpacing.md,
+        vertical: ViernesSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ViernesSearchBar(
+              controller: _searchController,
+              hintText: 'Search conversations...',
+              onSearchChanged: (value) {
+                final provider = Provider.of<ConversationProvider>(context, listen: false);
+                provider.updateSearchTerm(value);
+                provider.applySearch();
               },
+              onClear: _clearSearch,
             ),
           ),
+          const SizedBox(width: ViernesSpacing.sm),
+          _buildFilterButton(context, isDark),
         ],
       ),
     );
   }
 
-  Widget _buildSearchBar(BuildContext context, bool isDark) {
-    return ConversationSearchBar(
-      controller: _searchController,
-      hintText: 'Search conversations...',
-      onChanged: (value) {
-        // Debounced search handled by the widget
-        final provider = Provider.of<ConversationProvider>(context, listen: false);
-        provider.updateSearchTerm(value);
+  Widget _buildFilterButton(BuildContext context, bool isDark) {
+    return Consumer<ConversationProvider>(
+      builder: (context, provider, _) {
+        final hasActiveFilters = provider.filters.activeFilterCount > 0;
+
+        return Stack(
+          children: [
+            Container(
+              height: 56,
+              width: 56,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
+                    : Colors.white.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
+                      : const Color(0xFFe5e7eb).withValues(alpha: 0.3),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 32,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => ConversationFilterModal(
+                        initialFilters: provider.filters,
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+                  child: Center(
+                    child: Icon(
+                      Icons.filter_list,
+                      color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (hasActiveFilters)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        ViernesColors.secondary.withValues(alpha: 0.9),
+                        ViernesColors.accent.withValues(alpha: 0.9),
+                      ],
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark
+                          ? ViernesColors.backgroundDark
+                          : ViernesColors.backgroundLight,
+                      width: 2,
+                    ),
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 20,
+                    minHeight: 20,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${provider.filters.activeFilterCount}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
       },
-      onSubmitted: _applySearch,
-      onClear: _clearSearch,
     );
   }
 
@@ -246,76 +272,29 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
         // Loading state
         if (provider.status == ConversationStatus.loading &&
             provider.conversations.isEmpty) {
-          return const ConversationLoadingSkeleton();
+          return const ViernesListSkeleton(
+            preset: ViernesSkeletonPreset.conversation,
+          );
         }
 
         // Error state
         if (provider.status == ConversationStatus.error &&
             provider.conversations.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 64,
-                  color: ViernesColors.danger.withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: ViernesSpacing.md),
-                Text(
-                  'Error loading conversations',
-                  style: ViernesTextStyles.h6.copyWith(
-                    color: ViernesColors.getTextColor(isDark),
-                  ),
-                ),
-                const SizedBox(height: ViernesSpacing.sm),
-                Text(
-                  provider.errorMessage ?? 'Unknown error',
-                  style: ViernesTextStyles.bodySmall.copyWith(
-                    color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: ViernesSpacing.lg),
-                ElevatedButton(
-                  onPressed: () => provider.retry(),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
+          return ViernesErrorState(
+            message: provider.errorMessage ?? 'Error loading conversations',
+            onRetry: () => provider.retry(),
           );
         }
 
         // Empty state
         if (provider.conversations.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.chat_bubble_outline,
-                  size: 64,
-                  color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.3),
-                ),
-                const SizedBox(height: ViernesSpacing.md),
-                Text(
-                  'No conversations found',
-                  style: ViernesTextStyles.h6.copyWith(
-                    color: ViernesColors.getTextColor(isDark),
-                  ),
-                ),
-                const SizedBox(height: ViernesSpacing.sm),
-                Text(
-                  provider.searchTerm.isNotEmpty || provider.filters.hasActiveFilters
-                      ? 'Try adjusting your filters'
-                      : 'Conversations will appear here',
-                  style: ViernesTextStyles.bodySmall.copyWith(
-                    color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+          return ViernesEmptyState(
+            message: 'No conversations found',
+            icon: Icons.chat_bubble_outline,
+            hasFilters: provider.searchTerm.isNotEmpty || provider.filters.hasActiveFilters,
+            description: provider.searchTerm.isNotEmpty || provider.filters.hasActiveFilters
+                ? 'Try adjusting your filters'
+                : 'Conversations will appear here',
           );
         }
 

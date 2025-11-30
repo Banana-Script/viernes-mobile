@@ -709,50 +709,39 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
 
   @override
   Future<List<ConversationStatusOptionModel>> getStatuses() async {
-    const endpoint = '/conversation_statuses/';
-
-    try {
-      AppLogger.apiRequest('GET', endpoint);
-
-      final response = await _httpClient.dio.get(endpoint);
-
-      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
-
-      if (response.statusCode == 200) {
-        final data = response.data as Map<String, dynamic>;
-        return (data['data'] as List?)
-                ?.map((s) => ConversationStatusOptionModel.fromJson(s as Map<String, dynamic>))
-                .toList() ??
-            [];
-      } else {
-        throw NetworkException(
-          'Failed to load statuses',
-          statusCode: response.statusCode,
-          endpoint: endpoint,
-        );
-      }
-    } on DioException catch (e, stackTrace) {
-      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
-      throw NetworkException(
-        'Network error while fetching statuses',
-        statusCode: e.response?.statusCode,
-        endpoint: endpoint,
-        stackTrace: stackTrace,
-        originalError: e,
-      );
-    } catch (e, stackTrace) {
-      AppLogger.apiError(endpoint, e, stackTrace);
-      throw ParseException(
-        'Error parsing statuses response: ${e.toString()}',
-        stackTrace: stackTrace,
-        originalError: e,
-      );
-    }
+    // Conversation statuses are fixed values in the database (no API endpoint exists)
+    // These match the web frontend constants in conversationStatus.ts
+    return const [
+      ConversationStatusOptionModel(
+        id: 1,
+        value: '010',
+        label: 'Started',
+        description: 'Started',
+      ),
+      ConversationStatusOptionModel(
+        id: 2,
+        value: '020',
+        label: 'In Progress',
+        description: 'In Progress',
+      ),
+      ConversationStatusOptionModel(
+        id: 3,
+        value: '030',
+        label: 'Completed Successfully',
+        description: 'Completed Successfully',
+      ),
+      ConversationStatusOptionModel(
+        id: 4,
+        value: '040',
+        label: 'Completed Unsuccessfully',
+        description: 'Completed Unsuccessfully',
+      ),
+    ];
   }
 
   @override
   Future<List<TagOptionModel>> getTags() async {
-    const endpoint = '/organizations/organization_tags/';
+    const endpoint = '/organization-tags/';
 
     try {
       AppLogger.apiRequest('GET', endpoint);

@@ -6,15 +6,12 @@ import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../shared/widgets/viernes_background.dart';
+import '../../../../shared/widgets/list_components/index.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../providers/customer_provider.dart';
 import '../widgets/customer_card.dart';
-import '../widgets/customer_search_bar.dart';
-import '../widgets/customer_filter_drawer.dart';
-import '../widgets/customer_empty_state.dart';
-import '../widgets/customer_loading_skeleton.dart';
-import '../widgets/customer_error_state.dart';
+import '../widgets/customer_filter_modal.dart';
 import '../widgets/customer_view_toggle.dart';
 import 'customer_detail_page.dart';
 import 'customer_form_page.dart';
@@ -48,6 +45,7 @@ class CustomerListPage extends ConsumerStatefulWidget {
 
 class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -73,7 +71,15 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
+    provider.updateSearchTerm('');
+    provider.applySearch();
   }
 
   void _onScroll() {
@@ -139,30 +145,39 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
 
               const SizedBox(height: ViernesSpacing.md),
 
-              // Search bar
-              const Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ViernesSpacing.md,
-                ),
-                child: CustomerSearchBar(),
-              ),
-
-              const SizedBox(height: ViernesSpacing.md),
-
-              // Toggle and filter row
+              // Search bar and filter button row
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: ViernesSpacing.md,
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
-                      child: CustomerViewToggle(),
+                    Expanded(
+                      child: ViernesSearchBar(
+                        controller: _searchController,
+                        hintText: 'Search customers...',
+                        onSearchChanged: (value) {
+                          final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
+                          provider.updateSearchTerm(value);
+                          provider.applySearch();
+                        },
+                        onClear: _clearSearch,
+                      ),
                     ),
                     const SizedBox(width: ViernesSpacing.sm),
                     _buildFilterButton(isDark),
                   ],
                 ),
+              ),
+
+              const SizedBox(height: ViernesSpacing.md),
+
+              // View toggle
+              const Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ViernesSpacing.md,
+                ),
+                child: CustomerViewToggle(),
               ),
 
               const SizedBox(height: ViernesSpacing.md),
@@ -181,30 +196,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   }
 
   Widget _buildHeader(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-        ViernesSpacing.md,
-        ViernesSpacing.space5,
-        ViernesSpacing.md,
-        ViernesSpacing.md,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              'Customers',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
-                letterSpacing: 1.2,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
+    return const ViernesPageHeader(title: 'Customers');
   }
 
   Widget _buildFilterButton(bool isDark) {
@@ -215,6 +207,8 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
         return Stack(
           children: [
             Container(
+              height: 56,
+              width: 56,
               decoration: BoxDecoration(
                 color: isDark
                     ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
@@ -223,17 +217,25 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
                 border: Border.all(
                   color: isDark
                       ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
-                      : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
+                      : const Color(0xFFe5e7eb).withValues(alpha: 0.3),
                   width: 1,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 32,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () => _openFilterDrawer(context),
+                  onTap: () => _openFilterModal(context),
                   borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
-                  child: Padding(
-                    padding: const EdgeInsets.all(ViernesSpacing.space3),
+                  child: Center(
                     child: Icon(
                       Icons.filter_list,
                       color: isDark ? ViernesColors.accent : ViernesColors.primary,
@@ -287,31 +289,15 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
     );
   }
 
-  void _openFilterDrawer(BuildContext context) {
-    showGeneralDialog(
+  void _openFilterModal(BuildContext context) {
+    final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: 'Filter',
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(1, 0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeInOut,
-          )),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.85,
-              child: const CustomerFilterDrawer(),
-            ),
-          ),
-        );
-      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CustomerFilterModal(
+        initialFilters: provider.filters,
+      ),
     );
   }
 
@@ -320,7 +306,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
       builder: (context, provider, _) {
         // Error state
         if (provider.status == CustomerStatus.error) {
-          return CustomerErrorState(
+          return ViernesErrorState(
             message: provider.errorMessage ?? 'An error occurred',
             onRetry: () => provider.retry(),
           );
@@ -328,12 +314,16 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
 
         // Initial loading state
         if (provider.status == CustomerStatus.loading && provider.customers.isEmpty) {
-          return const CustomerLoadingSkeleton();
+          return const ViernesListSkeleton(
+            preset: ViernesSkeletonPreset.customer,
+          );
         }
 
         // Empty state
         if (provider.customers.isEmpty && provider.status == CustomerStatus.loaded) {
-          return CustomerEmptyState(
+          return ViernesEmptyState(
+            message: 'No customers found',
+            icon: Icons.people_outline,
             hasFilters: provider.filters.hasActiveFilters || provider.searchTerm.isNotEmpty,
             description: provider.filters.hasActiveFilters || provider.searchTerm.isNotEmpty
                 ? 'Try adjusting your filters or search query'
