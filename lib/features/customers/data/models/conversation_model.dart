@@ -37,8 +37,8 @@ class ConversationModel extends ConversationEntity {
   /// Create from JSON
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
     return ConversationModel(
-      id: json['id'] as int,
-      userId: json['user_id'] as int,
+      id: json['id'] as int? ?? 0,
+      userId: json['user_id'] as int? ?? 0,
       user: json['user'] != null
           ? CustomerDetailModel.fromJson(json['user'] as Map<String, dynamic>)
           : null,
@@ -58,15 +58,19 @@ class ConversationModel extends ConversationEntity {
               .map((a) => ConversationAssignModel.fromJson(a as Map<String, dynamic>))
               .toList()
           : [],
-      organizationId: json['organization_id'] as int,
-      statusId: json['status_id'] as int,
+      organizationId: json['organization_id'] as int? ?? 0,
+      statusId: json['status_id'] as int? ?? 0,
       agentId: json['agent_id'] as int?,
       priority: json['priority'] as String?,
       category: json['category'] as String?,
       sentiment: json['sentiment'] as String?,
       type: ConversationType.fromString(json['type'] as String? ?? 'CHAT'),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : DateTime.now(),
       firstResponseAt: json['first_response_at'] != null
           ? DateTime.parse(json['first_response_at'] as String)
           : null,
@@ -176,9 +180,26 @@ class ConversationTagModel extends ConversationTag {
   });
 
   factory ConversationTagModel.fromJson(Map<String, dynamic> json) {
+    // The API returns tags with a nested 'tag' object containing the actual tag data
+    // Nested structure: { "tag_id": 629, "id": 1141140, "tag": { "tag_name": "other", ... } }
+    // Flat structure: { "id": 629, "tag_name": "other", "description": "..." }
+    final tagData = json['tag'] is Map<String, dynamic>
+        ? json['tag'] as Map<String, dynamic>
+        : null;
+
+    if (tagData != null) {
+      // Nested structure from conversation detail endpoint
+      return ConversationTagModel(
+        id: tagData['id'] as int? ?? json['tag_id'] as int? ?? 0,
+        tagName: tagData['tag_name'] as String? ?? '',
+        description: tagData['description'] as String? ?? '',
+      );
+    }
+
+    // Flat structure fallback (from other endpoints)
     return ConversationTagModel(
-      id: json['id'] as int,
-      tagName: json['tag_name'] as String? ?? '',
+      id: json['tag_id'] as int? ?? json['id'] as int? ?? 0,
+      tagName: json['tag_name'] as String? ?? json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
     );
   }
@@ -204,11 +225,15 @@ class ConversationAssignModel extends ConversationAssign {
 
   factory ConversationAssignModel.fromJson(Map<String, dynamic> json) {
     return ConversationAssignModel(
-      id: json['id'] as int,
-      userId: json['user_id'] as int,
-      user: AssignedUserModel.fromJson(json['user'] as Map<String, dynamic>),
-      conversationId: json['conversation_id'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id'] as int? ?? 0,
+      userId: json['user_id'] as int? ?? 0,
+      user: json['user'] != null
+          ? AssignedUserModel.fromJson(json['user'] as Map<String, dynamic>)
+          : const AssignedUserModel(id: 0, fullname: '', email: ''),
+      conversationId: json['conversation_id'] as int? ?? 0,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : DateTime.now(),
     );
   }
 
@@ -233,7 +258,7 @@ class AssignedUserModel extends AssignedUser {
 
   factory AssignedUserModel.fromJson(Map<String, dynamic> json) {
     return AssignedUserModel(
-      id: json['id'] as int,
+      id: json['id'] as int? ?? 0,
       fullname: json['fullname'] as String? ?? '',
       email: json['email'] as String? ?? '',
     );

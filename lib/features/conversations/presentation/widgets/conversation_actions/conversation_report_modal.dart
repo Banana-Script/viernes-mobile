@@ -438,17 +438,15 @@ class ConversationReportModal extends StatelessWidget {
             vertical: ViernesSpacing.xs,
           ),
           decoration: BoxDecoration(
-            color: ViernesColors.info.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: ViernesColors.info.withValues(alpha: 0.3),
-            ),
+            color: ViernesColors.secondary,
+            borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             tag.tagName,
             style: ViernesTextStyles.bodySmall.copyWith(
-              color: ViernesColors.info,
+              fontSize: 11,
               fontWeight: FontWeight.w500,
+              color: Colors.black,
             ),
           ),
         );

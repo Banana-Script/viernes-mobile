@@ -293,6 +293,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     return AppBar(
       backgroundColor: ViernesColors.getControlBackground(isDark),
       elevation: 0,
+      centerTitle: false,
       leading: IconButton(
         icon: Icon(
           Icons.arrow_back,
