@@ -62,3 +62,9 @@ app.*.map.json
 
 # Firebase cache
 .firebase/
+
+# Flutter Linux symlinks
+linux/flutter/ephemeral/.plugin_symlinks/
+
+# Windows artifacts
+nul
