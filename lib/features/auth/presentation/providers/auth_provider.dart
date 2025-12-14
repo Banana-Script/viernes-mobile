@@ -31,6 +31,7 @@ class AuthProvider extends ChangeNotifier {
     required this.changeAgentAvailabilityUseCase,
     required this.getOrganizationInfoUseCase,
   }) {
+    debugPrint('[AuthProvider] Constructor called, initializing auth state...');
     _initializeAuthState();
   }
 
@@ -52,40 +53,50 @@ class AuthProvider extends ChangeNotifier {
   bool get isTogglingAvailability => _isTogglingAvailability;
 
   void _initializeAuthState() {
+    debugPrint('[AuthProvider] Setting up authStateChanges listener...');
     _authStateSubscription = getCurrentUserUseCase.authStateChanges.listen((user) async {
+      debugPrint('[AuthProvider] Auth state changed: user=${user?.email}');
       if (user != null) {
         // User is authenticated in Firebase, now fetch complete profile from backend
         await _loadUserProfile(user);
       } else {
         // User is not authenticated
+        debugPrint('[AuthProvider] No user, setting status to unauthenticated');
         _user = null;
         _status = AuthStatus.unauthenticated;
         _errorMessage = null;
         notifyListeners();
       }
     });
+    debugPrint('[AuthProvider] Listener setup complete');
   }
 
   Future<void> _loadUserProfile(UserEntity firebaseUser) async {
+    debugPrint('[AuthProvider] _loadUserProfile started for ${firebaseUser.email}');
     try {
       _isLoadingProfile = true;
       _status = AuthStatus.loading;
+      debugPrint('[AuthProvider] Status -> loading, calling notifyListeners');
       notifyListeners();
 
+      debugPrint('[AuthProvider] Calling getUserProfileUseCase...');
       AppLogger.info('Loading user profile from backend', tag: 'AuthProvider');
 
       // Fetch complete profile from backend (no UID needed, uses token)
       final completeProfile = await getUserProfileUseCase.call();
 
+      debugPrint('[AuthProvider] Profile received: databaseId=${completeProfile.databaseId}, orgId=${completeProfile.organizationId}');
       _user = completeProfile;
       _status = AuthStatus.authenticated;
       _errorMessage = null;
 
+      debugPrint('[AuthProvider] Status -> authenticated, user: ${completeProfile.email}');
       AppLogger.info('User profile loaded successfully', tag: 'AuthProvider');
 
       // Load organization info in parallel (non-blocking)
       _loadOrganizationInfo();
     } catch (e) {
+      debugPrint('[AuthProvider] ERROR loading profile: $e');
       AppLogger.error('Failed to load user profile: $e', tag: 'AuthProvider');
 
       // Even if backend fails, we still have Firebase user data
@@ -95,6 +106,7 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = 'Could not load complete profile. Some features may be limited.';
     } finally {
       _isLoadingProfile = false;
+      debugPrint('[AuthProvider] Profile load complete, calling notifyListeners. Status: $_status');
       notifyListeners();
     }
   }

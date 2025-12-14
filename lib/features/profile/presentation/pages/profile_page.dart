@@ -10,6 +10,7 @@ import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../../../../shared/widgets/viernes_availability_toggle.dart';
 import '../../../auth/presentation/providers/auth_provider.dart' as auth_provider;
+import '../widgets/notification_settings.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -197,6 +198,11 @@ class ProfilePage extends ConsumerWidget {
                         onToggle: (_) => authProvider.toggleAvailability(),
                         errorMessage: authProvider.errorMessage,
                       ),
+
+                    const SizedBox(height: 16),
+
+                    // Notification Settings
+                    const NotificationSettings(),
 
                     const SizedBox(height: 16),
 

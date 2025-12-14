@@ -50,6 +50,9 @@ dependencies:
   # Chat & Real-time
   web_socket_channel: ^2.4.0
 
+  # Local Notifications
+  flutter_local_notifications: ^19.0.0
+
   # Pull to refresh
   pull_to_refresh: ^2.0.0
 

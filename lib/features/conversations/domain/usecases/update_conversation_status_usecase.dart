@@ -13,15 +13,18 @@ class UpdateConversationStatusUseCase {
   /// Parameters:
   /// - [conversationId]: The conversation ID
   /// - [statusId]: New status ID
+  /// - [organizationId]: The organization ID
   ///
   /// Returns void on success
   Future<void> call({
     required int conversationId,
     required int statusId,
+    required int organizationId,
   }) async {
     return await _repository.updateConversationStatus(
       conversationId: conversationId,
       statusId: statusId,
+      organizationId: organizationId,
     );
   }
 }

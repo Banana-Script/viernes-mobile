@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import '../../../../core/models/sse_events.dart';
+import '../../../../core/services/organization_sse_service.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/conversation_filters.dart';
 import '../../domain/entities/message_entity.dart';
@@ -92,6 +94,10 @@ class ConversationProvider extends ChangeNotifier {
   // First message cache for conversation cards (lazy loading)
   final Map<int, String?> _firstMessageCache = {};
   final Set<int> _loadingFirstMessages = {};
+
+  // SSE subscriptions
+  final List<VoidCallback> _sseUnsubscribers = [];
+  bool _sseConnected = false;
 
   // Getters
   ConversationStatus get status => _status;
@@ -413,7 +419,7 @@ class ConversationProvider extends ChangeNotifier {
     // Verify we're still on the same conversation before updating state
     if (_selectedConversationId != conversationId) return;
 
-    _messages = response.messages;
+    _messages = List<MessageEntity>.from(response.messages);
     _messageTotalCount = response.totalCount;
     _messageTotalPages = response.totalPages;
     _messageCurrentPage = response.currentPage;
@@ -443,7 +449,7 @@ class ConversationProvider extends ChangeNotifier {
         pageSize: _messagePageSize,
       );
 
-      _messages = response.messages;
+      _messages = List<MessageEntity>.from(response.messages);
       _messageTotalCount = response.totalCount;
       _messageTotalPages = response.totalPages;
       _messageCurrentPage = response.currentPage;
@@ -629,11 +635,12 @@ class ConversationProvider extends ChangeNotifier {
   }
 
   /// Update conversation status
-  Future<bool> updateConversationStatus(int conversationId, int statusId) async {
+  Future<bool> updateConversationStatus(int conversationId, int statusId, int organizationId) async {
     try {
       await _updateConversationStatusUseCase(
         conversationId: conversationId,
         statusId: statusId,
+        organizationId: organizationId,
       );
 
       // Update in list if present
@@ -771,5 +778,374 @@ class ConversationProvider extends ChangeNotifier {
     _messageStatus = MessageStatus.initial;
     _messageErrorMessage = null;
     notifyListeners();
+  }
+
+  // =============================================================================
+  // SSE Real-Time Integration
+  // =============================================================================
+
+  /// Whether SSE is connected
+  bool get sseConnected => _sseConnected;
+
+  /// Connect to organization SSE for real-time updates
+  Future<void> connectSSE({
+    required int organizationId,
+    required int currentUserId,
+  }) async {
+    if (_sseConnected) {
+      AppLogger.warning(
+        'SSE already connected',
+        tag: 'ConversationProvider',
+      );
+      return;
+    }
+
+    final sseService = OrganizationSSEService.instance;
+
+    // Connect to SSE
+    await sseService.connectWithConfig(
+      organizationId: organizationId,
+      currentUserId: currentUserId,
+    );
+
+    // Subscribe to new conversation events
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.newConversation, _handleNewConversation),
+    );
+
+    // Subscribe to user message events
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.userMessage, _handleUserMessageSSE),
+    );
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.newMessage, _handleUserMessageSSE),
+    );
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.messageReceived, _handleUserMessageSSE),
+    );
+
+    // Subscribe to agent assigned events
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.agentAssigned, _handleAgentAssigned),
+    );
+
+    // Subscribe to conversation status change events
+    _sseUnsubscribers.add(
+      sseService.subscribe(
+        SSEEventType.conversationStatusChange,
+        _handleConversationStatusChange,
+      ),
+    );
+
+    // Subscribe to agent message events (for list updates)
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.agentMessage, _handleAgentMessageSSE),
+    );
+
+    // Subscribe to LLM response events (for list updates)
+    _sseUnsubscribers.add(
+      sseService.subscribe(SSEEventType.llmResponseEnd, _handleLLMResponseSSE),
+    );
+
+    _sseConnected = true;
+    AppLogger.info(
+      'SSE connected for organization $organizationId',
+      tag: 'ConversationProvider',
+    );
+  }
+
+  /// Disconnect from organization SSE
+  Future<void> disconnectSSE() async {
+    if (!_sseConnected) return;
+
+    // Unsubscribe from all events
+    for (final unsub in _sseUnsubscribers) {
+      unsub();
+    }
+    _sseUnsubscribers.clear();
+
+    // Disconnect SSE service
+    await OrganizationSSEService.instance.disconnect();
+
+    _sseConnected = false;
+    AppLogger.info('SSE disconnected', tag: 'ConversationProvider');
+  }
+
+  /// Handle new conversation SSE event
+  void _handleNewConversation(SSEEvent event) {
+    if (event is! SSENewConversationEvent) return;
+
+    AppLogger.info(
+      'SSE: New conversation ${event.conversationId}',
+      tag: 'ConversationProvider',
+    );
+
+    // Reload conversations to get the new one
+    // We refresh instead of adding directly to ensure proper ordering and data
+    loadConversations(resetPage: true);
+  }
+
+  /// Handle user message SSE event
+  void _handleUserMessageSSE(SSEEvent event) {
+    if (event is! SSEUserMessageEvent) return;
+
+    final conversationId = event.conversationId;
+    if (conversationId == null) return;
+
+    AppLogger.info(
+      'SSE: User message in conversation $conversationId',
+      tag: 'ConversationProvider',
+    );
+
+    // Update first message cache
+    _firstMessageCache[conversationId] = event.message;
+
+    // Find conversation in list and update its position
+    final index = _conversations.indexWhere((c) => c.id == conversationId);
+    if (index > 0) {
+      // Move conversation to top of list (most recent)
+      // Create a NEW list reference to ensure Flutter detects the change
+      final conversation = _conversations[index];
+      _conversations = [
+        conversation,
+        ..._conversations.sublist(0, index),
+        ..._conversations.sublist(index + 1),
+      ];
+      AppLogger.info(
+        'SSE: Moved conversation $conversationId to top of list',
+        tag: 'ConversationProvider',
+      );
+      notifyListeners();
+    } else if (index == -1) {
+      // Conversation not in list, reload to get it
+      AppLogger.info(
+        'SSE: Conversation $conversationId not in list, reloading',
+        tag: 'ConversationProvider',
+      );
+      loadConversations(resetPage: true);
+    } else {
+      // Already at top, just notify for message cache update
+      AppLogger.info(
+        'SSE: Conversation $conversationId already at top, updating cache only',
+        tag: 'ConversationProvider',
+      );
+      notifyListeners();
+    }
+
+    // If this conversation is currently selected, add the message
+    if (_selectedConversationId == conversationId) {
+      _addMessageFromSSE(event);
+    }
+  }
+
+  /// Handle agent assigned SSE event
+  void _handleAgentAssigned(SSEEvent event) {
+    if (event is! SSEAgentAssignedEvent) return;
+
+    final conversationId = event.conversationId;
+    if (conversationId == null) return;
+
+    AppLogger.info(
+      'SSE: Agent ${event.agentName} assigned to conversation $conversationId',
+      tag: 'ConversationProvider',
+    );
+
+    // Reload conversation detail if currently selected
+    if (_selectedConversationId == conversationId) {
+      _reloadSelectedConversation();
+    }
+
+    // Reload list if in "my conversations" view
+    if (_viewMode == ConversationViewMode.my) {
+      loadConversations(resetPage: true);
+    }
+  }
+
+  /// Handle conversation status change SSE event
+  void _handleConversationStatusChange(SSEEvent event) {
+    if (event is! SSEConversationStatusChangeEvent) return;
+
+    final conversationId = event.conversationId;
+    if (conversationId == null) return;
+
+    AppLogger.info(
+      'SSE: Conversation $conversationId status changed: ${event.oldStatus} -> ${event.newStatus}',
+      tag: 'ConversationProvider',
+    );
+
+    // Reload conversation detail if currently selected
+    if (_selectedConversationId == conversationId) {
+      _reloadSelectedConversation();
+    }
+
+    // Find and update in list (or reload if needed)
+    final index = _conversations.indexWhere((c) => c.id == conversationId);
+    if (index != -1) {
+      // Reload to get updated status
+      loadConversations(resetPage: true);
+    }
+  }
+
+  /// Handle agent message SSE event (org-level, for list updates)
+  void _handleAgentMessageSSE(SSEEvent event) {
+    if (event is! SSEAgentMessageEvent) return;
+
+    final conversationId = event.conversationId;
+    if (conversationId == null) return;
+
+    AppLogger.info(
+      'SSE: Agent message in conversation $conversationId',
+      tag: 'ConversationProvider',
+    );
+
+    // Update first message cache
+    _firstMessageCache[conversationId] = event.message;
+
+    // Move conversation to top if in list
+    final index = _conversations.indexWhere((c) => c.id == conversationId);
+    if (index > 0) {
+      final conversation = _conversations[index];
+      _conversations = [
+        conversation,
+        ..._conversations.sublist(0, index),
+        ..._conversations.sublist(index + 1),
+      ];
+    }
+
+    notifyListeners();
+  }
+
+  /// Handle LLM response SSE event (org-level, for list updates)
+  void _handleLLMResponseSSE(SSEEvent event) {
+    if (event is! SSELLMResponseEndEvent) return;
+
+    final conversationId = event.conversationId;
+    if (conversationId == null) return;
+
+    AppLogger.info(
+      'SSE: LLM response in conversation $conversationId',
+      tag: 'ConversationProvider',
+    );
+
+    // Update first message cache with LLM response
+    _firstMessageCache[conversationId] = event.message;
+
+    // Move conversation to top if in list
+    final index = _conversations.indexWhere((c) => c.id == conversationId);
+    if (index > 0) {
+      final conversation = _conversations[index];
+      _conversations = [
+        conversation,
+        ..._conversations.sublist(0, index),
+        ..._conversations.sublist(index + 1),
+      ];
+    }
+
+    notifyListeners();
+  }
+
+  /// Add message from SSE event to current conversation
+  void _addMessageFromSSE(SSEUserMessageEvent event) {
+    // Create a temporary message entity from SSE event
+    final message = MessageEntity(
+      id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
+      conversationId: event.conversationId ?? 0,
+      text: event.message,
+      fromUser: true,
+      fromAgent: false,
+      type: MessageType.fromString(event.messageType),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        ((event.timestamp ?? DateTime.now().millisecondsSinceEpoch ~/ 1000) * 1000).toInt(),
+      ),
+    );
+
+    // Check if message already exists (avoid duplicates)
+    final exists = _messages.any(
+      (m) => m.text == message.text && m.fromUser == message.fromUser,
+    );
+
+    if (!exists) {
+      _messages.insert(0, message);
+      _messageTotalCount++;
+      notifyListeners();
+    }
+  }
+
+  /// Reload currently selected conversation detail
+  Future<void> _reloadSelectedConversation() async {
+    if (_selectedConversationId == null) return;
+
+    try {
+      final updated = await _getConversationDetailUseCase(_selectedConversationId!);
+      _selectedConversation = updated;
+
+      // Update in list too
+      final index = _conversations.indexWhere((c) => c.id == _selectedConversationId);
+      if (index != -1) {
+        _conversations[index] = updated;
+      }
+
+      notifyListeners();
+    } catch (e) {
+      AppLogger.error(
+        'Error reloading conversation: $e',
+        tag: 'ConversationProvider',
+      );
+    }
+  }
+
+  /// Add agent message from SSE (called from conversation detail page)
+  void addAgentMessageFromSSE(SSEAgentMessageEvent event) {
+    final conversationId = event.conversationId;
+    if (conversationId == null) return;
+
+    // Always update first message cache for the conversation list
+    _firstMessageCache[conversationId] = event.message;
+
+    // Move conversation to top if in list
+    final index = _conversations.indexWhere((c) => c.id == conversationId);
+    if (index > 0) {
+      final conversation = _conversations[index];
+      _conversations = [
+        conversation,
+        ..._conversations.sublist(0, index),
+        ..._conversations.sublist(index + 1),
+      ];
+    }
+
+    // If this conversation is currently selected, add the message to detail view
+    if (_selectedConversationId == conversationId) {
+      final message = MessageEntity(
+        id: DateTime.now().millisecondsSinceEpoch,
+        conversationId: conversationId,
+        text: event.message,
+        fromUser: false,
+        fromAgent: true,
+        type: MessageType.fromString(event.messageType),
+        agentId: event.agentId,
+        agentName: event.agentName,
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+          ((event.timestamp ?? DateTime.now().millisecondsSinceEpoch ~/ 1000) * 1000).toInt(),
+        ),
+      );
+
+      // Check if message already exists
+      final exists = _messages.any(
+        (m) => m.text == message.text && m.fromUser == message.fromUser,
+      );
+
+      if (!exists) {
+        _messages.insert(0, message);
+        _messageTotalCount++;
+      }
+    }
+
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    disconnectSSE();
+    super.dispose();
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+
 import '../config/environment_config.dart';
 
 class AppLogger {

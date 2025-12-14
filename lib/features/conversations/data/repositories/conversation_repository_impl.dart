@@ -159,11 +159,13 @@ class ConversationRepositoryImpl implements ConversationRepository {
   Future<void> updateConversationStatus({
     required int conversationId,
     required int statusId,
+    required int organizationId,
   }) async {
     try {
       await _remoteDataSource.updateConversationStatus(
         conversationId: conversationId,
         statusId: statusId,
+        organizationId: organizationId,
       );
     } catch (e, stackTrace) {
       if (e is ViernesException) {

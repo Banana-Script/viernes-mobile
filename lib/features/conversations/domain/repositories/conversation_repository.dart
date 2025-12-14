@@ -46,6 +46,7 @@ abstract class ConversationRepository {
   Future<void> updateConversationStatus({
     required int conversationId,
     required int statusId,
+    required int organizationId,
   });
 
   /// Update conversation priority

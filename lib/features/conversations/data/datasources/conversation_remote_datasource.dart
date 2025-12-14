@@ -49,6 +49,7 @@ abstract class ConversationRemoteDataSource {
   Future<void> updateConversationStatus({
     required int conversationId,
     required int statusId,
+    required int organizationId,
   });
 
   /// Update conversation priority
@@ -469,12 +470,14 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
   Future<void> updateConversationStatus({
     required int conversationId,
     required int statusId,
+    required int organizationId,
   }) async {
-    final endpoint = '/conversations/$conversationId/';
+    final endpoint = '/conversations/$conversationId';
 
     try {
       final requestData = {
         'status_id': statusId,
+        'organization_id': organizationId,
       };
 
       AppLogger.apiRequest('PATCH', endpoint, params: requestData);
@@ -486,7 +489,8 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
 
       AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
 
-      if (response.statusCode != 200) {
+      // Accept both 200 and 204 (No Content) as success
+      if (response.statusCode != 200 && response.statusCode != 204) {
         throw NetworkException(
           'Failed to update conversation status',
           statusCode: response.statusCode,
@@ -544,7 +548,7 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
     required int conversationId,
     required String priority,
   }) async {
-    final endpoint = '/conversations/$conversationId/';
+    final endpoint = '/conversations/$conversationId';
 
     try {
       final requestData = {
@@ -560,7 +564,7 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
 
       AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 200 && response.statusCode != 204) {
         throw NetworkException(
           'Failed to update conversation priority',
           statusCode: response.statusCode,

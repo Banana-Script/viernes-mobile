@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/models/sse_events.dart';
+import '../../../../core/services/conversation_sse_service.dart';
+import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../core/utils/logger.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/conversation_provider.dart';
+import '../../domain/repositories/conversation_repository.dart' show ConversationStatusOption;
 import '../../domain/entities/message_entity.dart';
 import '../../../customers/domain/entities/conversation_entity.dart';
 import '../widgets/message_bubble.dart';
@@ -42,6 +47,11 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
   final ScrollController _scrollController = ScrollController();
   bool _showToolCalls = true;
 
+  // SSE for real-time updates
+  ConversationSSEService? _sseService;
+  bool _isTyping = false;
+  String _typingBy = '';
+
   @override
   void initState() {
     super.initState();
@@ -59,16 +69,159 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
           await provider.assignConversationToMe(widget.conversationId);
         }
       }
+
+      // Connect to conversation SSE
+      _connectSSE();
     });
 
     // Setup scroll listener for loading older messages
     _scrollController.addListener(_onScroll);
+
+    // Track current conversation for notification service
+    NotificationService.instance.setCurrentConversation(widget.conversationId);
   }
 
   @override
   void dispose() {
+    _disconnectSSE();
     _scrollController.dispose();
+
+    // Clear current conversation from notification service
+    NotificationService.instance.setCurrentConversation(null);
+
     super.dispose();
+  }
+
+  /// Connect to conversation-level SSE
+  void _connectSSE() {
+    _sseService = ConversationSSEService(conversationId: widget.conversationId);
+
+    // Set up callbacks
+    _sseService!.onUserMessage = _handleUserMessage;
+    _sseService!.onAgentMessage = _handleAgentMessage;
+    _sseService!.onLLMResponse = _handleLLMResponse;
+    _sseService!.onTyping = _handleTyping;
+    _sseService!.onAgentAssigned = _handleAgentAssigned;
+    _sseService!.onStatusChange = _handleStatusChange;
+    _sseService!.onError = _handleSSEError;
+
+    // Connect
+    _sseService!.connect().then((_) {
+      AppLogger.info(
+        'Connected to conversation SSE for ${widget.conversationId}',
+        tag: 'ConversationDetail',
+      );
+    }).catchError((e) {
+      AppLogger.error(
+        'Error connecting to conversation SSE: $e',
+        tag: 'ConversationDetail',
+      );
+    });
+  }
+
+  /// Disconnect from conversation-level SSE
+  Future<void> _disconnectSSE() async {
+    await _sseService?.dispose();
+    _sseService = null;
+  }
+
+  /// Handle incoming user message from SSE
+  void _handleUserMessage(SSEUserMessageEvent event) {
+    if (!mounted) return;
+
+    AppLogger.debug(
+      'SSE: User message received',
+      tag: 'ConversationDetail',
+    );
+
+    // The provider will handle adding the message
+    // Provider already subscribed to org-level SSE for this
+  }
+
+  /// Handle incoming agent message from SSE
+  void _handleAgentMessage(SSEAgentMessageEvent event) {
+    if (!mounted) return;
+
+    AppLogger.debug(
+      'SSE: Agent message received',
+      tag: 'ConversationDetail',
+    );
+
+    // Add message to provider
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    provider.addAgentMessageFromSSE(event);
+  }
+
+  /// Handle LLM response from SSE
+  void _handleLLMResponse(SSELLMResponseEndEvent event) {
+    if (!mounted) return;
+
+    AppLogger.debug(
+      'SSE: LLM response received',
+      tag: 'ConversationDetail',
+    );
+
+    // Create agent message event from LLM response
+    final agentEvent = SSEAgentMessageEvent(
+      message: event.message,
+      messageType: event.messageType,
+      conversationId: event.conversationId,
+      organizationId: event.organizationId,
+      platform: event.platform,
+      timestamp: event.timestamp,
+      metadata: const {},
+    );
+
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    provider.addAgentMessageFromSSE(agentEvent);
+  }
+
+  /// Handle typing indicator from SSE
+  void _handleTyping(bool isTyping, String typingBy) {
+    if (!mounted) return;
+
+    setState(() {
+      _isTyping = isTyping;
+      _typingBy = typingBy;
+    });
+  }
+
+  /// Handle agent assigned from SSE
+  void _handleAgentAssigned(SSEAgentAssignedEvent event) {
+    if (!mounted) return;
+
+    AppLogger.debug(
+      'SSE: Agent assigned - ${event.agentName}',
+      tag: 'ConversationDetail',
+    );
+
+    // Reload conversation to get updated assignment
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    provider.selectConversation(widget.conversationId);
+  }
+
+  /// Handle status change from SSE
+  void _handleStatusChange(SSEConversationStatusChangeEvent event) {
+    if (!mounted) return;
+
+    AppLogger.debug(
+      'SSE: Status changed - ${event.oldStatus} -> ${event.newStatus}',
+      tag: 'ConversationDetail',
+    );
+
+    // Reload conversation to get updated status
+    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    provider.selectConversation(widget.conversationId);
+  }
+
+  /// Handle SSE error
+  void _handleSSEError(String error) {
+    if (!mounted) return;
+
+    AppLogger.error(
+      'SSE Error: $error',
+      tag: 'ConversationDetail',
+    );
   }
 
   void _onScroll() {
@@ -139,11 +292,54 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
       final provider = Provider.of<ConversationProvider>(context, listen: false);
       final scaffoldMessenger = ScaffoldMessenger.of(context);
 
+      // Get organizationId from the selected conversation
+      final conversation = provider.selectedConversation;
+      if (conversation == null) {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('Error: Conversación no cargada'),
+            backgroundColor: ViernesColors.danger,
+          ),
+        );
+        return;
+      }
+
+      // Check if status options are loaded
+      if (provider.availableStatuses.isEmpty) {
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('Error: Opciones de estado no cargadas. Intente de nuevo.'),
+            backgroundColor: ViernesColors.danger,
+          ),
+        );
+        return;
+      }
+
+      // Lookup status ID from availableStatuses by value_definition
       // Status 030 = Completed Successfully, 040 = Completed Unsuccessfully
-      final statusId = isSuccessful ? 30 : 40;
+      const statusCompletedSuccessfully = '030';
+      const statusCompletedUnsuccessfully = '040';
+      final statusValue = isSuccessful ? statusCompletedSuccessfully : statusCompletedUnsuccessfully;
+
+      final statusOption = provider.availableStatuses.cast<ConversationStatusOption?>().firstWhere(
+        (s) => s?.value == statusValue,
+        orElse: () => null,
+      );
+
+      if (statusOption == null) {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text('Error: Estado $statusValue no encontrado'),
+            backgroundColor: ViernesColors.danger,
+          ),
+        );
+        return;
+      }
+
       final success = await provider.updateConversationStatus(
         widget.conversationId,
-        statusId,
+        statusOption.id,
+        conversation.organizationId,
       );
 
       if (mounted) {
@@ -470,6 +666,12 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
                 .where((m) => m.type != MessageType.toolCall)
                 .toList();
 
+        // Calculate item count (typing indicator + messages + loading indicator)
+        final hasTyping = _isTyping;
+        final itemCount = filteredMessages.length +
+            (hasTyping ? 1 : 0) +
+            (provider.isLoadingMoreMessages ? 1 : 0);
+
         // Messages list (reversed to show newest at bottom)
         return ListView.builder(
           controller: _scrollController,
@@ -478,11 +680,18 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
             vertical: ViernesSpacing.lg,
             horizontal: ViernesSpacing.md,
           ),
-          itemCount: filteredMessages.length +
-              (provider.isLoadingMoreMessages ? 1 : 0),
+          itemCount: itemCount,
           itemBuilder: (context, index) {
+            // Typing indicator at the bottom (index 0 when reversed)
+            if (hasTyping && index == 0) {
+              return _buildTypingIndicator(isDark);
+            }
+
+            // Adjust index for typing indicator
+            final adjustedIndex = hasTyping ? index - 1 : index;
+
             // Loading indicator at top (for older messages)
-            if (index >= filteredMessages.length) {
+            if (adjustedIndex >= filteredMessages.length) {
               return const Padding(
                 padding: EdgeInsets.all(ViernesSpacing.md),
                 child: Center(child: CircularProgressIndicator()),
@@ -490,7 +699,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
             }
 
             // Messages are reversed, so we need to access them in reverse order
-            final message = filteredMessages[index];
+            final message = filteredMessages[adjustedIndex];
             return MessageBubble(
               message: message,
               isDark: isDark,
@@ -498,6 +707,83 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
           },
         );
       },
+    );
+  }
+
+  /// Build typing indicator widget
+  Widget _buildTypingIndicator(bool isDark) {
+    final typingLabel = _typingBy == 'ai'
+        ? 'AI is thinking...'
+        : _typingBy.isNotEmpty
+            ? '$_typingBy is typing...'
+            : 'Typing...';
+
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: ViernesSpacing.xl * 2,
+        right: ViernesSpacing.md,
+        bottom: ViernesSpacing.sm,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: ViernesSpacing.md,
+              vertical: ViernesSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: ViernesColors.getControlBackground(isDark),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: ViernesColors.getBorderColor(isDark).withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTypingDots(isDark),
+                const SizedBox(width: ViernesSpacing.sm),
+                Text(
+                  typingLabel,
+                  style: ViernesTextStyles.caption.copyWith(
+                    color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build animated typing dots
+  Widget _buildTypingDots(bool isDark) {
+    return SizedBox(
+      width: 24,
+      height: 16,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(3, (index) {
+          return TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.3, end: 1.0),
+            duration: Duration(milliseconds: 400 + (index * 150)),
+            curve: Curves.easeInOut,
+            builder: (context, value, child) {
+              return Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: ViernesColors.primary.withValues(alpha: value),
+                  shape: BoxShape.circle,
+                ),
+              );
+            },
+          );
+        }),
+      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../../../../core/services/http_client.dart';
 import '../models/organization_model.dart';
 import '../models/user_model.dart';
@@ -28,7 +29,9 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   Future<UserModel> getUserProfile() async {
     try {
       // Using /users/me endpoint - it uses the Bearer token to identify the user
+      debugPrint('[UserRemoteDataSource] Calling GET /users/me...');
       final response = await _httpClient.dio.get('/users/me');
+      debugPrint('[UserRemoteDataSource] Response: ${response.statusCode}, data: ${response.data}');
 
       if (response.statusCode == 200) {
         // Parse the backend response with nested structure

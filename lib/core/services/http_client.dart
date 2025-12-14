@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import '../config/environment_config.dart';
 import '../utils/logger.dart';
 
