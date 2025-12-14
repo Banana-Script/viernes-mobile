@@ -386,7 +386,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
         ),
       ),
       trailing: isSelected
-          ? Icon(Icons.check_circle, color: ViernesColors.primary)
+          ? const Icon(Icons.check_circle, color: ViernesColors.primary)
           : null,
       enabled: !isCurrentAgent && agent.isAvailable,
       contentPadding: const EdgeInsets.symmetric(

@@ -88,7 +88,7 @@ class _ChartWidgetsDemoState extends State<ChartWidgetsDemo> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.info_outline,
             color: ViernesColors.info,
             size: 32,
@@ -148,7 +148,7 @@ class _ChartWidgetsDemoState extends State<ChartWidgetsDemo> {
           const SizedBox(height: ViernesSpacing.md),
           PurchaseIntentionChart(
             currentIntention: 'High',
-            distribution: {
+            distribution: const {
               'high': 70.0,
               'medium': 20.0,
               'low': 10.0,
@@ -272,7 +272,7 @@ class _ChartWidgetsDemoState extends State<ChartWidgetsDemo> {
           const SizedBox(height: ViernesSpacing.sm),
           PurchaseIntentionChart(
             currentIntention: 'Medium',
-            distribution: {
+            distribution: const {
               'high': 45.0,
               'medium': 35.0,
               'low': 20.0,

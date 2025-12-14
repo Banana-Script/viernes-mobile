@@ -216,7 +216,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
                             height: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.add_circle_outline,
                             color: ViernesColors.primary,
                           ),

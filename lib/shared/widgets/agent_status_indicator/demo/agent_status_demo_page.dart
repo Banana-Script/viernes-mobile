@@ -272,7 +272,10 @@ class _AgentStatusDemoPageState extends State<AgentStatusDemoPage> {
                   _isActive = value;
                 });
               },
-              activeColor: ViernesColors.success,
+              activeTrackColor: ViernesColors.success.withValues(alpha: 0.5),
+              thumbColor: WidgetStatePropertyAll(
+                _isActive ? ViernesColors.success : null,
+              ),
             ),
           ],
         ),

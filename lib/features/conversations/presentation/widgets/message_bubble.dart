@@ -120,7 +120,7 @@ class MessageBubble extends StatelessWidget {
           color: ViernesColors.primary.withValues(alpha: 0.1), // rgba(55, 65, 81, 0.1)
           shape: BoxShape.circle,
         ),
-        child: Center(
+        child: const Center(
           child: Icon(
             Icons.person,
             size: 20,

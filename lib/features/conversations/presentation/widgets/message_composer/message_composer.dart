@@ -170,19 +170,6 @@ class _MessageComposerState extends State<MessageComposer> {
     return null;
   }
 
-  /// Check if conversation needs a template message (24h rule)
-  bool get _needsTemplateSelection {
-    final conversation = widget.conversation;
-    if (conversation == null) return false;
-
-    // If explicitly locked, needs template
-    if (conversation.locked) return true;
-
-    // Check if 24 hours have passed since last update
-    final diffInHours = DateTime.now().difference(conversation.updatedAt).inHours;
-    return diffInHours >= 24;
-  }
-
   bool get _canSend {
     return !_isSending &&
         !widget.isSending &&
