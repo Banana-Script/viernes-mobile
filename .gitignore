@@ -44,13 +44,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Firebase configuration files (will be managed separately per environment)
-android/app/google-services.json
-android/app/src/dev/google-services.json
-android/app/src/prod/google-services.json
-ios/Runner/GoogleService-Info.plist
-ios/Runner/GoogleService-Info-Dev.plist
-ios/Runner/GoogleService-Info-Prod.plist
+# Firebase configuration files - ROOT level only (these are reference/backup files)
+# The actual config files in android/app/src/{dev,prod}/ and ios/config/{dev,prod}/ SHOULD be tracked
+/google-services.json
+/google-services*.json
+/GoogleService-Info.plist
 
 # Environment-specific configuration
 .env
