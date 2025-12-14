@@ -78,6 +78,7 @@ class ConversationProvider extends ChangeNotifier {
 
   // Selected conversation (for detail view)
   ConversationEntity? _selectedConversation;
+  int? _selectedConversationId; // Track current conversation to prevent race conditions
 
   // Messages state
   MessageStatus _messageStatus = MessageStatus.initial;
@@ -352,17 +353,46 @@ class ConversationProvider extends ChangeNotifier {
 
   /// Select conversation and load details
   Future<void> selectConversation(int conversationId) async {
+    // Skip if already loading the same conversation
+    if (_selectedConversationId == conversationId &&
+        _messageStatus == MessageStatus.loading) {
+      return;
+    }
+
+    // Track current conversation to prevent race conditions
+    _selectedConversationId = conversationId;
+
+    // Clear previous state immediately to avoid showing old content (flicker)
+    _messages = [];
+    _messageStatus = MessageStatus.loading;
+    _messageErrorMessage = null;
+    _messageCurrentPage = 1;
+    _selectedConversation = null;
+    notifyListeners();
+
     try {
-      _selectedConversation = await _getConversationDetailUseCase(conversationId);
+      // Load conversation detail and messages in parallel for better UX
+      // Note: If either fails, both are abandoned (Future.wait fails-fast)
+      final results = await Future.wait([
+        _getConversationDetailUseCase(conversationId),
+        _loadMessagesInternal(conversationId),
+      ]);
 
-      // Load messages for this conversation
-      await loadMessages(conversationId, resetPage: true);
+      // Verify we're still on the same conversation (user might have switched)
+      if (_selectedConversationId != conversationId) return;
 
+      _selectedConversation = results[0] as ConversationEntity;
+      _messageStatus = MessageStatus.loaded;
       notifyListeners();
     } catch (e, stackTrace) {
+      // Only update error state if still on same conversation
+      if (_selectedConversationId != conversationId) return;
+
       _errorMessage = 'Failed to load conversation: $e';
+      _messageStatus = MessageStatus.error;
+      _messageErrorMessage = e.toString();
       AppLogger.error(
-        'Error selecting conversation: $e',
+        'Error selecting conversation $conversationId: $e',
         tag: 'ConversationProvider',
         error: e,
         stackTrace: stackTrace,
@@ -371,18 +401,40 @@ class ConversationProvider extends ChangeNotifier {
     }
   }
 
+  /// Internal method to load messages without triggering state changes
+  /// Caller is responsible for setting loading/loaded status and notifyListeners
+  Future<void> _loadMessagesInternal(int conversationId) async {
+    final response = await _getMessagesUseCase(
+      conversationId: conversationId,
+      page: 1,
+      pageSize: _messagePageSize,
+    );
+
+    // Verify we're still on the same conversation before updating state
+    if (_selectedConversationId != conversationId) return;
+
+    _messages = response.messages;
+    _messageTotalCount = response.totalCount;
+    _messageTotalPages = response.totalPages;
+    _messageCurrentPage = response.currentPage;
+  }
+
   /// Load messages for a conversation
   Future<void> loadMessages(int conversationId, {bool resetPage = false}) async {
-    if (_messageStatus == MessageStatus.loading) return;
+    // Skip if already loading, unless we're resetting for a new conversation
+    if (_messageStatus == MessageStatus.loading && !resetPage) return;
 
     if (resetPage) {
       _messageCurrentPage = 1;
       _messages = [];
+      _messageStatus = MessageStatus.loading;
+      _messageErrorMessage = null;
+      notifyListeners();
+    } else {
+      _messageStatus = MessageStatus.loading;
+      _messageErrorMessage = null;
+      notifyListeners();
     }
-
-    _messageStatus = MessageStatus.loading;
-    _messageErrorMessage = null;
-    notifyListeners();
 
     try {
       final response = await _getMessagesUseCase(
@@ -413,6 +465,8 @@ class ConversationProvider extends ChangeNotifier {
 
   /// Load more messages (pagination - older messages)
   Future<void> loadMoreMessages(int conversationId) async {
+    // Validate we're on the correct conversation
+    if (_selectedConversationId != conversationId) return;
     if (!hasMoreMessages || _messageStatus == MessageStatus.loadingMore) return;
 
     _messageStatus = MessageStatus.loadingMore;
@@ -427,15 +481,21 @@ class ConversationProvider extends ChangeNotifier {
         pageSize: _messagePageSize,
       );
 
+      // Verify we're still on the same conversation after async operation
+      if (_selectedConversationId != conversationId) return;
+
       _messages.addAll(response.messages);
       _messageCurrentPage = response.currentPage;
 
       _messageStatus = MessageStatus.loaded;
     } catch (e, stackTrace) {
+      // Only update error if still on same conversation
+      if (_selectedConversationId != conversationId) return;
+
       _messageStatus = MessageStatus.error;
       _messageErrorMessage = e.toString();
       AppLogger.error(
-        'Error loading more messages: $e',
+        'Error loading more messages for conversation $conversationId: $e',
         tag: 'ConversationProvider',
         error: e,
         stackTrace: stackTrace,
@@ -706,8 +766,10 @@ class ConversationProvider extends ChangeNotifier {
   /// Clear selected conversation
   void clearSelectedConversation() {
     _selectedConversation = null;
+    _selectedConversationId = null;
     _messages = [];
     _messageStatus = MessageStatus.initial;
+    _messageErrorMessage = null;
     notifyListeners();
   }
 }
