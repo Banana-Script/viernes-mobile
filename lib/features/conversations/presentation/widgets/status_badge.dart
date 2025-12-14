@@ -47,24 +47,45 @@ class StatusBadge extends StatelessWidget {
 
   String _getStatusLabel(String status) {
     final statusLower = status.toLowerCase();
-    if (statusLower.contains('open')) return 'OPEN';
-    if (statusLower.contains('pending')) return 'PENDING';
-    if (statusLower.contains('resolved')) return 'RESOLVED';
-    if (statusLower.contains('abandoned')) return 'ABANDONED';
+    // Started / Open
+    if (statusLower.contains('started') || statusLower.contains('open')) {
+      return 'STARTED';
+    }
+    // In progress / Pending
+    if (statusLower.contains('progress') || statusLower.contains('pending')) {
+      return 'IN PROGRESS';
+    }
+    // Completed / Resolved (successful)
+    if (statusLower == 'completed' || statusLower.contains('resolved')) {
+      return 'COMPLETED';
+    }
+    // Completed Unsuccessfully / Abandoned
+    if (statusLower.contains('unsuccessfully') || statusLower.contains('abandoned')) {
+      return 'CLOSED';
+    }
     return status.toUpperCase();
   }
 
   Color _getStatusColor(String status) {
     final statusLower = status.toLowerCase();
-    if (statusLower.contains('open')) {
-      return const Color(0xFF16A34A); // Success green
-    } else if (statusLower.contains('pending')) {
+    // Started / Open - Cyan (needs attention, new conversation)
+    if (statusLower.contains('started') || statusLower.contains('open')) {
+      return const Color(0xFF51F5F8); // Accent cyan
+    }
+    // In progress / Pending - Orange (active work)
+    else if (statusLower.contains('progress') || statusLower.contains('pending')) {
       return const Color(0xFFE2A03F); // Warning orange
-    } else if (statusLower.contains('resolved')) {
-      return const Color(0xFF2196F3); // Info blue
-    } else if (statusLower.contains('abandoned')) {
-      return const Color(0xFF64748B); // Gray
-    } else {
+    }
+    // Completed / Resolved (successful) - Green (success)
+    else if (statusLower == 'completed' || statusLower.contains('resolved')) {
+      return const Color(0xFF16A34A); // Success green
+    }
+    // Completed Unsuccessfully / Abandoned - Red (negative outcome)
+    else if (statusLower.contains('unsuccessfully') || statusLower.contains('abandoned')) {
+      return const Color(0xFFE7515A); // Danger red
+    }
+    // Default
+    else {
       return const Color(0xFF9CA3AF); // Default gray
     }
   }
