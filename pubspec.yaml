@@ -60,6 +60,9 @@ dependencies:
   lottie: ^3.1.0
   shimmer: ^3.0.0
 
+  # Splash Screen
+  flutter_native_splash: ^2.4.3
+
   # Utilities
   shared_preferences: ^2.2.2
   device_info_plus: ^10.1.0
@@ -83,6 +86,7 @@ flutter:
   assets:
     - assets/images/auth/logo.png
     - assets/images/auth/powered-by-2.png
+    - assets/animations/
 
 # App Icon Configuration
 flutter_launcher_icons:

@@ -461,8 +461,11 @@ class _MessageComposerState extends State<MessageComposer> {
 
   /// Build banner shown when input is disabled
   Widget _buildDisabledBanner(BuildContext context, String message, bool isDark) {
-    // Check if this is an unassigned conversation
-    final isUnassigned = widget.conversation?.agentId == null;
+    // Check if this is an unassigned AND active conversation
+    // Only show "Asignar a mí" for active statuses ('010' = Started, '020' = In Progress)
+    final statusValue = widget.conversation?.status?.valueDefinition ?? '';
+    final isActiveStatus = statusValue == '010' || statusValue == '020';
+    final isUnassigned = widget.conversation?.agentId == null && isActiveStatus;
 
     // Determine icon based on message type
     IconData icon = Icons.lock_outline;

@@ -10,6 +10,7 @@ import 'core/services/notification_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/main/presentation/pages/main_page.dart';
+import 'features/splash/presentation/pages/splash_screen.dart';
 import 'features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'features/customers/presentation/providers/customer_provider.dart';
 import 'features/conversations/presentation/providers/conversation_provider.dart';
@@ -72,9 +73,21 @@ class AuthenticationWrapper extends StatefulWidget {
 
 class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
   bool _sseInitialized = false;
+  bool _showSplash = true;
+
+  void _onSplashComplete() {
+    if (mounted) {
+      setState(() => _showSplash = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Show animated splash screen first
+    if (_showSplash) {
+      return SplashScreen(onComplete: _onSplashComplete);
+    }
+
     return provider.Consumer<auth_provider.AuthProvider>(
       builder: (context, authProvider, child) {
         debugPrint('[AuthWrapper] Status: ${authProvider.status}, sseInit: $_sseInitialized, user: ${authProvider.user?.email}');
