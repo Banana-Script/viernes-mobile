@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
@@ -46,6 +47,7 @@ class CustomerListPage extends ConsumerStatefulWidget {
 class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -72,6 +74,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -336,12 +339,17 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
         }
 
         // Customer list
-        return RefreshIndicator(
-          onRefresh: _onRefresh,
-          color: isDark ? ViernesColors.accent : ViernesColors.primary,
-          backgroundColor: isDark
-              ? ViernesColors.panelDark
-              : ViernesColors.panelLight,
+        return SmartRefresher(
+          controller: _refreshController,
+          onRefresh: () async {
+            await _onRefresh();
+            _refreshController.refreshCompleted();
+          },
+          header: WaterDropMaterialHeader(
+            backgroundColor: isDark ? ViernesColors.accent : ViernesColors.secondary,
+            color: Colors.black,
+            distance: 60,
+          ),
           child: ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(

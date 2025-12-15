@@ -17,6 +17,7 @@ import '../widgets/sentiment_chart.dart';
 import '../widgets/categories_chart.dart';
 import '../widgets/ai_human_chart.dart';
 import '../widgets/tags_chart.dart';
+import '../widgets/consumption_chart.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -28,7 +29,9 @@ class DashboardPage extends ConsumerStatefulWidget {
 class _DashboardPageState extends ConsumerState<DashboardPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final RefreshController _refreshController = RefreshController(initialRefresh: false);
+  final RefreshController _overviewRefreshController = RefreshController(initialRefresh: false);
+  final RefreshController _analyticsRefreshController = RefreshController(initialRefresh: false);
+  final RefreshController _insightsRefreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -47,7 +50,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   @override
   void dispose() {
     _tabController.dispose();
-    _refreshController.dispose();
+    _overviewRefreshController.dispose();
+    _analyticsRefreshController.dispose();
+    _insightsRefreshController.dispose();
     super.dispose();
   }
 
@@ -78,22 +83,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       return _buildErrorWidget(provider);
                     }
 
-                    return SmartRefresher(
-                      controller: _refreshController,
-                      onRefresh: () => _onRefresh(provider),
-                      header: WaterDropMaterialHeader(
-                        backgroundColor: isDark ? ViernesColors.accent : ViernesColors.secondary,
-                        color: Colors.black,
-                        distance: 60,
-                      ),
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          _buildOverviewTab(provider),
-                          _buildAnalyticsTab(provider),
-                          _buildInsightsTab(provider),
-                        ],
-                      ),
+                    return TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildOverviewTab(provider, isDark),
+                        _buildAnalyticsTab(provider, isDark),
+                        _buildInsightsTab(provider, isDark),
+                      ],
                     );
                   },
                 ),
@@ -199,59 +195,116 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Widget _buildOverviewTab(DashboardProvider provider) {
+  WaterDropMaterialHeader _buildRefreshHeader(bool isDark) {
+    return WaterDropMaterialHeader(
+      backgroundColor: isDark ? ViernesColors.accent : ViernesColors.secondary,
+      color: Colors.black,
+      distance: 60,
+    );
+  }
+
+  Widget _buildOverviewTab(DashboardProvider provider, bool isDark) {
     final isLoading = provider.status == DashboardStatus.loading;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildStatsCards(provider, isLoading),
-          const SizedBox(height: 16),
-          AiHumanChart(
-            stats: provider.aiHumanStats,
-            isLoading: isLoading,
-          ),
-        ],
+    return SmartRefresher(
+      controller: _overviewRefreshController,
+      onRefresh: () => _onRefresh(provider, _overviewRefreshController),
+      header: _buildRefreshHeader(isDark),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _buildStatsCards(provider, isLoading),
+            const SizedBox(height: 16),
+            AiHumanChart(
+              stats: provider.aiHumanStats,
+              isLoading: isLoading,
+            ),
+            const SizedBox(height: 16),
+            // Consumption Charts
+            _buildConsumptionSection(isLoading),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildAnalyticsTab(DashboardProvider provider) {
+  Widget _buildConsumptionSection(bool isLoading) {
+    return provider_pkg.Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        final org = authProvider.organization;
+
+        return Column(
+          children: [
+            // Messages Chart
+            ConsumptionChart(
+              title: 'Mensajes Consumidos',
+              total: (org?.totalMessageCount ?? 0).toDouble(),
+              consumed: (org?.currentMessageCount ?? 0).toDouble(),
+              isMinutes: false,
+              isLoading: isLoading || org == null,
+            ),
+            const SizedBox(height: 16),
+            // Minutes Chart
+            ConsumptionChart(
+              title: 'Minutos Consumidos',
+              total: org?.totalMinutes ?? 0,
+              consumed: org?.consumedMinutes ?? 0,
+              recharged: org?.totalMinutesRecharged,
+              isMinutes: true,
+              isLoading: isLoading || org == null,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildAnalyticsTab(DashboardProvider provider, bool isDark) {
     final isLoading = provider.status == DashboardStatus.loading;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          SentimentChart(
-            sentiments: provider.monthlyStats?.sentiments ?? {},
-            isLoading: isLoading,
-          ),
-          const SizedBox(height: 16),
-          CategoriesChart(
-            categories: provider.monthlyStats?.topCategories ?? {},
-            isLoading: isLoading,
-          ),
-        ],
+    return SmartRefresher(
+      controller: _analyticsRefreshController,
+      onRefresh: () => _onRefresh(provider, _analyticsRefreshController),
+      header: _buildRefreshHeader(isDark),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            SentimentChart(
+              sentiments: provider.monthlyStats?.sentiments ?? {},
+              isLoading: isLoading,
+            ),
+            const SizedBox(height: 16),
+            CategoriesChart(
+              categories: provider.monthlyStats?.topCategories ?? {},
+              isLoading: isLoading,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildInsightsTab(DashboardProvider provider) {
+  Widget _buildInsightsTab(DashboardProvider provider, bool isDark) {
     final isLoading = provider.status == DashboardStatus.loading;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          TagsChart(
-            tags: provider.monthlyStats?.tags ?? {},
-            isLoading: isLoading,
-          ),
-          const SizedBox(height: 16),
-          _buildAdvisorsBreakdown(provider, isLoading, ref.watch(isDarkModeProvider)),
-        ],
+    return SmartRefresher(
+      controller: _insightsRefreshController,
+      onRefresh: () => _onRefresh(provider, _insightsRefreshController),
+      header: _buildRefreshHeader(isDark),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TagsChart(
+              tags: provider.monthlyStats?.tags ?? {},
+              isLoading: isLoading,
+            ),
+            const SizedBox(height: 16),
+            _buildAdvisorsBreakdown(provider, isLoading, isDark),
+          ],
+        ),
       ),
     );
   }
@@ -510,9 +563,30 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Future<void> _onRefresh(DashboardProvider provider) async {
-    await provider.refresh();
-    _refreshController.refreshCompleted();
+  Future<void> _onRefresh(DashboardProvider provider, RefreshController controller) async {
+    try {
+      // Refresh dashboard data
+      await provider.refresh();
+
+      // Also refresh organization data for consumption charts
+      if (mounted) {
+        final authProvider = provider_pkg.Provider.of<AuthProvider>(context, listen: false);
+        await authProvider.refreshOrganization();
+      }
+
+      // Check if refresh succeeded
+      if (!mounted) return;
+
+      if (provider.status == DashboardStatus.error) {
+        controller.refreshFailed();
+      } else {
+        controller.refreshCompleted();
+      }
+    } catch (e) {
+      if (mounted) {
+        controller.refreshFailed();
+      }
+    }
   }
 
   void _showExportDialog(BuildContext context) {

@@ -8,7 +8,7 @@ class AdvisorModel extends Advisor {
 
   factory AdvisorModel.fromJson(Map<String, dynamic> json) {
     return AdvisorModel(
-      name: json['name'] ?? '',
+      name: json['advisor_name'] ?? json['name'] ?? '',
       conversationCount: json['conversation_count'] ?? 0,
     );
   }

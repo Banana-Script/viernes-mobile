@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 
 /// Viernes Stats Card
 ///
-/// Unified stats card with glassmorphism effect, replacing both StatsCard and GradientStatsCard.
+/// Unified stats card with glassmorphism effect and improved visual design.
 /// Features:
-/// - Glassmorphism styling matching auth pages
+/// - Glassmorphism styling with inner glow effect
 /// - Support for gradient accent on primary cards
 /// - Color-coded icons with subtle backgrounds
 /// - Loading state with shimmer effect
+/// - Haptic feedback on tap
+/// - Optimized dark mode variants
 ///
 /// Usage:
 /// ```dart
@@ -22,7 +25,7 @@ import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 ///   isPrimary: true,  // Uses gradient accent
 /// )
 /// ```
-class ViernesStatsCard extends StatelessWidget {
+class ViernesStatsCard extends StatefulWidget {
   final String title;
   final String value;
   final String? subtitle;
@@ -45,50 +48,166 @@ class ViernesStatsCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final defaultAccent = accentColor ??
-        (isDark ? ViernesColors.accent : ViernesColors.primary);
+  State<ViernesStatsCard> createState() => _ViernesStatsCardState();
+}
 
-    return ViernesGlassmorphismCard(
-      borderRadius: 14,
-      padding: const EdgeInsets.all(16),
-      onTap: onTap,
-      child: isLoading
-          ? _buildLoadingContent()
-          : _buildContent(isDark, defaultAccent),
+class _ViernesStatsCardState extends State<ViernesStatsCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
 
-  Widget _buildLoadingContent() {
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    if (widget.onTap != null) {
+      _animationController.forward();
+      HapticFeedback.lightImpact();
+    }
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    if (widget.onTap != null) {
+      _animationController.reverse();
+    }
+  }
+
+  void _handleTapCancel() {
+    if (widget.onTap != null) {
+      _animationController.reverse();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultAccent = widget.accentColor ??
+        (isDark ? ViernesColors.accent : ViernesColors.primary);
+
+    return GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _scaleAnimation.value,
+            child: child,
+          );
+        },
+        child: ViernesGlassmorphismCard(
+          borderRadius: 16,
+          padding: EdgeInsets.zero,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              // Inner glow effect for primary cards
+              border: widget.isPrimary
+                  ? Border.all(
+                      color: isDark
+                          ? ViernesColors.accent.withValues(alpha: 0.25)
+                          : ViernesColors.primary.withValues(alpha: 0.15),
+                      width: 1.5,
+                    )
+                  : Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.05)
+                          : Colors.black.withValues(alpha: 0.03),
+                      width: 1,
+                    ),
+              // Subtle inner glow
+              boxShadow: widget.isPrimary && isDark
+                  ? [
+                      BoxShadow(
+                        color: ViernesColors.accent.withValues(alpha: 0.08),
+                        blurRadius: 12,
+                        spreadRadius: -2,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: widget.isLoading
+                  ? _buildLoadingContent(isDark)
+                  : _buildContent(isDark, defaultAccent),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingContent(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          height: 16,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(4),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Container(
+                height: 14,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.grey.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         Container(
-          height: 32,
+          height: 28,
           width: 80,
           decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(4),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.grey.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(6),
           ),
         ),
-        if (subtitle != null) ...[
-          const SizedBox(height: 8),
+        if (widget.subtitle != null) ...[
+          const SizedBox(height: 6),
           Container(
             height: 12,
             width: 100,
             decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.3),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.grey.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -98,6 +217,11 @@ class ViernesStatsCard extends StatelessWidget {
   }
 
   Widget _buildContent(bool isDark, Color accentColor) {
+    // Determine value color based on priority and theme
+    final valueColor = widget.isPrimary
+        ? (isDark ? ViernesColors.accent : ViernesColors.primary)
+        : accentColor;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,14 +229,15 @@ class ViernesStatsCard extends StatelessWidget {
         // Header: Title and Icon
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Text(
-                title,
+                widget.title,
                 style: ViernesTextStyles.bodySmall.copyWith(
-                  color: ViernesColors.getTextColor(isDark)
-                      .withValues(alpha: 0.7),
+                  color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                   fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -121,26 +246,39 @@ class ViernesStatsCard extends StatelessWidget {
             const SizedBox(width: 8),
             // Icon with gradient background if primary
             Container(
-              width: 36,
-              height: 36,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
-                gradient: isPrimary
+                gradient: widget.isPrimary
                     ? LinearGradient(
-                        colors: [
-                          ViernesColors.secondary.withValues(alpha: 0.3),
-                          ViernesColors.accent.withValues(alpha: 0.3),
-                        ],
+                        colors: isDark
+                            ? [
+                                ViernesColors.accent.withValues(alpha: 0.25),
+                                ViernesColors.accent.withValues(alpha: 0.1),
+                              ]
+                            : [
+                                ViernesColors.primary.withValues(alpha: 0.15),
+                                ViernesColors.primary.withValues(alpha: 0.05),
+                              ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       )
                     : null,
-                color: isPrimary ? null : accentColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
+                color: widget.isPrimary ? null : accentColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(11),
+                border: widget.isPrimary
+                    ? Border.all(
+                        color: isDark
+                            ? ViernesColors.accent.withValues(alpha: 0.2)
+                            : ViernesColors.primary.withValues(alpha: 0.1),
+                        width: 1,
+                      )
+                    : null,
               ),
               child: Icon(
-                icon,
-                color: isPrimary
-                    ? (isDark
-                        ? ViernesColors.accent
-                        : ViernesColors.secondary)
+                widget.icon,
+                color: widget.isPrimary
+                    ? (isDark ? ViernesColors.accent : ViernesColors.primary)
                     : accentColor,
                 size: 20,
               ),
@@ -148,32 +286,61 @@ class ViernesStatsCard extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
-        // Value
-        Text(
-          value,
-          style: ViernesTextStyles.h3.copyWith(
-            color: isPrimary
-                ? (isDark ? ViernesColors.accent : ViernesColors.primary)
-                : accentColor,
-            fontWeight: FontWeight.w700,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        // Value with optional badge styling for primary
+        widget.isPrimary
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: valueColor.withValues(alpha: isDark ? 0.12 : 0.08),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  widget.value,
+                  style: ViernesTextStyles.h3.copyWith(
+                    color: valueColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 24,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+            : Text(
+                widget.value,
+                style: ViernesTextStyles.h3.copyWith(
+                  color: valueColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
 
         // Subtitle
-        if (subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            subtitle!,
-            style: ViernesTextStyles.caption.copyWith(
-              color: ViernesColors.getTextColor(isDark)
-                  .withValues(alpha: 0.6),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+        if (widget.subtitle != null) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(
+                Icons.trending_up_rounded,
+                size: 14,
+                color: ViernesColors.success.withValues(alpha: 0.8),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  widget.subtitle!,
+                  style: ViernesTextStyles.caption.copyWith(
+                    color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         ],
       ],

@@ -124,6 +124,12 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Public method to refresh organization info
+  /// Called when dashboard pull-to-refresh is triggered
+  Future<void> refreshOrganization() async {
+    await _loadOrganizationInfo();
+  }
+
   /// Toggles the agent's availability status
   /// This updates the status on the backend and refreshes the user profile
   Future<void> toggleAvailability() async {

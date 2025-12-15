@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -24,6 +25,7 @@ class ConversationsListPage extends StatefulWidget {
 class _ConversationsListPageState extends State<ConversationsListPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
     _searchController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -302,8 +305,17 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
         }
 
         // List with pull-to-refresh
-        return RefreshIndicator(
-          onRefresh: () => provider.refresh(),
+        return SmartRefresher(
+          controller: _refreshController,
+          onRefresh: () async {
+            await provider.refresh();
+            _refreshController.refreshCompleted();
+          },
+          header: WaterDropMaterialHeader(
+            backgroundColor: isDark ? ViernesColors.accent : ViernesColors.secondary,
+            color: Colors.black,
+            distance: 60,
+          ),
           child: ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(
