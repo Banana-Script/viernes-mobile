@@ -214,7 +214,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
         Switch.adaptive(
           value: value,
           onChanged: _isLoading ? null : onChanged,
-          activeThumbColor: ViernesColors.primary,
+          activeColor: ViernesColors.primary,
           activeTrackColor: ViernesColors.primary.withValues(alpha: 0.3),
         ),
       ],

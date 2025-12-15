@@ -78,14 +78,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       child: Column(
                         children: [
                           Image.asset(
-                            'assets/images/auth/logo.png',
+                            isDark
+                                ? 'assets/images/auth/logo-dark.png'
+                                : 'assets/images/auth/logo.png',
                             width: 180,
                             height: 45,
                             fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 12),
                           Image.asset(
-                            'assets/images/auth/powered-by-2.png',
+                            isDark
+                                ? 'assets/images/auth/powered-by-dark.png'
+                                : 'assets/images/auth/powered-by-2.png',
                             width: 110,
                             height: 18,
                             fit: BoxFit.contain,
@@ -227,50 +231,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 ),
               ),
 
-              // Theme toggle button (top-right)
-              Positioned(
-                top: 16,
-                right: 16,
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
-                        : Colors.white.withValues(alpha: 0.95),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isDark
-                          ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
-                          : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        final themeManager = ref.read(themeManagerProvider.notifier);
-                        themeManager.toggleTheme();
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      child: Center(
-                        child: Text(
-                          isDark ? '🌙' : '☀️',
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

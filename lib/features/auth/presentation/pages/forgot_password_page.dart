@@ -81,14 +81,18 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                       child: Column(
                         children: [
                           Image.asset(
-                            'assets/images/auth/logo.png',
+                            isDark
+                                ? 'assets/images/auth/logo-dark.png'
+                                : 'assets/images/auth/logo.png',
                             width: 180,
                             height: 45,
                             fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 12),
                           Image.asset(
-                            'assets/images/auth/powered-by-2.png',
+                            isDark
+                                ? 'assets/images/auth/powered-by-dark.png'
+                                : 'assets/images/auth/powered-by-2.png',
                             width: 110,
                             height: 18,
                             fit: BoxFit.contain,

@@ -16,6 +16,9 @@ fi
 echo "Build Configuration: ${CONFIGURATION}"
 echo "Copying Firebase config from: ${CONFIG_PATH}"
 
+# Copy to Runner directory (required for Xcode build)
+cp "${CONFIG_PATH}" "${SRCROOT}/Runner/GoogleService-Info.plist"
+
 # Ensure the destination directory exists
 mkdir -p "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app"
 

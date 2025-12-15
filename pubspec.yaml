@@ -85,7 +85,9 @@ flutter:
 
   assets:
     - assets/images/auth/logo.png
+    - assets/images/auth/logo-dark.png
     - assets/images/auth/powered-by-2.png
+    - assets/images/auth/powered-by-dark.png
     - assets/animations/
 
 # App Icon Configuration

@@ -95,9 +95,10 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     // Accessibility: respect reduce motion preference
     final reduceMotion = MediaQuery.of(context).disableAnimations;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF060818) : Colors.white,
       body: AnimatedBuilder(
         animation: _fadeOpacity,
         builder: (context, child) {
@@ -151,14 +152,18 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Column(
                       children: [
                         Image.asset(
-                          'assets/images/auth/logo.png',
+                          isDark
+                              ? 'assets/images/auth/logo-dark.png'
+                              : 'assets/images/auth/logo.png',
                           width: 180,
                           height: 45,
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(height: 16),
                         Image.asset(
-                          'assets/images/auth/powered-by-2.png',
+                          isDark
+                              ? 'assets/images/auth/powered-by-dark.png'
+                              : 'assets/images/auth/powered-by-2.png',
                           width: 110,
                           height: 18,
                           fit: BoxFit.contain,
