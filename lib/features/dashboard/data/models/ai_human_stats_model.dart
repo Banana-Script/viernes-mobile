@@ -65,20 +65,23 @@ class AiHumanStatsModel extends AiHumanStats {
   });
 
   factory AiHumanStatsModel.fromJson(Map<String, dynamic> json) {
+    // API wraps response in 'data' object
+    final data = json['data'] as Map<String, dynamic>? ?? json;
+
     // Parse advisors breakdown
     List<AdvisorModel> advisorsList = [];
-    if (json['advisors_breakdown'] != null &&
-        json['advisors_breakdown']['advisors'] != null) {
-      final advisorsData = json['advisors_breakdown']['advisors'] as List;
+    if (data['advisors_breakdown'] != null &&
+        data['advisors_breakdown']['advisors'] != null) {
+      final advisorsData = data['advisors_breakdown']['advisors'] as List;
       advisorsList = advisorsData
           .map((advisor) => AdvisorModel.fromJson(advisor))
           .toList();
     }
 
     return AiHumanStatsModel(
-      totalConversations: json['total_conversations'] ?? 0,
-      aiOnly: ConversationBreakdownModel.fromJson(json['ai_only'] ?? {}),
-      humanAssisted: ConversationBreakdownModel.fromJson(json['human_assisted'] ?? {}),
+      totalConversations: data['total_conversations'] ?? 0,
+      aiOnly: ConversationBreakdownModel.fromJson(data['ai_only'] ?? {}),
+      humanAssisted: ConversationBreakdownModel.fromJson(data['human_assisted'] ?? {}),
       advisors: advisorsList,
     );
   }

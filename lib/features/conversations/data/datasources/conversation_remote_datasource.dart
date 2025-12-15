@@ -119,6 +119,7 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
         'page_size': pageSize.toString(),
         'order_by': orderBy,
         'order_direction': orderDirection,
+        'conversation_type': 'CHAT', // Filter only chat conversations (exclude calls)
       };
 
       // Add search term if provided
