@@ -24,7 +24,7 @@ android {
     defaultConfig {
         // Default application ID - will be overridden by flavors
         applicationId = "com.bananascript.viernesforbusiness"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23  // Required by Firebase Auth
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -50,6 +50,9 @@ class NotificationService {
   // Track currently visible conversation to avoid duplicate notifications
   int? _currentConversationId;
 
+  /// Get current conversation ID (for FCM handler to check)
+  int? get currentConversationId => _currentConversationId;
+
   // Track current user ID for filtering notifications (database_id)
   int? _currentUserId;
 

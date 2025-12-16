@@ -7,6 +7,8 @@ import 'core/theme/theme_manager.dart';
 import 'core/constants/app_constants.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/services/notification_service.dart';
+import 'core/services/fcm_token_service.dart';
+import 'core/services/fcm_message_handler.dart';
 import 'features/auth/presentation/providers/auth_provider.dart' as auth_provider;
 import 'features/auth/presentation/pages/login_page.dart';
 import 'features/main/presentation/pages/main_page.dart';
@@ -24,6 +26,11 @@ Future<SharedPreferences> initializeApp() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   DependencyInjection.initialize();
   await NotificationService.instance.initialize(sharedPreferences);
+
+  // Initialize FCM
+  await FCMTokenService.instance.initialize();
+  FCMMessageHandler.initialize();
+
   return sharedPreferences;
 }
 
@@ -182,6 +189,12 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     NotificationService.instance.setCurrentUserId(userId);
     NotificationService.instance.startListening();
 
+    // Register FCM token in Firestore
+    FCMTokenService.instance.registerToken(
+      userUid: user.uid,
+      userDatabaseId: userId,
+    );
+
     debugPrint('[SSE Init] SSE initialization complete');
   }
 
@@ -198,6 +211,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     // Stop notification listening and clear user ID
     NotificationService.instance.stopListening();
     NotificationService.instance.setCurrentUserId(null);
+
+    // Unregister FCM token
+    FCMTokenService.instance.unregisterToken();
 
     debugPrint('[SSE Cleanup] SSE disconnected');
   }
