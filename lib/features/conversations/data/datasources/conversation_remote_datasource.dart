@@ -3,6 +3,7 @@ import '../../../../core/services/http_client.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/conversation_filters.dart';
+import '../../domain/entities/message_entity.dart';
 import '../models/message_model.dart';
 import '../models/conversations_list_response_model.dart';
 import '../../../customers/data/models/conversation_model.dart';
@@ -34,6 +35,7 @@ abstract class ConversationRemoteDataSource {
   /// Send text message
   Future<MessageModel> sendMessage({
     required int conversationId,
+    required String sessionId,
     required String text,
   });
 
@@ -319,14 +321,26 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
   @override
   Future<MessageModel> sendMessage({
     required int conversationId,
+    required String sessionId,
     required String text,
   }) async {
-    final endpoint = '/conversations/$conversationId/messages/';
+    const endpoint = '/whatsapp-send-message';
+
+    // Normalize sessionId
+    final normalizedSessionId = sessionId.trim();
+
+    // Validate sessionId
+    if (normalizedSessionId.isEmpty) {
+      throw ValidationException(
+        'Session ID cannot be empty',
+        stackTrace: StackTrace.current,
+      );
+    }
 
     try {
       final requestData = {
-        'text': text,
-        'type': 'text',
+        'message': text,
+        'session_id': normalizedSessionId,
       };
 
       AppLogger.apiRequest('POST', endpoint, params: requestData);
@@ -339,7 +353,22 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
       AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return MessageModel.fromJson(response.data as Map<String, dynamic>);
+        // API may return different structure, create a placeholder MessageModel
+        final responseData = response.data;
+        if (responseData is Map<String, dynamic> && responseData.containsKey('id')) {
+          return MessageModel.fromJson(responseData);
+        }
+        // Return a placeholder message for UI update
+        return MessageModel(
+          id: DateTime.now().millisecondsSinceEpoch,
+          conversationId: conversationId,
+          text: text,
+          fromUser: false,
+          fromAgent: true,
+          createdAt: DateTime.now(),
+          status: 'sent',
+          type: MessageType.text,
+        );
       } else {
         throw NetworkException(
           'Failed to send message',
@@ -364,9 +393,9 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
         );
       } else if (e.response?.statusCode == 404) {
         throw NotFoundException(
-          'Conversation not found',
-          resourceType: 'Conversation',
-          resourceId: conversationId,
+          'WhatsApp session not found',
+          resourceType: 'WhatsApp Session',
+          resourceId: normalizedSessionId,
           stackTrace: stackTrace,
           originalError: e,
         );

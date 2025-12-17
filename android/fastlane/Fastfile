@@ -1,0 +1,113 @@
+default_platform(:android)
+
+platform :android do
+
+  desc "Build Flutter app bundle"
+  lane :build do |options|
+    flavor = options[:flavor] || "prod"
+
+    # Clean previous builds
+    sh("cd ../.. && flutter clean")
+
+    # Get dependencies
+    sh("cd ../.. && flutter pub get")
+
+    # Build AAB
+    sh("cd ../.. && flutter build appbundle --flavor #{flavor} -t lib/main_#{flavor}.dart --release")
+  end
+
+  desc "Deploy to Internal Testing track"
+  lane :internal do |options|
+    flavor = options[:flavor] || "prod"
+
+    # Build first
+    build(flavor: flavor)
+
+    # Upload to Play Store - Internal Testing
+    upload_to_play_store(
+      track: "internal",
+      aab: "../build/app/outputs/bundle/#{flavor}Release/app-#{flavor}-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "draft"  # Cambiar a "completed" para publicar automaticamente
+    )
+  end
+
+  desc "Deploy to Alpha (Closed Testing) track"
+  lane :alpha do |options|
+    flavor = options[:flavor] || "prod"
+
+    build(flavor: flavor)
+
+    upload_to_play_store(
+      track: "alpha",
+      aab: "../build/app/outputs/bundle/#{flavor}Release/app-#{flavor}-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "completed"
+    )
+  end
+
+  desc "Deploy to Beta (Open Testing) track"
+  lane :beta do |options|
+    flavor = options[:flavor] || "prod"
+
+    build(flavor: flavor)
+
+    upload_to_play_store(
+      track: "beta",
+      aab: "../build/app/outputs/bundle/#{flavor}Release/app-#{flavor}-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "completed"
+    )
+  end
+
+  desc "Deploy to Production"
+  lane :production do |options|
+    flavor = options[:flavor] || "prod"
+    rollout = options[:rollout] || "1.0"  # 1.0 = 100%, 0.1 = 10%
+
+    build(flavor: flavor)
+
+    upload_to_play_store(
+      track: "production",
+      aab: "../build/app/outputs/bundle/#{flavor}Release/app-#{flavor}-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "completed",
+      rollout: rollout.to_s
+    )
+  end
+
+  desc "Promote from Internal to Production"
+  lane :promote_to_production do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "production",
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Increment version code"
+  lane :increment_version do
+    # Read current version from pubspec.yaml
+    pubspec = File.read("../../pubspec.yaml")
+    current_version = pubspec.match(/version: (\d+\.\d+\.\d+)\+(\d+)/)[2].to_i
+    new_version = current_version + 1
+
+    # Update pubspec.yaml
+    new_pubspec = pubspec.gsub(/version: (\d+\.\d+\.\d+)\+\d+/, "version: \\1+#{new_version}")
+    File.write("../../pubspec.yaml", new_pubspec)
+
+    puts "Version code incremented to #{new_version}"
+  end
+
+end

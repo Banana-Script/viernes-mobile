@@ -565,12 +565,26 @@ class ConversationProvider extends ChangeNotifier {
 
   /// Send text message
   Future<bool> sendMessage(int conversationId, String text) async {
+    // Validate sessionId before starting send operation
+    final sessionId = _selectedConversation?.user?.sessionId;
+    if (sessionId == null || sessionId.trim().isEmpty) {
+      _messageStatus = MessageStatus.error;
+      _messageErrorMessage = 'Session ID not available for this conversation';
+      AppLogger.error(
+        'Cannot send message: Session ID missing for conversation $conversationId',
+        tag: 'ConversationProvider',
+      );
+      notifyListeners();
+      return false;
+    }
+
     _messageStatus = MessageStatus.sending;
     notifyListeners();
 
     try {
       final message = await _sendMessageUseCase(
         conversationId: conversationId,
+        sessionId: sessionId,
         text: text,
       );
 

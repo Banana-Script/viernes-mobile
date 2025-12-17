@@ -108,11 +108,13 @@ class ConversationRepositoryImpl implements ConversationRepository {
   @override
   Future<MessageEntity> sendMessage({
     required int conversationId,
+    required String sessionId,
     required String text,
   }) async {
     try {
       return await _remoteDataSource.sendMessage(
         conversationId: conversationId,
+        sessionId: sessionId,
         text: text,
       );
     } catch (e, stackTrace) {

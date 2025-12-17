@@ -31,6 +31,7 @@ abstract class ConversationRepository {
   /// Send a text message
   Future<MessageEntity> sendMessage({
     required int conversationId,
+    required String sessionId,
     required String text,
   });
 

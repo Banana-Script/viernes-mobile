@@ -71,3 +71,14 @@ linux/flutter/ephemeral/.plugin_symlinks/
 
 # Windows artifacts
 nul
+
+# Android signing keys
+android/key.properties
+android/keys/
+*.keystore
+*.jks
+
+# Fastlane secrets
+android/fastlane/google-play-service-account.json
+android/fastlane/report.xml
+android/fastlane/README.md
