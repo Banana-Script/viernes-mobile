@@ -12,6 +12,8 @@ class AppStrings {
 
   // Settings
   static const String settings = 'Configuración';
+  static const String notifications = 'Notificaciones';
+  static const String appearance = 'Apariencia';
   static const String signOut = 'CERRAR SESIÓN';
 
   // Theme

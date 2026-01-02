@@ -9,8 +9,10 @@ import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../../../../shared/widgets/viernes_availability_toggle.dart';
+import '../../../../shared/widgets/viernes_settings_tile.dart';
 import '../../../auth/presentation/providers/auth_provider.dart' as auth_provider;
-import '../widgets/notification_settings.dart';
+import 'appearance_settings_page.dart';
+import 'notification_settings_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -201,32 +203,31 @@ class ProfilePage extends ConsumerWidget {
 
                     const SizedBox(height: 16),
 
-                    // Notification Settings
-                    const NotificationSettings(),
+                    // Notification Settings Tile
+                    ViernesSettingsTile(
+                      icon: Icons.notifications_outlined,
+                      title: AppStrings.notifications,
+                      subtitle: NotificationSettingsPage.getNotificationSummary(),
+                      iconColor: ViernesColors.primary,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationSettingsPage(),
+                        ),
+                      ),
+                    ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
-                    // Settings Card
-                    ViernesGlassmorphismCard(
-                      borderRadius: 24,
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppStrings.settings,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // Theme selector
-                          _buildThemeSelector(context, ref, isDark, themeMode),
-                        ],
+                    // Appearance Settings Tile
+                    ViernesSettingsTile(
+                      icon: Icons.palette_outlined,
+                      title: AppStrings.appearance,
+                      subtitle: AppearanceSettingsPage.getThemeSummary(themeMode),
+                      iconColor: ViernesColors.secondary,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AppearanceSettingsPage(),
+                        ),
                       ),
                     ),
 
@@ -267,199 +268,6 @@ class ProfilePage extends ConsumerWidget {
             fontWeight: FontWeight.w700,
             color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
             letterSpacing: 1.2,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildThemeSelector(BuildContext context, WidgetRef ref, bool isDark, ThemeMode currentTheme) {
-    return Column(
-      children: [
-        // Light mode option
-        _buildThemeOption(
-          context: context,
-          ref: ref,
-          isDark: isDark,
-          themeMode: ThemeMode.light,
-          currentTheme: currentTheme,
-          icon: Icons.light_mode,
-          title: AppStrings.lightMode,
-          description: AppStrings.lightModeDesc,
-        ),
-        const SizedBox(height: 12),
-
-        // Dark mode option
-        _buildThemeOption(
-          context: context,
-          ref: ref,
-          isDark: isDark,
-          themeMode: ThemeMode.dark,
-          currentTheme: currentTheme,
-          icon: Icons.dark_mode,
-          title: AppStrings.darkMode,
-          description: AppStrings.darkModeDesc,
-        ),
-        const SizedBox(height: 12),
-
-        // System mode option
-        _buildThemeOption(
-          context: context,
-          ref: ref,
-          isDark: isDark,
-          themeMode: ThemeMode.system,
-          currentTheme: currentTheme,
-          icon: Icons.brightness_auto,
-          title: AppStrings.autoMode,
-          description: AppStrings.autoModeDesc,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildThemeOption({
-    required BuildContext context,
-    required WidgetRef ref,
-    required bool isDark,
-    required ThemeMode themeMode,
-    required ThemeMode currentTheme,
-    required IconData icon,
-    required String title,
-    required String description,
-  }) {
-    final isSelected = currentTheme == themeMode;
-
-    return Semantics(
-      label: '${AppStrings.themeSelectorPrefix}$title',
-      value: isSelected ? AppStrings.selected : AppStrings.notSelected,
-      button: true,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark ? ViernesColors.accent : ViernesColors.secondary).withValues(alpha: 0.15)
-              : (isDark ? ViernesColors.accent : ViernesColors.primary).withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? (isDark ? ViernesColors.accent : ViernesColors.secondary)
-                : (isDark ? ViernesColors.accent : ViernesColors.primary).withValues(alpha: 0.1),
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () async {
-              try {
-                final themeManager = ref.read(themeManagerProvider.notifier);
-                await themeManager.setThemeMode(themeMode);
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${AppStrings.themeChangeError}: $e'),
-                      backgroundColor: ViernesColors.danger,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                }
-              }
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                // Icon
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    gradient: isSelected
-                        ? LinearGradient(
-                            colors: [
-                              ViernesColors.secondary.withValues(alpha: 0.6),
-                              ViernesColors.accent.withValues(alpha: 0.6),
-                            ],
-                          )
-                        : null,
-                    color: isSelected
-                        ? null
-                        : (isDark ? ViernesColors.accent : ViernesColors.primary)
-                            .withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    icon,
-                    color: isSelected
-                        ? Colors.black
-                        : (isDark ? ViernesColors.accent : ViernesColors.primary),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-
-                // Title and description
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: ViernesTextStyles.bodyText.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: ViernesColors.getTextColor(isDark),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        description,
-                        style: ViernesTextStyles.bodySmall.copyWith(
-                          color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Selected indicator
-                if (isSelected)
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ViernesColors.secondary.withValues(alpha: 0.8),
-                          ViernesColors.accent.withValues(alpha: 0.8),
-                        ],
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.black,
-                      size: 16,
-                    ),
-                  )
-                else
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: (isDark ? ViernesColors.accent : ViernesColors.primary)
-                            .withValues(alpha: 0.3),
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ),
