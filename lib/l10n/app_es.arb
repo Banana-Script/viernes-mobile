@@ -106,6 +106,8 @@
   "noAdvisorData": "No hay datos de asesores disponibles",
   "themeChangeError": "Error al cambiar el tema",
   "exportSuccess": "Datos exportados exitosamente",
+  "exportSavedToDownloads": "CSV guardado en carpeta Descargas",
+  "exportSavedShareCanceled": "Archivo guardado. Toca para compartir de nuevo.",
   "exportFailed": "Falló la exportación",
 
   "exportDataButton": "Exportar datos",

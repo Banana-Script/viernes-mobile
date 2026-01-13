@@ -231,6 +231,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportSuccess => 'Data exported successfully';
 
   @override
+  String get exportSavedToDownloads => 'CSV saved to Downloads folder';
+
+  @override
+  String get exportSavedShareCanceled => 'File saved. Tap to share again.';
+
+  @override
   String get exportFailed => 'Export failed';
 
   @override

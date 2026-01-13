@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../../core/utils/logger.dart';
 import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/viernes_colors.dart';
@@ -688,21 +689,70 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     child: ViernesGradientButton(
                       text: AppStrings.export,
                       onPressed: () async {
-                        Navigator.of(context).pop();
+                        // Capture references before popping dialog
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        final navigator = Navigator.of(context);
+                        final l10n = AppLocalizations.of(context);
+                        final successMessage = l10n?.exportSavedToDownloads ?? 'CSV saved to Downloads';
+                        final shareCanceledMessage = l10n?.exportSavedShareCanceled ?? 'File saved. Tap to share again.';
+                        final failedMessage = l10n?.exportFailed ?? 'Export failed';
+
+                        navigator.pop();
+                        AppLogger.info('Export button pressed, calling provider...', tag: 'DashboardPage');
                         final filePath = await provider.exportConversationStats();
-                        if (filePath != null && context.mounted) {
+                        AppLogger.info('Provider returned filePath: $filePath', tag: 'DashboardPage');
+                        if (filePath != null) {
                           // Share the file
-                          await Share.shareXFiles(
-                            [XFile(filePath)],
-                            text: 'Viernes Conversation Statistics',
-                          );
-                          if (context.mounted) {
-                            _showSuccessSnackBar(context, AppStrings.exportSuccess);
+                          AppLogger.info('Calling Share.shareXFiles...', tag: 'DashboardPage');
+                          try {
+                            final result = await Share.shareXFiles(
+                              [XFile(filePath)],
+                              text: 'Viernes Conversation Statistics',
+                            );
+                            AppLogger.info('Share result: ${result.status}', tag: 'DashboardPage');
+
+                            // Show appropriate message based on share result
+                            final message = result.status == ShareResultStatus.success
+                                ? successMessage
+                                : shareCanceledMessage;
+                            scaffoldMessenger.showSnackBar(
+                              SnackBar(
+                                content: Text(message),
+                                backgroundColor: ViernesColors.success,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                margin: const EdgeInsets.all(16),
+                              ),
+                            );
+                          } catch (e) {
+                            AppLogger.error('Share error: $e', tag: 'DashboardPage');
+                            // File was created but share failed
+                            scaffoldMessenger.showSnackBar(
+                              SnackBar(
+                                content: Text(shareCanceledMessage),
+                                backgroundColor: ViernesColors.success,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                margin: const EdgeInsets.all(16),
+                              ),
+                            );
                           }
-                        } else if (context.mounted) {
-                          _showErrorSnackBar(
-                            context,
-                            provider.errorMessage ?? AppStrings.exportFailed,
+                        } else {
+                          AppLogger.error('filePath is null', tag: 'DashboardPage');
+                          scaffoldMessenger.showSnackBar(
+                            SnackBar(
+                              content: Text(provider.errorMessage ?? failedMessage),
+                              backgroundColor: ViernesColors.danger,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              margin: const EdgeInsets.all(16),
+                            ),
                           );
                         }
                       },
@@ -720,31 +770,4 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  void _showSuccessSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: ViernesColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: const EdgeInsets.all(16),
-      ),
-    );
-  }
-
-  void _showErrorSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: ViernesColors.danger,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: const EdgeInsets.all(16),
-      ),
-    );
-  }
 }

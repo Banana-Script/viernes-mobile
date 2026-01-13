@@ -536,6 +536,18 @@ abstract class AppLocalizations {
   /// **'Data exported successfully'**
   String get exportSuccess;
 
+  /// Export success message indicating file location
+  ///
+  /// In en, this message translates to:
+  /// **'CSV saved to Downloads folder'**
+  String get exportSavedToDownloads;
+
+  /// Export success message when share was canceled
+  ///
+  /// In en, this message translates to:
+  /// **'File saved. Tap to share again.'**
+  String get exportSavedShareCanceled;
+
   /// Export failed message
   ///
   /// In en, this message translates to:

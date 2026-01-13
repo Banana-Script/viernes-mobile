@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import '../../../../core/services/http_client.dart';
 import '../models/monthly_stats_model.dart';
@@ -83,11 +85,14 @@ class DashboardRemoteDataSourceImpl implements DashboardRemoteDataSource {
   @override
   Future<String> exportConversationStats() async {
     try {
-      final response = await _httpClient.dio.get('/conversations/export-conversation-stats/');
+      final response = await _httpClient.dio.get(
+        '/conversations/export-conversation-stats/',
+        options: Options(responseType: ResponseType.bytes),
+      );
 
       if (response.statusCode == 200) {
-        // Return the CSV content as string
-        return response.data.toString();
+        // Decode bytes to UTF-8 string for CSV content
+        return utf8.decode(response.data as List<int>);
       } else {
         throw DioException(
           requestOptions: response.requestOptions,

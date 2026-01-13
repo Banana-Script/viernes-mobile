@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/monthly_stats.dart';
 import '../../domain/entities/ai_human_stats.dart';
@@ -122,32 +124,29 @@ class DashboardProvider extends ChangeNotifier {
 
     try {
       // Get CSV data from use case
+      AppLogger.info('Starting CSV export...', tag: 'DashboardProvider');
       final csvData = await _exportConversationStatsUseCase();
+      AppLogger.info('CSV data received, length: ${csvData.length} chars', tag: 'DashboardProvider');
 
       // Generate filename with timestamp
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
       final fileName = 'viernes_stats_$timestamp.csv';
 
       // Get the directory to save the file
-      // Use app-specific external directory (no permissions needed on Android 10+)
-      Directory? directory;
-      if (Platform.isAndroid) {
-        // Use app-specific external storage (scoped storage compliant)
-        directory = await getExternalStorageDirectory();
-      } else {
-        // For iOS, use app documents directory
-        directory = await getApplicationDocumentsDirectory();
-      }
+      final directory = await _getExportDirectory();
 
       if (directory == null) {
         throw Exception('Could not access storage directory');
       }
+      AppLogger.info('Directory: ${directory.path}', tag: 'DashboardProvider');
 
       // Create file and write CSV data
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(csvData);
 
-      AppLogger.info('CSV exported to: ${file.path}', tag: 'DashboardProvider');
+      final exists = await file.exists();
+      final size = exists ? await file.length() : 0;
+      AppLogger.info('CSV exported to: ${file.path}, exists: $exists, size: $size bytes', tag: 'DashboardProvider');
 
       // Return file path for sharing
       return file.path;
@@ -158,6 +157,43 @@ class DashboardProvider extends ChangeNotifier {
     } finally {
       _isExporting = false;
       notifyListeners();
+    }
+  }
+
+  /// Get the appropriate directory for exporting files
+  /// - Android <= 12: Request storage permission, use Downloads folder
+  /// - Android 13+: Use app-specific directory (scoped storage)
+  /// - iOS: Use app documents directory
+  Future<Directory?> _getExportDirectory() async {
+    if (Platform.isAndroid) {
+      // Check Android SDK version
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      final sdkInt = androidInfo.version.sdkInt;
+
+      AppLogger.info('Android SDK: $sdkInt', tag: 'DashboardProvider');
+
+      // Android 12 (API 32) and below: Request permission for Downloads
+      if (sdkInt <= 32) {
+        final status = await Permission.storage.request();
+        AppLogger.info('Storage permission status: $status', tag: 'DashboardProvider');
+
+        if (status.isGranted) {
+          // Try public Downloads folder
+          final downloadsDir = Directory('/storage/emulated/0/Download');
+          if (await downloadsDir.exists()) {
+            return downloadsDir;
+          }
+        }
+        // Permission denied or Downloads doesn't exist, fall back to app storage
+        AppLogger.info('Using app-specific storage (permission denied or Downloads not found)', tag: 'DashboardProvider');
+      }
+
+      // Android 13+ or fallback: Use app-specific external storage
+      return await getExternalStorageDirectory();
+    } else {
+      // iOS: Use app documents directory
+      return await getApplicationDocumentsDirectory();
     }
   }
 

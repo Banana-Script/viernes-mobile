@@ -365,6 +365,16 @@
     "description": "Export success message"
   },
 
+  "exportSavedToDownloads": "CSV saved to Downloads folder",
+  "@exportSavedToDownloads": {
+    "description": "Export success message indicating file location"
+  },
+
+  "exportSavedShareCanceled": "File saved. Tap to share again.",
+  "@exportSavedShareCanceled": {
+    "description": "Export success message when share was canceled"
+  },
+
   "exportFailed": "Export failed",
   "@exportFailed": {
     "description": "Export failed message"
