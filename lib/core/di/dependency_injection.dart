@@ -53,6 +53,7 @@ import '../../features/conversations/presentation/providers/conversation_provide
 
 import '../services/http_client.dart';
 import '../services/value_definitions_service.dart';
+import '../services/organization_timezone_service.dart';
 
 class DependencyInjection {
   // Auth dependencies
@@ -73,6 +74,7 @@ class DependencyInjection {
   // Shared dependencies
   static late final HttpClient _httpClient;
   static late final ValueDefinitionsService _valueDefinitionsService;
+  static late final OrganizationTimezoneService _organizationTimezoneService;
 
   // Dashboard dependencies
   static late final DashboardRemoteDataSource _dashboardRemoteDataSource;
@@ -129,6 +131,7 @@ class DependencyInjection {
     // Shared services (needed for user remote data source)
     _httpClient = HttpClient();
     _valueDefinitionsService = ValueDefinitionsService(_httpClient);
+    _organizationTimezoneService = OrganizationTimezoneService(_httpClient);
 
     // Data sources
     _authDataSource = FirebaseAuthDataSourceImpl(firebaseAuth: _firebaseAuth);
@@ -266,4 +269,7 @@ class DependencyInjection {
 
   // Value Definitions getters
   static ValueDefinitionsService get valueDefinitionsService => _valueDefinitionsService;
+
+  // Organization Timezone getter
+  static OrganizationTimezoneService get organizationTimezoneService => _organizationTimezoneService;
 }

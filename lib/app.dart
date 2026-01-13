@@ -7,6 +7,8 @@ import 'gen_l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_manager.dart';
 import 'core/locale/locale_manager.dart';
+import 'core/timezone/timezone_manager.dart';
+import 'core/utils/timezone_utils.dart';
 import 'core/constants/app_constants.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/services/notification_service.dart';
@@ -29,6 +31,9 @@ Future<SharedPreferences> initializeApp() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   DependencyInjection.initialize();
   await NotificationService.instance.initialize(sharedPreferences);
+
+  // Initialize timezone database
+  TimezoneUtils.initialize();
 
   // Initialize FCM
   await FCMTokenService.instance.initialize();
@@ -86,14 +91,14 @@ class ViernesApp extends ConsumerWidget {
 }
 
 /// Authentication wrapper that handles SSE connection based on auth state.
-class AuthenticationWrapper extends StatefulWidget {
+class AuthenticationWrapper extends ConsumerStatefulWidget {
   const AuthenticationWrapper({super.key});
 
   @override
-  State<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
+  ConsumerState<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
 }
 
-class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
+class _AuthenticationWrapperState extends ConsumerState<AuthenticationWrapper> {
   bool _sseInitialized = false;
   bool _showSplash = true;
 
@@ -192,6 +197,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     // Load value definitions (for dynamic role_id, status_id, etc.)
     _loadValueDefinitions();
 
+    // Load organization timezone
+    _loadOrganizationTimezone();
+
     // Connect SSE in ConversationProvider
     final conversationProvider = provider.Provider.of<ConversationProvider>(
       context,
@@ -227,6 +235,22 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     }
   }
 
+  Future<void> _loadOrganizationTimezone() async {
+    try {
+      debugPrint('[Timezone] Loading organization timezone...');
+      final timezone = await DependencyInjection.organizationTimezoneService.loadTimezone();
+      if (timezone != null && mounted) {
+        ref.read(timezoneManagerProvider.notifier).setOrganizationTimezone(timezone);
+        debugPrint('[Timezone] Organization timezone loaded: $timezone');
+      } else {
+        debugPrint('[Timezone] No organization timezone available, using device timezone');
+      }
+    } catch (e) {
+      debugPrint('[Timezone] Error loading organization timezone: $e');
+      // Non-blocking - the app can still work with device timezone
+    }
+  }
+
   void _cleanupRealTimeServices(BuildContext context) {
     debugPrint('[SSE Cleanup] Disconnecting SSE...');
 
@@ -246,6 +270,10 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
     // Clear value definitions cache
     DependencyInjection.valueDefinitionsService.clear();
+
+    // Clear organization timezone cache and state
+    DependencyInjection.organizationTimezoneService.clear();
+    ref.read(timezoneManagerProvider.notifier).clearOrganizationTimezone();
 
     debugPrint('[SSE Cleanup] SSE disconnected');
   }

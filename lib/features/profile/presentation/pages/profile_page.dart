@@ -7,6 +7,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/locale/locale_manager.dart';
+import '../../../../core/timezone/timezone_manager.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
@@ -16,6 +17,7 @@ import '../../../auth/presentation/providers/auth_provider.dart' as auth_provide
 import 'appearance_settings_page.dart';
 import 'notification_settings_page.dart';
 import 'language_settings_page.dart';
+import 'timezone_settings_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -245,6 +247,24 @@ class ProfilePage extends ConsumerWidget {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const LanguageSettingsPage(),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Timezone Settings Tile
+                    ViernesSettingsTile(
+                      icon: Icons.access_time_outlined,
+                      title: AppLocalizations.of(context)!.timezoneSettings,
+                      subtitle: TimezoneSettingsPage.getTimezoneSummary(
+                        ref.watch(timezoneManagerProvider),
+                        AppLocalizations.of(context),
+                      ),
+                      iconColor: ViernesColors.info,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const TimezoneSettingsPage(),
                         ),
                       ),
                     ),

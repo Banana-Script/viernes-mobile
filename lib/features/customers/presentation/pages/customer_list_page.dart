@@ -6,6 +6,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/timezone/timezone_manager.dart';
 import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/list_components/index.dart';
@@ -308,6 +309,8 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   }
 
   Widget _buildContent(bool isDark, AppLocalizations? l10n) {
+    final timezone = ref.watch(currentTimezoneProvider);
+
     return provider_pkg.Consumer<CustomerProvider>(
       builder: (context, provider, _) {
         // Error state
@@ -376,6 +379,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
               return CustomerCard(
                 customer: provider.customers[index],
                 isDark: isDark,
+                timezone: timezone,
                 onTap: () => _onCustomerTap(provider.customers[index]),
               );
             },

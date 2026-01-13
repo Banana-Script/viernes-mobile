@@ -669,4 +669,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get justNow => 'Just now';
+
+  @override
+  String get timezoneSettings => 'Timezone';
+
+  @override
+  String get organizationTimezone => 'Organization timezone';
+
+  @override
+  String get deviceTimezone => 'Device timezone';
+
+  @override
+  String get currentTimezone => 'Current Timezone';
+
+  @override
+  String get timezoneDescription =>
+      'All dates and times in the app will be displayed according to the selected timezone.';
+
+  @override
+  String get timezoneNotAvailable => 'Not available';
 }

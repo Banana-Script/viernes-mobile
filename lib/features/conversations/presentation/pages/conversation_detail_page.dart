@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart' as provider_pkg;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/models/sse_events.dart';
+import '../../../../core/timezone/timezone_manager.dart';
 import '../../../../core/services/conversation_sse_service.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/viernes_colors.dart';
@@ -29,7 +31,7 @@ import '../../domain/entities/internal_note_entity.dart';
 /// Conversation Detail Page
 ///
 /// Chat interface for viewing and sending messages in a conversation.
-class ConversationDetailPage extends StatefulWidget {
+class ConversationDetailPage extends ConsumerStatefulWidget {
   final int conversationId;
   final bool allowDirectChat;
 
@@ -40,10 +42,10 @@ class ConversationDetailPage extends StatefulWidget {
   });
 
   @override
-  State<ConversationDetailPage> createState() => _ConversationDetailPageState();
+  ConsumerState<ConversationDetailPage> createState() => _ConversationDetailPageState();
 }
 
-class _ConversationDetailPageState extends State<ConversationDetailPage> {
+class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage> {
   final ScrollController _scrollController = ScrollController();
   bool _showToolCalls = true;
 
@@ -59,7 +61,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
 
     // Load conversation and messages
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final provider = Provider.of<ConversationProvider>(context, listen: false);
+      final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
       await provider.selectConversation(widget.conversationId);
 
       // Auto-assign if coming from customer detail and conversation has no agent
@@ -148,7 +150,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     );
 
     // Add message to provider
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
     provider.addAgentMessageFromSSE(event);
   }
 
@@ -172,7 +174,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
       metadata: const {},
     );
 
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
     provider.addAgentMessageFromSSE(agentEvent);
   }
 
@@ -196,7 +198,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     );
 
     // Reload conversation to get updated assignment
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
     provider.selectConversation(widget.conversationId);
   }
 
@@ -210,7 +212,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     );
 
     // Reload conversation to get updated status
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
+    final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
     provider.selectConversation(widget.conversationId);
   }
 
@@ -228,7 +230,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     // Load more messages when scrolling to top (older messages)
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      final provider = Provider.of<ConversationProvider>(context, listen: false);
+      final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
       if (!provider.isLoadingMoreMessages && provider.hasMoreMessages) {
         provider.loadMoreMessages(widget.conversationId);
       }
@@ -251,8 +253,8 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
   }
 
   void _showActionsBottomSheet(BuildContext context) {
-    final provider = Provider.of<ConversationProvider>(context, listen: false);
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
+    final authProvider = provider_pkg.Provider.of<AuthProvider>(context, listen: false);
     final conversation = provider.selectedConversation;
 
     if (conversation == null) return;
@@ -289,7 +291,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     );
 
     if (confirmed == true && mounted) {
-      final provider = Provider.of<ConversationProvider>(context, listen: false);
+      final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
       final scaffoldMessenger = ScaffoldMessenger.of(context);
 
       // Get organizationId from the selected conversation
@@ -370,7 +372,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
     BuildContext context,
     ConversationEntity conversation,
   ) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = provider_pkg.Provider.of<AuthProvider>(context, listen: false);
 
     // Show the panel - note: a full implementation would require
     // proper dependency injection for the InternalNotesProvider
@@ -497,7 +499,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
         ),
         onPressed: () => Navigator.pop(context),
       ),
-      title: Consumer<ConversationProvider>(
+      title: provider_pkg.Consumer<ConversationProvider>(
         builder: (context, provider, _) {
           final conversation = provider.selectedConversation;
           if (conversation == null) {
@@ -536,7 +538,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
   }
 
   Widget _buildStatusBar(BuildContext context, bool isDark) {
-    return Consumer<ConversationProvider>(
+    return provider_pkg.Consumer<ConversationProvider>(
       builder: (context, provider, _) {
         final conversation = provider.selectedConversation;
         if (conversation == null) {
@@ -580,7 +582,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
   }
 
   Widget _buildMessagesList(BuildContext context, bool isDark) {
-    return Consumer<ConversationProvider>(
+    return provider_pkg.Consumer<ConversationProvider>(
       builder: (context, provider, _) {
         // Loading state
         if (provider.messageStatus == MessageStatus.loading &&
@@ -700,9 +702,11 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
 
             // Messages are reversed, so we need to access them in reverse order
             final message = filteredMessages[adjustedIndex];
+            final timezone = ref.watch(currentTimezoneProvider);
             return MessageBubble(
               message: message,
               isDark: isDark,
+              timezone: timezone,
             );
           },
         );
@@ -788,7 +792,7 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> {
   }
 
   Widget _buildMessageInput(BuildContext context, bool isDark) {
-    return Consumer2<ConversationProvider, AuthProvider>(
+    return provider_pkg.Consumer2<ConversationProvider, AuthProvider>(
       builder: (context, conversationProvider, authProvider, _) {
         return MessageComposer(
           conversationId: widget.conversationId,

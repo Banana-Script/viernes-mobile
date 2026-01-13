@@ -746,5 +746,30 @@
   "loadMore": "Load More",
   "noConversationsYet": "No conversations yet",
   "conversationHistoryWillAppear": "Conversation history will appear here",
-  "justNow": "Just now"
+  "justNow": "Just now",
+
+  "timezoneSettings": "Timezone",
+  "@timezoneSettings": {
+    "description": "Timezone settings page title"
+  },
+  "organizationTimezone": "Organization timezone",
+  "@organizationTimezone": {
+    "description": "Organization timezone option"
+  },
+  "deviceTimezone": "Device timezone",
+  "@deviceTimezone": {
+    "description": "Device timezone option"
+  },
+  "currentTimezone": "Current Timezone",
+  "@currentTimezone": {
+    "description": "Current timezone section header"
+  },
+  "timezoneDescription": "All dates and times in the app will be displayed according to the selected timezone.",
+  "@timezoneDescription": {
+    "description": "Description explaining timezone setting effect"
+  },
+  "timezoneNotAvailable": "Not available",
+  "@timezoneNotAvailable": {
+    "description": "Message when organization timezone is not available"
+  }
 }

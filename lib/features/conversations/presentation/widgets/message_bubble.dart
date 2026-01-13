@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../core/utils/timezone_utils.dart';
 import '../../domain/entities/message_entity.dart';
 
 /// Message Bubble Widget
@@ -10,11 +11,13 @@ import '../../domain/entities/message_entity.dart';
 class MessageBubble extends StatelessWidget {
   final MessageEntity message;
   final bool isDark;
+  final String timezone;
 
   const MessageBubble({
     super.key,
     required this.message,
     required this.isDark,
+    required this.timezone,
   });
 
   @override
@@ -83,7 +86,7 @@ class MessageBubble extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        _formatTime(message.createdAt),
+                        _formatTime(context, message.createdAt),
                         style: ViernesTextStyles.caption.copyWith(
                           fontSize: 11,
                           color: isCustomer
@@ -259,9 +262,8 @@ class MessageBubble extends StatelessWidget {
         : const Color(0x1A000000); // Black at 10% opacity = rgba(0, 0, 0, 0.1)
   }
 
-  String _formatTime(DateTime dateTime) {
-    final hour = dateTime.hour.toString().padLeft(2, '0');
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
+  String _formatTime(BuildContext context, DateTime dateTime) {
+    final locale = Localizations.localeOf(context).languageCode;
+    return TimezoneUtils.formatTimeOnly(dateTime, timezone, locale);
   }
 }

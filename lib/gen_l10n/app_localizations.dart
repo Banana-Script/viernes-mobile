@@ -1381,6 +1381,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Just now'**
   String get justNow;
+
+  /// Timezone settings page title
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get timezoneSettings;
+
+  /// Organization timezone option
+  ///
+  /// In en, this message translates to:
+  /// **'Organization timezone'**
+  String get organizationTimezone;
+
+  /// Device timezone option
+  ///
+  /// In en, this message translates to:
+  /// **'Device timezone'**
+  String get deviceTimezone;
+
+  /// Current timezone section header
+  ///
+  /// In en, this message translates to:
+  /// **'Current Timezone'**
+  String get currentTimezone;
+
+  /// Description explaining timezone setting effect
+  ///
+  /// In en, this message translates to:
+  /// **'All dates and times in the app will be displayed according to the selected timezone.'**
+  String get timezoneDescription;
+
+  /// Message when organization timezone is not available
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get timezoneNotAvailable;
 }
 
 class _AppLocalizationsDelegate

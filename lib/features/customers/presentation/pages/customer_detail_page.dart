@@ -7,8 +7,9 @@ import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_dimensions.dart';
 import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/timezone/timezone_manager.dart';
 import '../../../../core/utils/customer_insight_helper.dart';
-import '../../../../core/utils/date_formatters.dart';
+import '../../../../core/utils/timezone_utils.dart';
 import '../../../../core/constants/insight_features.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
@@ -231,6 +232,10 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   Widget _buildHeroSection(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
+    final timezone = ref.watch(currentTimezoneProvider);
+    final locale = Localizations.localeOf(context);
+    final localeCode = locale.languageCode;
+
     return ViernesGlassmorphismCard(
       borderRadius: ViernesSpacing.radius24,
       padding: const EdgeInsets.all(ViernesSpacing.lg),
@@ -295,7 +300,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
               borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
             ),
             child: Text(
-              '${l10n?.memberSince ?? 'Member since'} ${DateFormatters.monthYear.format(customer.createdAt)}',
+              '${l10n?.memberSince ?? 'Member since'} ${TimezoneUtils.formatMonthYear(customer.createdAt, timezone, localeCode)}',
               style: ViernesTextStyles.labelSmall.copyWith(
                 color: isDark ? ViernesColors.accent : ViernesColors.primary,
                 fontWeight: FontWeight.w600,
@@ -440,6 +445,10 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   Widget _buildContactSection(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
+    final timezone = ref.watch(currentTimezoneProvider);
+    final locale = Localizations.localeOf(context);
+    final localeCode = locale.languageCode;
+
     return ViernesGlassmorphismCard(
       borderRadius: ViernesSpacing.radius14,
       padding: const EdgeInsets.all(ViernesSpacing.md),
@@ -467,7 +476,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
           InfoRow(
             icon: Icons.calendar_today_rounded,
             label: l10n?.created ?? 'Created',
-            value: DateFormatters.fullDate.format(customer.createdAt),
+            value: TimezoneUtils.formatFullDate(customer.createdAt, timezone, localeCode),
             isDark: isDark,
           ),
         ],
@@ -678,6 +687,8 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   Widget _buildMetricsGrid(CustomerEntity customer, bool isDark, String languageCode, AppLocalizations? l10n) {
+    final timezone = ref.watch(currentTimezoneProvider);
+
     // Use CustomerInsightHelper with constant
     final purchaseIntention = CustomerInsightHelper.getInsightValue(
       customer,
@@ -704,7 +715,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
           icon: Icons.access_time_rounded,
           label: l10n?.lastContact ?? 'Last Interaction',
           value: customer.lastInteraction != null
-              ? DateFormatters.formatRelative(customer.lastInteraction!)
+              ? TimezoneUtils.formatRelativeTime(customer.lastInteraction!, timezone, languageCode, l10n)
               : l10n?.never ?? 'Never',
           isDark: isDark,
           iconColor: ViernesColors.warning,
@@ -759,9 +770,12 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   /// Future enhancement: Connect to actual conversation data API
   /// For now shows empty state with proper placeholder structure
   Widget _buildConversationHistoryTable(CustomerEntity customer, bool isDark) {
+    final timezone = ref.watch(currentTimezoneProvider);
+
     return ConversationHistoryTable(
       conversations: const [], // TODO: Load actual conversation data from API
       isDark: isDark,
+      timezone: timezone,
       isLoading: false,
       hasMorePages: false,
       onRefresh: () async {

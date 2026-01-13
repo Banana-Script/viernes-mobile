@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
+import '../../../../core/utils/timezone_utils.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../gen_l10n/app_localizations.dart';
 import '../../domain/entities/customer_entity.dart';
@@ -23,12 +23,14 @@ class CustomerCard extends StatelessWidget {
   final CustomerEntity customer;
   final VoidCallback? onTap;
   final bool isDark;
+  final String timezone;
 
   const CustomerCard({
     super.key,
     required this.customer,
     this.onTap,
     required this.isDark,
+    required this.timezone,
   });
 
   @override
@@ -354,24 +356,7 @@ class CustomerCard extends StatelessWidget {
   }
 
   String _formatDate(DateTime date, AppLocalizations? l10n, String localeCode) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        return l10n?.minutesAgo(difference.inMinutes) ?? '${difference.inMinutes}m ago';
-      }
-      return l10n?.hoursAgo(difference.inHours) ?? '${difference.inHours}h ago';
-    } else if (difference.inDays == 1) {
-      return l10n?.yesterdayTime ?? 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return l10n?.daysAgo(difference.inDays) ?? '${difference.inDays}d ago';
-    } else if (difference.inDays < 30) {
-      final weeks = (difference.inDays / 7).floor();
-      return l10n?.weeksAgo(weeks) ?? '${weeks}w ago';
-    } else {
-      return DateFormat.yMMMd(localeCode).format(date);
-    }
+    return TimezoneUtils.formatRelativeTime(date, timezone, localeCode, l10n);
   }
 
   /// Parse purchase intention from JSON string or return plain value

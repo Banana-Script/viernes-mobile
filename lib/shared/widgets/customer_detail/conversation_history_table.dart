@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../core/theme/viernes_colors.dart';
 import '../../../core/theme/viernes_text_styles.dart';
 import '../../../core/theme/viernes_spacing.dart';
+import '../../../core/utils/timezone_utils.dart';
 import '../../../features/customers/domain/entities/conversation_entity.dart';
 import '../../../gen_l10n/app_localizations.dart';
 import '../viernes_glassmorphism_card.dart';
@@ -45,6 +45,7 @@ class ConversationHistoryTable extends StatelessWidget {
   final Future<void> Function()? onRefresh;
   final VoidCallback? onLoadMore;
   final Function(ConversationEntity)? onViewConversation;
+  final String timezone;
 
   const ConversationHistoryTable({
     super.key,
@@ -55,6 +56,7 @@ class ConversationHistoryTable extends StatelessWidget {
     this.onRefresh,
     this.onLoadMore,
     this.onViewConversation,
+    required this.timezone,
   });
 
   @override
@@ -365,28 +367,13 @@ class ConversationHistoryTable extends StatelessWidget {
     return ViernesColors.primary;
   }
 
-  /// Format date to readable string (locale-aware)
+  /// Format date to readable string (locale-aware, timezone-aware)
   String _formatDate(DateTime date, String localeCode) {
-    return DateFormat.yMMMd(localeCode).format(date);
+    return TimezoneUtils.formatFullDate(date, timezone, localeCode);
   }
 
-  /// Format relative time (locale-aware)
+  /// Format relative time (locale-aware, timezone-aware)
   String _formatRelativeTime(DateTime date, AppLocalizations? l10n, String localeCode) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inMinutes < 1) {
-      return l10n?.justNow ?? 'Just now';
-    } else if (difference.inMinutes < 60) {
-      return l10n?.minutesAgo(difference.inMinutes) ?? '${difference.inMinutes}m ago';
-    } else if (difference.inHours < 24) {
-      return l10n?.hoursAgo(difference.inHours) ?? '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return l10n?.daysAgo(difference.inDays) ?? '${difference.inDays}d ago';
-    } else if (difference.inDays < 30) {
-      return l10n?.weeksAgo((difference.inDays / 7).floor()) ?? '${(difference.inDays / 7).floor()}w ago';
-    } else {
-      return DateFormat.yMMMd(localeCode).format(date);
-    }
+    return TimezoneUtils.formatRelativeTime(date, timezone, localeCode, l10n);
   }
 }

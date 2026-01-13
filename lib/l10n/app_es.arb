@@ -270,5 +270,12 @@
   "loadMore": "Cargar Más",
   "noConversationsYet": "Sin conversaciones aún",
   "conversationHistoryWillAppear": "El historial de conversaciones aparecerá aquí",
-  "justNow": "Ahora mismo"
+  "justNow": "Ahora mismo",
+
+  "timezoneSettings": "Zona horaria",
+  "organizationTimezone": "Zona horaria de la organización",
+  "deviceTimezone": "Zona horaria del dispositivo",
+  "currentTimezone": "Zona Horaria Actual",
+  "timezoneDescription": "Todas las fechas y horas en la aplicación se mostrarán según la zona horaria seleccionada.",
+  "timezoneNotAvailable": "No disponible"
 }
