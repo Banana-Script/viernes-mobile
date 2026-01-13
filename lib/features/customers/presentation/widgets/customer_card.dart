@@ -5,6 +5,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../domain/entities/customer_entity.dart';
 
 /// Customer Card Widget
@@ -32,6 +33,8 @@ class CustomerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final localeCode = Localizations.localeOf(context).languageCode;
     return Padding(
       padding: const EdgeInsets.only(bottom: ViernesSpacing.sm),
       child: ViernesGlassmorphismCard(
@@ -77,7 +80,7 @@ class CustomerCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              customer.assignedAgent?.name ?? 'Viernes',
+                              customer.assignedAgent?.name ?? (l10n?.appName ?? 'Viernes'),
                               style: ViernesTextStyles.bodySmall.copyWith(
                                 color: ViernesColors.getTextColor(isDark)
                                     .withValues(alpha: 0.6),
@@ -132,8 +135,10 @@ class CustomerCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildDateInfo(
-                    'Created',
+                    l10n?.created ?? 'Created',
                     customer.createdAt,
+                    l10n,
+                    localeCode,
                   ),
                 ),
                 if (customer.lastInteraction != null) ...[
@@ -146,8 +151,10 @@ class CustomerCard extends StatelessWidget {
                   const SizedBox(width: ViernesSpacing.sm),
                   Expanded(
                     child: _buildDateInfo(
-                      'Last Contact',
+                      l10n?.lastContact ?? 'Last Contact',
                       customer.lastInteraction!,
+                      l10n,
+                      localeCode,
                     ),
                   ),
                 ],
@@ -320,8 +327,8 @@ class CustomerCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDateInfo(String label, DateTime date) {
-    final dateStr = _formatDate(date);
+  Widget _buildDateInfo(String label, DateTime date, AppLocalizations? l10n, String localeCode) {
+    final dateStr = _formatDate(date, l10n, localeCode);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,24 +353,24 @@ class CustomerCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AppLocalizations? l10n, String localeCode) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        return '${difference.inMinutes}m ago';
+        return l10n?.minutesAgo(difference.inMinutes) ?? '${difference.inMinutes}m ago';
       }
-      return '${difference.inHours}h ago';
+      return l10n?.hoursAgo(difference.inHours) ?? '${difference.inHours}h ago';
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return l10n?.yesterdayTime ?? 'Yesterday';
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n?.daysAgo(difference.inDays) ?? '${difference.inDays}d ago';
     } else if (difference.inDays < 30) {
       final weeks = (difference.inDays / 7).floor();
-      return '${weeks}w ago';
+      return l10n?.weeksAgo(weeks) ?? '${weeks}w ago';
     } else {
-      return DateFormat('MMM d, y').format(date);
+      return DateFormat.yMMMd(localeCode).format(date);
     }
   }
 

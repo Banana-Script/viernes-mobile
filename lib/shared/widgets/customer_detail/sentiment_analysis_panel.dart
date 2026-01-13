@@ -5,6 +5,7 @@ import '../../../core/theme/viernes_spacing.dart';
 import '../../../core/utils/customer_insight_helper.dart';
 import '../../../core/constants/insight_features.dart';
 import '../../../features/customers/domain/entities/customer_entity.dart';
+import '../../../gen_l10n/app_localizations.dart';
 import '../viernes_glassmorphism_card.dart';
 import 'section_header.dart';
 import 'insight_badge.dart';
@@ -91,6 +92,7 @@ class SentimentAnalysisPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final languageCode = Localizations.localeOf(context).languageCode;
+    final l10n = AppLocalizations.of(context);
 
     // Use CustomerInsightHelper instead of duplicated code
     final emotionsBadge = CustomerInsightHelper.getInsightValue(
@@ -153,14 +155,14 @@ class SentimentAnalysisPanel extends StatelessWidget {
         children: [
           SectionHeader(
             icon: Icons.sentiment_satisfied_rounded,
-            title: 'Sentiment Analysis',
+            title: l10n?.sentimentAnalysis ?? 'Sentiment Analysis',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.md),
 
           // Emotions subsection
           _buildSentimentSubsection(
-            title: 'Emotions',
+            title: l10n?.emotions ?? 'Emotions',
             badgeValue: emotionsBadge,
             detailValue: emotionsDetail,
             badgeColor: _getSentimentColor(emotionsBadge),
@@ -172,7 +174,7 @@ class SentimentAnalysisPanel extends StatelessWidget {
 
           // Attitudes subsection
           _buildSentimentSubsection(
-            title: 'Attitudes',
+            title: l10n?.attitudes ?? 'Attitudes',
             badgeValue: attitudesBadge,
             detailValue: attitudesDetail,
             badgeColor: ViernesColors.info,
@@ -184,7 +186,7 @@ class SentimentAnalysisPanel extends StatelessWidget {
 
           // Personality subsection
           _buildSentimentSubsection(
-            title: 'Personality',
+            title: l10n?.personality ?? 'Personality',
             badgeValue: personalityBadge,
             detailValue: personalityDetail,
             badgeColor: ViernesColors.secondary,
@@ -196,7 +198,7 @@ class SentimentAnalysisPanel extends StatelessWidget {
 
           // Intentions subsection
           _buildSentimentSubsection(
-            title: 'Intentions',
+            title: l10n?.intentions ?? 'Intentions',
             badgeValue: intentionsBadge,
             detailValue: intentionsDetail,
             badgeColor: ViernesColors.accent,

@@ -4,6 +4,7 @@ import '../../../core/theme/viernes_colors.dart';
 import '../../../core/theme/viernes_text_styles.dart';
 import '../../../core/theme/viernes_spacing.dart';
 import '../../../features/customers/domain/entities/conversation_entity.dart';
+import '../../../gen_l10n/app_localizations.dart';
 import '../viernes_glassmorphism_card.dart';
 import 'section_header.dart';
 import 'insight_badge.dart';
@@ -58,6 +59,9 @@ class ConversationHistoryTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final localeCode = Localizations.localeOf(context).languageCode;
+
     return ViernesGlassmorphismCard(
       borderRadius: ViernesSpacing.radius24,
       padding: const EdgeInsets.all(ViernesSpacing.lg),
@@ -67,7 +71,7 @@ class ConversationHistoryTable extends StatelessWidget {
           // Section Header
           SectionHeader(
             icon: Icons.history_rounded,
-            title: 'Conversation History',
+            title: l10n?.conversationHistory ?? 'Conversation History',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.lg),
@@ -76,28 +80,28 @@ class ConversationHistoryTable extends StatelessWidget {
           if (isLoading && conversations.isEmpty)
             _buildLoadingSkeleton()
           else if (conversations.isEmpty)
-            _buildEmptyState()
+            _buildEmptyState(l10n)
           else
-            _buildConversationsList(),
+            _buildConversationsList(l10n, localeCode),
         ],
       ),
     );
   }
 
   /// Build conversations list
-  Widget _buildConversationsList() {
+  Widget _buildConversationsList(AppLocalizations? l10n, String localeCode) {
     return Column(
       children: [
         // Conversation cards
         ...conversations.map((conversation) => Padding(
             padding: const EdgeInsets.only(bottom: ViernesSpacing.md),
-            child: _buildConversationCard(conversation),
+            child: _buildConversationCard(conversation, l10n, localeCode),
           )),
 
         // Load more button
         if (hasMorePages) ...[
           const SizedBox(height: ViernesSpacing.sm),
-          _buildLoadMoreButton(),
+          _buildLoadMoreButton(l10n),
         ],
 
         // Loading indicator for load more
@@ -121,7 +125,7 @@ class ConversationHistoryTable extends StatelessWidget {
   }
 
   /// Build individual conversation card
-  Widget _buildConversationCard(ConversationEntity conversation) {
+  Widget _buildConversationCard(ConversationEntity conversation, AppLocalizations? l10n, String localeCode) {
     return Container(
       decoration: BoxDecoration(
         color: (isDark ? ViernesColors.panelDark : ViernesColors.panelLight)
@@ -152,7 +156,7 @@ class ConversationHistoryTable extends StatelessWidget {
                     // Date
                     Expanded(
                       child: Text(
-                        _formatDate(conversation.createdAt),
+                        _formatDate(conversation.createdAt, localeCode),
                         style: ViernesTextStyles.bodyText.copyWith(
                           color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
                           fontWeight: FontWeight.w600,
@@ -175,7 +179,7 @@ class ConversationHistoryTable extends StatelessWidget {
                 // Agent
                 if (conversation.agent != null)
                   _buildInfoRow(
-                    'Agent',
+                    l10n?.agent ?? 'Agent',
                     conversation.agent!.fullname,
                   ),
 
@@ -186,7 +190,7 @@ class ConversationHistoryTable extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Status: ',
+                        l10n?.statusLabel ?? 'Status: ',
                         style: ViernesTextStyles.labelSmall.copyWith(
                           color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                               .withValues(alpha: 0.6),
@@ -204,8 +208,8 @@ class ConversationHistoryTable extends StatelessWidget {
 
                 // Last activity
                 _buildInfoRow(
-                  'Last activity',
-                  _formatRelativeTime(conversation.updatedAt),
+                  l10n?.lastActivity ?? 'Last activity',
+                  _formatRelativeTime(conversation.updatedAt, l10n, localeCode),
                 ),
               ],
             ),
@@ -268,7 +272,7 @@ class ConversationHistoryTable extends StatelessWidget {
   }
 
   /// Build load more button
-  Widget _buildLoadMoreButton() {
+  Widget _buildLoadMoreButton(AppLocalizations? l10n) {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton(
@@ -284,7 +288,7 @@ class ConversationHistoryTable extends StatelessWidget {
           ),
         ),
         child: Text(
-          'Load More',
+          l10n?.loadMore ?? 'Load More',
           style: ViernesTextStyles.label.copyWith(
             color: isDark ? ViernesColors.accent : ViernesColors.primary,
           ),
@@ -294,7 +298,7 @@ class ConversationHistoryTable extends StatelessWidget {
   }
 
   /// Build empty state
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations? l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(ViernesSpacing.xl),
@@ -308,7 +312,7 @@ class ConversationHistoryTable extends StatelessWidget {
             ),
             const SizedBox(height: ViernesSpacing.md),
             Text(
-              'No conversations yet',
+              l10n?.noConversationsYet ?? 'No conversations yet',
               style: ViernesTextStyles.bodyLarge.copyWith(
                 color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                     .withValues(alpha: 0.6),
@@ -316,7 +320,7 @@ class ConversationHistoryTable extends StatelessWidget {
             ),
             const SizedBox(height: ViernesSpacing.sm),
             Text(
-              'Conversation history will appear here',
+              l10n?.conversationHistoryWillAppear ?? 'Conversation history will appear here',
               style: ViernesTextStyles.bodySmall.copyWith(
                 color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                     .withValues(alpha: 0.4),
@@ -361,28 +365,28 @@ class ConversationHistoryTable extends StatelessWidget {
     return ViernesColors.primary;
   }
 
-  /// Format date to readable string
-  String _formatDate(DateTime date) {
-    return DateFormat('MMM d, yyyy').format(date);
+  /// Format date to readable string (locale-aware)
+  String _formatDate(DateTime date, String localeCode) {
+    return DateFormat.yMMMd(localeCode).format(date);
   }
 
-  /// Format relative time
-  String _formatRelativeTime(DateTime date) {
+  /// Format relative time (locale-aware)
+  String _formatRelativeTime(DateTime date, AppLocalizations? l10n, String localeCode) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n?.justNow ?? 'Just now';
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return l10n?.minutesAgo(difference.inMinutes) ?? '${difference.inMinutes}m ago';
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
+      return l10n?.hoursAgo(difference.inHours) ?? '${difference.inHours}h ago';
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n?.daysAgo(difference.inDays) ?? '${difference.inDays}d ago';
     } else if (difference.inDays < 30) {
-      return '${(difference.inDays / 7).floor()}w ago';
+      return l10n?.weeksAgo((difference.inDays / 7).floor()) ?? '${(difference.inDays / 7).floor()}w ago';
     } else {
-      return DateFormat('MMM d, yyyy').format(date);
+      return DateFormat.yMMMd(localeCode).format(date);
     }
   }
 }

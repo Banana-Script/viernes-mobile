@@ -16,8 +16,9 @@ abstract class CustomerRepository {
     int? agentId,
   });
 
-  /// Get customer by ID
-  Future<CustomerEntity> getCustomerById(int customerId);
+  /// Get customer by user ID
+  /// Uses /users/{userId} endpoint which includes optional fields (identification, age, occupation)
+  Future<CustomerEntity> getCustomerById(int userId);
 
   /// Create new customer
   Future<CustomerEntity> createCustomer({

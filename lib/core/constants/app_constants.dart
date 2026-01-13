@@ -20,11 +20,7 @@ class AppConstants {
   static bool get isDebugMode => EnvironmentConfig.enableDebugMode;
   static bool get isVerboseLogging => EnvironmentConfig.enableVerboseLogging;
 
-  // User Roles
-  static const int customerRoleId = 2; // Customer role
-  static const int agentRoleId = 1; // Agent role
-
-  // User Status
-  static const int activeStatusId = 1; // Active status
-  static const int inactiveStatusId = 2; // Inactive status
+  // Note: User roles and statuses now come from ValueDefinitionsService
+  // which loads them dynamically from /values_definitions/ API
+  // See: lib/core/services/value_definitions_service.dart
 }

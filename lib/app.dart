@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'gen_l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_manager.dart';
+import 'core/locale/locale_manager.dart';
 import 'core/constants/app_constants.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/services/notification_service.dart';
@@ -42,6 +45,7 @@ class ViernesApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeManagerProvider);
+    final locale = ref.watch(localeManagerProvider);
 
     return provider.MultiProvider(
       providers: [
@@ -63,6 +67,17 @@ class ViernesApp extends ConsumerWidget {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: themeMode,
+        locale: locale,
+        supportedLocales: const [
+          Locale('en'), // English
+          Locale('es'), // Spanish
+        ],
+        localizationsDelegates: [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: const AuthenticationWrapper(),
         debugShowCheckedModeBanner: AppConstants.isDebugMode,
       ),
@@ -174,6 +189,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
     debugPrint('[SSE Init] Connecting SSE for org $organizationId, user $userId');
 
+    // Load value definitions (for dynamic role_id, status_id, etc.)
+    _loadValueDefinitions();
+
     // Connect SSE in ConversationProvider
     final conversationProvider = provider.Provider.of<ConversationProvider>(
       context,
@@ -198,6 +216,17 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
     debugPrint('[SSE Init] SSE initialization complete');
   }
 
+  Future<void> _loadValueDefinitions() async {
+    try {
+      debugPrint('[ValueDefs] Loading value definitions...');
+      await DependencyInjection.valueDefinitionsService.loadAllDefinitions();
+      debugPrint('[ValueDefs] Value definitions loaded successfully');
+    } catch (e) {
+      debugPrint('[ValueDefs] Error loading value definitions: $e');
+      // Non-blocking - the app can still work with fallback values
+    }
+  }
+
   void _cleanupRealTimeServices(BuildContext context) {
     debugPrint('[SSE Cleanup] Disconnecting SSE...');
 
@@ -214,6 +243,9 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
     // Unregister FCM token
     FCMTokenService.instance.unregisterToken();
+
+    // Clear value definitions cache
+    DependencyInjection.valueDefinitionsService.clear();
 
     debugPrint('[SSE Cleanup] SSE disconnected');
   }

@@ -5,6 +5,7 @@ import '../../../core/theme/viernes_spacing.dart';
 import '../../../core/utils/customer_insight_helper.dart';
 import '../../../core/constants/insight_features.dart';
 import '../../../features/customers/domain/entities/customer_entity.dart';
+import '../../../gen_l10n/app_localizations.dart';
 import '../viernes_glassmorphism_card.dart';
 import 'section_header.dart';
 
@@ -26,6 +27,7 @@ class InsightsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final languageCode = Localizations.localeOf(context).languageCode;
+    final l10n = AppLocalizations.of(context);
 
     // Use CustomerInsightHelper instead of duplicated code
     final insightsValue = CustomerInsightHelper.getInsightValue(
@@ -47,7 +49,7 @@ class InsightsPanel extends StatelessWidget {
         children: [
           SectionHeader(
             icon: Icons.psychology_rounded,
-            title: 'Detailed Insights',
+            title: l10n?.detailedInsights ?? 'Detailed Insights',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.sm),

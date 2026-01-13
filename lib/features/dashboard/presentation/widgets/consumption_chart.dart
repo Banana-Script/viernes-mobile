@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
@@ -60,13 +61,13 @@ class ConsumptionChart extends StatelessWidget {
             height: 160,
             child: isLoading
                 ? _buildLoadingChart(isDark)
-                : _buildChart(isDark, remaining, usedPercentage),
+                : _buildChart(context, isDark, remaining, usedPercentage),
           ),
 
           const SizedBox(height: 16),
 
           // Metrics
-          _buildMetrics(isDark, remaining),
+          _buildMetrics(context, isDark, remaining),
         ],
       ),
     );
@@ -85,7 +86,7 @@ class ConsumptionChart extends StatelessWidget {
     );
   }
 
-  Widget _buildChart(bool isDark, double remaining, double usedPercentage) {
+  Widget _buildChart(BuildContext context, bool isDark, double remaining, double usedPercentage) {
     // Colors
     const usedColor = Color(0xFFB0B0B0); // Gray for used
     const remainingColor = ViernesColors.success; // Green for remaining
@@ -129,7 +130,7 @@ class ConsumptionChart extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Usado',
+              AppLocalizations.of(context)!.used,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -155,7 +156,7 @@ class ConsumptionChart extends StatelessWidget {
     );
   }
 
-  Widget _buildMetrics(bool isDark, double remaining) {
+  Widget _buildMetrics(BuildContext context, bool isDark, double remaining) {
     final formatter = NumberFormat('#,###', 'es');
     final textColor = isDark ? ViernesColors.textDark : ViernesColors.textLight;
 
@@ -163,7 +164,7 @@ class ConsumptionChart extends StatelessWidget {
       children: [
         // Total
         _buildMetricRow(
-          label: isMinutes ? 'Minutos Totales:' : 'Total de mensajes:',
+          label: isMinutes ? '${AppLocalizations.of(context)!.totalMinutes}:' : '${AppLocalizations.of(context)!.totalMessages}:',
           value: isMinutes
               ? formatter.format(total.round())
               : formatter.format(total.toInt()),
@@ -174,7 +175,7 @@ class ConsumptionChart extends StatelessWidget {
 
         // Consumed
         _buildMetricRow(
-          label: isMinutes ? 'Minutos Consumidos:' : 'Mensajes Consumidos:',
+          label: isMinutes ? '${AppLocalizations.of(context)!.consumedMinutes}:' : '${AppLocalizations.of(context)!.consumedMessages}:',
           value: isMinutes
               ? consumed.toStringAsFixed(2)
               : formatter.format(consumed.toInt()),
@@ -185,7 +186,7 @@ class ConsumptionChart extends StatelessWidget {
 
         // Remaining
         _buildMetricRow(
-          label: 'Restante:',
+          label: '${AppLocalizations.of(context)!.remaining}:',
           value: isMinutes
               ? remaining.toStringAsFixed(2)
               : formatter.format(remaining.toInt()),
@@ -197,7 +198,7 @@ class ConsumptionChart extends StatelessWidget {
         if (isMinutes && recharged != null && recharged! > 0) ...[
           const SizedBox(height: 8),
           _buildMetricRow(
-            label: 'Minutos recargados:',
+            label: '${AppLocalizations.of(context)!.rechargedMinutes}:',
             value: formatter.format(recharged!.round()),
             valueColor: ViernesColors.accent,
             isDark: isDark,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -238,7 +240,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
           children: [
             // Messages Chart
             ConsumptionChart(
-              title: 'Mensajes Consumidos',
+              title: AppLocalizations.of(context)!.consumedMessages,
               total: (org?.totalMessageCount ?? 0).toDouble(),
               consumed: (org?.currentMessageCount ?? 0).toDouble(),
               isMinutes: false,
@@ -247,7 +249,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             const SizedBox(height: 16),
             // Minutes Chart
             ConsumptionChart(
-              title: 'Minutos Consumidos',
+              title: AppLocalizations.of(context)!.consumedMinutes,
               total: org?.totalMinutes ?? 0,
               consumed: org?.consumedMinutes ?? 0,
               recharged: org?.totalMinutesRecharged,
@@ -687,9 +689,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       text: AppStrings.export,
                       onPressed: () async {
                         Navigator.of(context).pop();
-                        final csvData = await provider.exportConversationStats();
-                        if (csvData != null && context.mounted) {
-                          _showSuccessSnackBar(context, AppStrings.exportSuccess);
+                        final filePath = await provider.exportConversationStats();
+                        if (filePath != null && context.mounted) {
+                          // Share the file
+                          await Share.shareXFiles(
+                            [XFile(filePath)],
+                            text: 'Viernes Conversation Statistics',
+                          );
+                          if (context.mounted) {
+                            _showSuccessSnackBar(context, AppStrings.exportSuccess);
+                          }
                         } else if (context.mounted) {
                           _showErrorSnackBar(
                             context,

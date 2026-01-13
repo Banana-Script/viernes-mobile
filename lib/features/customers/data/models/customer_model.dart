@@ -11,6 +11,9 @@ class CustomerModel extends CustomerEntity {
     required super.name,
     required super.email,
     required super.phoneNumber,
+    super.identification,
+    super.age,
+    super.occupation,
     required super.createdAt,
     super.segment,
     super.segmentSummary,
@@ -22,7 +25,7 @@ class CustomerModel extends CustomerEntity {
     super.lastConversation,
   });
 
-  /// Create from JSON
+  /// Create from JSON (from /organization_users/customers endpoint)
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
     return CustomerModel(
       id: json['id'] as int,
@@ -30,6 +33,9 @@ class CustomerModel extends CustomerEntity {
       name: json['name'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phoneNumber: json['phone_number'] as String? ?? '',
+      identification: json['identification'] as String?,
+      age: json['age'] as int?,
+      occupation: json['occupation'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       segment: json['segment'] as String?,
       segmentSummary: json['segment_summary'] as String?,
@@ -55,6 +61,37 @@ class CustomerModel extends CustomerEntity {
     );
   }
 
+  /// Create from user detail JSON (from /users/{userId} endpoint)
+  /// This endpoint returns a different structure with optional fields
+  factory CustomerModel.fromUserDetail(Map<String, dynamic> json) {
+    final userId = json['id'] as int;
+
+    return CustomerModel(
+      // For user detail, we don't have the organization_user id
+      // Use userId as placeholder - will be updated when needed
+      id: 0, // Placeholder - not available from /users/{userId} endpoint
+      userId: userId,
+      name: json['fullname'] as String? ?? '', // Note: 'fullname' not 'name'
+      email: json['email'] as String? ?? '',
+      phoneNumber: json['session_id'] as String? ?? '', // Note: 'session_id' not 'phone_number'
+      identification: json['identification'] as String?,
+      age: json['age'] as int?,
+      occupation: json['occupation'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      // These fields are not available from /users/{userId} endpoint
+      segment: null,
+      segmentSummary: null,
+      segmentDescription: null,
+      segmentDate: null,
+      lastInteraction: json['last_interaction'] != null
+          ? DateTime.parse(json['last_interaction'] as String)
+          : null,
+      insightsInfo: const [],
+      assignedAgent: null,
+      lastConversation: null,
+    );
+  }
+
   /// Convert to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -63,6 +100,9 @@ class CustomerModel extends CustomerEntity {
       'name': name,
       'email': email,
       'phone_number': phoneNumber,
+      'identification': identification,
+      'age': age,
+      'occupation': occupation,
       'created_at': createdAt.toIso8601String(),
       'segment': segment,
       'segment_summary': segmentSummary,

@@ -4,6 +4,7 @@ import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 
 /// Customer Error State Widget
 ///
@@ -14,18 +15,19 @@ import '../../../../shared/widgets/viernes_gradient_button.dart';
 /// - Retry button
 /// - Glassmorphism design
 class CustomerErrorState extends StatelessWidget {
-  final String message;
+  final String? message;
   final VoidCallback? onRetry;
 
   const CustomerErrorState({
     super.key,
-    this.message = 'Failed to load customers',
+    this.message,
     this.onRetry,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: SingleChildScrollView(
@@ -59,7 +61,7 @@ class CustomerErrorState extends StatelessWidget {
 
               // Error title
               Text(
-                'Oops!',
+                l10n?.oops ?? 'Oops!',
                 style: ViernesTextStyles.h3.copyWith(
                   color: ViernesColors.getTextColor(isDark),
                 ),
@@ -69,7 +71,7 @@ class CustomerErrorState extends StatelessWidget {
 
               // Error message
               Text(
-                message,
+                message ?? l10n?.failedToLoadCustomers ?? 'Failed to load customers',
                 style: ViernesTextStyles.bodyText.copyWith(
                   color: ViernesColors.getTextColor(isDark)
                       .withValues(alpha: 0.7),
@@ -81,7 +83,7 @@ class CustomerErrorState extends StatelessWidget {
               if (onRetry != null) ...[
                 const SizedBox(height: ViernesSpacing.lg),
                 ViernesGradientButton(
-                  text: 'Retry',
+                  text: l10n?.retry ?? 'Retry',
                   onPressed: onRetry,
                   isLoading: false,
                   width: 200,

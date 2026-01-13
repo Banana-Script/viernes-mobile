@@ -99,6 +99,12 @@ class _ConversationCardState extends State<ConversationCard>
   /// Determines the visual priority of the conversation
   /// Based on unread count and assignment to current user
   ConversationPriority _getVisualPriority(BuildContext context) {
+    // Closed or archived conversations should never be highlighted
+    final statusValue = widget.conversation.status?.valueDefinition.toLowerCase();
+    if (statusValue == 'closed' || statusValue == 'archived') {
+      return ConversationPriority.normal;
+    }
+
     // No unread messages = normal priority
     if (widget.conversation.unreaded <= 0) {
       return ConversationPriority.normal;

@@ -39,8 +39,8 @@ class CreateCustomerUseCase {
       errors['userData'] = ['User data cannot be empty'];
     } else {
       // Validate user data fields
-      if (!userData.containsKey('name') || (userData['name'] as String?)?.isEmpty == true) {
-        errors['userData.name'] = ['Name is required'];
+      if (!userData.containsKey('fullname') || (userData['fullname'] as String?)?.isEmpty == true) {
+        errors['userData.fullname'] = ['Name is required'];
       }
 
       if (!userData.containsKey('email') || (userData['email'] as String?)?.isEmpty == true) {

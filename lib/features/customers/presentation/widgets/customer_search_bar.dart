@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../providers/customer_provider.dart';
 
 /// Customer Search Bar Widget
@@ -15,12 +16,12 @@ import '../providers/customer_provider.dart';
 /// - Smooth animations
 /// - Consistent with Viernes design system
 class CustomerSearchBar extends StatefulWidget {
-  final String hintText;
+  final String? hintText;
   final int debounceDuration;
 
   const CustomerSearchBar({
     super.key,
-    this.hintText = 'Search customers...',
+    this.hintText,
     this.debounceDuration = 500,
   });
 
@@ -74,6 +75,7 @@ class _CustomerSearchBarState extends State<CustomerSearchBar> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -103,7 +105,7 @@ class _CustomerSearchBarState extends State<CustomerSearchBar> {
           color: ViernesColors.getTextColor(isDark),
         ),
         decoration: InputDecoration(
-          hintText: widget.hintText,
+          hintText: widget.hintText ?? l10n?.searchCustomers ?? 'Search customers...',
           hintStyle: ViernesTextStyles.bodyText.copyWith(
             color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.5),
           ),

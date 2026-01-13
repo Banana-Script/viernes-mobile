@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import '../../../../core/models/sse_events.dart';
 import '../../../../core/services/organization_sse_service.dart';
@@ -98,6 +99,11 @@ class ConversationProvider extends ChangeNotifier {
   // SSE subscriptions
   final List<VoidCallback> _sseUnsubscribers = [];
   bool _sseConnected = false;
+
+  // Track processed SSE messages to prevent duplicates
+  // Use LinkedHashSet to maintain insertion order for proper cleanup
+  // ignore: prefer_collection_literals
+  final Set<String> _processedSSEMessages = LinkedHashSet<String>();
 
   // Getters
   ConversationStatus get status => _status;
@@ -791,6 +797,8 @@ class ConversationProvider extends ChangeNotifier {
     _messages = [];
     _messageStatus = MessageStatus.initial;
     _messageErrorMessage = null;
+    // Clear processed SSE messages cache when changing conversations
+    _processedSSEMessages.clear();
     notifyListeners();
   }
 
@@ -1060,6 +1068,33 @@ class ConversationProvider extends ChangeNotifier {
 
   /// Add message from SSE event to current conversation
   void _addMessageFromSSE(SSEUserMessageEvent event) {
+    // Create unique key for this SSE message to prevent duplicates
+    // Key format: conversationId_timestamp_messagePreview_user
+    // Use message preview (first 50 chars) instead of hashCode for reliability
+    final timestamp = event.timestamp ?? DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final messagePreview = event.message.length > 50
+        ? event.message.substring(0, 50)
+        : event.message;
+    final messageKey = '${event.conversationId}_${timestamp}_${messagePreview}_user';
+
+    // Check if we've already processed this SSE message
+    if (_processedSSEMessages.contains(messageKey)) {
+      AppLogger.debug('Duplicate SSE message detected, skipping: $messageKey', tag: 'ConversationProvider');
+      return;
+    }
+
+    // Mark as processed
+    _processedSSEMessages.add(messageKey);
+
+    // Limit the size of processed messages set (keep last 1000 messages)
+    // LinkedHashSet maintains insertion order, so we remove oldest entries
+    if (_processedSSEMessages.length > 1000) {
+      final toKeep = _processedSSEMessages.skip(_processedSSEMessages.length - 1000).toSet();
+      _processedSSEMessages
+        ..clear()
+        ..addAll(toKeep);
+    }
+
     // Create a temporary message entity from SSE event
     final message = MessageEntity(
       id: DateTime.now().millisecondsSinceEpoch, // Temporary ID
@@ -1068,21 +1103,12 @@ class ConversationProvider extends ChangeNotifier {
       fromUser: true,
       fromAgent: false,
       type: MessageType.fromString(event.messageType),
-      createdAt: DateTime.fromMillisecondsSinceEpoch(
-        ((event.timestamp ?? DateTime.now().millisecondsSinceEpoch ~/ 1000) * 1000).toInt(),
-      ),
+      createdAt: DateTime.fromMillisecondsSinceEpoch((timestamp * 1000).toInt()),
     );
 
-    // Check if message already exists (avoid duplicates)
-    final exists = _messages.any(
-      (m) => m.text == message.text && m.fromUser == message.fromUser,
-    );
-
-    if (!exists) {
-      _messages.insert(0, message);
-      _messageTotalCount++;
-      notifyListeners();
-    }
+    _messages.insert(0, message);
+    _messageTotalCount++;
+    notifyListeners();
   }
 
   /// Reload currently selected conversation detail
@@ -1129,6 +1155,36 @@ class ConversationProvider extends ChangeNotifier {
 
     // If this conversation is currently selected, add the message to detail view
     if (_selectedConversationId == conversationId) {
+      // Create unique key for this SSE message to prevent duplicates
+      // Key format: conversationId_timestamp_messagePreview_agent
+      // Use message preview (first 50 chars) instead of hashCode for reliability
+      final timestamp = event.timestamp ?? DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      final messagePreview = event.message.length > 50
+          ? event.message.substring(0, 50)
+          : event.message;
+      final messageKey = '${conversationId}_${timestamp}_${messagePreview}_agent';
+
+      // Check if we've already processed this SSE message
+      if (_processedSSEMessages.contains(messageKey)) {
+        AppLogger.debug(
+          'Duplicate SSE agent message detected, skipping: $messageKey',
+          tag: 'ConversationProvider',
+        );
+        return;
+      }
+
+      // Mark as processed
+      _processedSSEMessages.add(messageKey);
+
+      // Limit the size of processed messages set (keep last 1000 messages)
+      // LinkedHashSet maintains insertion order, so we remove oldest entries
+      if (_processedSSEMessages.length > 1000) {
+        final toKeep = _processedSSEMessages.skip(_processedSSEMessages.length - 1000).toSet();
+        _processedSSEMessages
+          ..clear()
+          ..addAll(toKeep);
+      }
+
       final message = MessageEntity(
         id: DateTime.now().millisecondsSinceEpoch,
         conversationId: conversationId,
@@ -1143,15 +1199,8 @@ class ConversationProvider extends ChangeNotifier {
         ),
       );
 
-      // Check if message already exists
-      final exists = _messages.any(
-        (m) => m.text == message.text && m.fromUser == message.fromUser,
-      );
-
-      if (!exists) {
-        _messages.insert(0, message);
-        _messageTotalCount++;
-      }
+      _messages.insert(0, message);
+      _messageTotalCount++;
     }
 
     notifyListeners();

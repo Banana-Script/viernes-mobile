@@ -4,6 +4,7 @@ import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_button.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 
 /// Delete Customer Dialog
 ///
@@ -71,6 +72,8 @@ class _DeleteCustomerDialogState extends State<DeleteCustomerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: ViernesGlassmorphismCard(
@@ -95,7 +98,7 @@ class _DeleteCustomerDialogState extends State<DeleteCustomerDialog> {
             const SizedBox(height: ViernesSpacing.md),
             // Title
             Text(
-              'Delete Customer?',
+              l10n?.deleteCustomerTitle ?? 'Delete Customer?',
               style: ViernesTextStyles.h5.copyWith(
                 color: widget.isDark ? ViernesColors.textDark : ViernesColors.textLight,
                 fontWeight: FontWeight.w700,
@@ -112,7 +115,7 @@ class _DeleteCustomerDialogState extends State<DeleteCustomerDialog> {
                       .withValues(alpha: 0.8),
                 ),
                 children: [
-                  const TextSpan(text: 'Are you sure you want to delete '),
+                  TextSpan(text: l10n?.deleteCustomerConfirm ?? 'Are you sure you want to delete '),
                   TextSpan(
                     text: widget.customerName,
                     style: const TextStyle(fontWeight: FontWeight.w700),
@@ -124,7 +127,7 @@ class _DeleteCustomerDialogState extends State<DeleteCustomerDialog> {
             const SizedBox(height: ViernesSpacing.xs),
             // Warning
             Text(
-              'This action cannot be undone.',
+              l10n?.actionCannotBeUndone ?? 'This action cannot be undone.',
               style: ViernesTextStyles.bodySmall.copyWith(
                 color: ViernesColors.danger,
                 fontWeight: FontWeight.w600,
@@ -137,14 +140,14 @@ class _DeleteCustomerDialogState extends State<DeleteCustomerDialog> {
               children: [
                 Expanded(
                   child: ViernesButton.outline(
-                    text: 'Cancel',
+                    text: l10n?.cancel ?? 'Cancel',
                     onPressed: _isDeleting ? null : () => Navigator.of(context).pop(false),
                   ),
                 ),
                 const SizedBox(width: ViernesSpacing.sm),
                 Expanded(
                   child: ViernesButton.danger(
-                    text: 'Delete',
+                    text: l10n?.delete ?? 'Delete',
                     isLoading: _isDeleting,
                     onPressed: _isDeleting ? null : _onDelete,
                   ),

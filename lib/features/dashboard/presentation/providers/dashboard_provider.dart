@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart';
 import '../../domain/entities/monthly_stats.dart';
 import '../../domain/entities/ai_human_stats.dart';
 import '../../domain/entities/customer_summary.dart';
@@ -110,7 +113,7 @@ class DashboardProvider extends ChangeNotifier {
     }
   }
 
-  // Export conversation stats
+  // Export conversation stats to file
   Future<String?> exportConversationStats() async {
     if (_isExporting) return null;
 
@@ -118,10 +121,39 @@ class DashboardProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Get CSV data from use case
       final csvData = await _exportConversationStatsUseCase();
-      return csvData;
+
+      // Generate filename with timestamp
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final fileName = 'viernes_stats_$timestamp.csv';
+
+      // Get the directory to save the file
+      // Use app-specific external directory (no permissions needed on Android 10+)
+      Directory? directory;
+      if (Platform.isAndroid) {
+        // Use app-specific external storage (scoped storage compliant)
+        directory = await getExternalStorageDirectory();
+      } else {
+        // For iOS, use app documents directory
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory == null) {
+        throw Exception('Could not access storage directory');
+      }
+
+      // Create file and write CSV data
+      final file = File('${directory.path}/$fileName');
+      await file.writeAsString(csvData);
+
+      AppLogger.info('CSV exported to: ${file.path}', tag: 'DashboardProvider');
+
+      // Return file path for sharing
+      return file.path;
     } catch (e) {
       _errorMessage = 'Failed to export conversation stats: $e';
+      AppLogger.error('Export error: $e', tag: 'DashboardProvider');
       return null;
     } finally {
       _isExporting = false;

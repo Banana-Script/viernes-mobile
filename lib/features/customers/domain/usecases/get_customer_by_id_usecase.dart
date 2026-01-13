@@ -4,7 +4,8 @@ import '../repositories/customer_repository.dart';
 
 /// Get Customer By ID Use Case
 ///
-/// Retrieves a single customer by their ID.
+/// Retrieves a single customer by their user ID.
+/// Uses the /users/{userId} endpoint which includes all optional fields.
 class GetCustomerByIdUseCase {
   final CustomerRepository _repository;
 
@@ -13,20 +14,20 @@ class GetCustomerByIdUseCase {
   /// Execute the use case
   ///
   /// Parameters:
-  /// - [customerId]: The ID of the customer to retrieve
+  /// - [userId]: The user ID of the customer to retrieve
   ///
   /// Throws:
-  /// - [ValidationException] if customerId is invalid
-  Future<CustomerEntity> call(int customerId) async {
-    if (customerId <= 0) {
+  /// - [ValidationException] if userId is invalid
+  Future<CustomerEntity> call(int userId) async {
+    if (userId <= 0) {
       throw ValidationException(
-        'Invalid customer ID',
+        'Invalid user ID',
         fieldErrors: {
-          'customerId': ['Customer ID must be a positive integer']
+          'userId': ['User ID must be a positive integer']
         },
       );
     }
 
-    return await _repository.getCustomerById(customerId);
+    return await _repository.getCustomerById(userId);
   }
 }

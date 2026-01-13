@@ -8,6 +8,9 @@ class CustomerEntity {
   final String name;
   final String email;
   final String phoneNumber;
+  final String? identification;
+  final int? age;
+  final String? occupation;
   final DateTime createdAt;
   final String? segment;
   final String? segmentSummary;
@@ -24,6 +27,9 @@ class CustomerEntity {
     required this.name,
     required this.email,
     required this.phoneNumber,
+    this.identification,
+    this.age,
+    this.occupation,
     required this.createdAt,
     this.segment,
     this.segmentSummary,

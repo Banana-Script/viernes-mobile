@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/theme_manager.dart';
+import '../../../../core/locale/locale_manager.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
@@ -13,6 +15,7 @@ import '../../../../shared/widgets/viernes_settings_tile.dart';
 import '../../../auth/presentation/providers/auth_provider.dart' as auth_provider;
 import 'appearance_settings_page.dart';
 import 'notification_settings_page.dart';
+import 'language_settings_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -227,6 +230,21 @@ class ProfilePage extends ConsumerWidget {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const AppearanceSettingsPage(),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Language Settings Tile
+                    ViernesSettingsTile(
+                      icon: Icons.language_outlined,
+                      title: AppLocalizations.of(context)!.language,
+                      subtitle: LanguageSettingsPage.getLocaleSummary(ref.watch(localeManagerProvider)),
+                      iconColor: ViernesColors.accent,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const LanguageSettingsPage(),
                         ),
                       ),
                     ),

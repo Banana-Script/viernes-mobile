@@ -7,6 +7,7 @@ import '../../domain/usecases/get_filter_options_usecase.dart';
 import '../../domain/usecases/create_customer_usecase.dart';
 import '../../domain/usecases/update_customer_usecase.dart';
 import '../../domain/usecases/delete_customer_usecase.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../../../../core/utils/logger.dart';
 
 enum CustomerStatus { initial, loading, loaded, loadingMore, error }
@@ -249,10 +250,10 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-  /// Get customer by ID
-  Future<void> getCustomerById(int customerId) async {
+  /// Get customer by user ID
+  Future<void> getCustomerById(int userId) async {
     try {
-      _selectedCustomer = await _getCustomerByIdUseCase(customerId);
+      _selectedCustomer = await _getCustomerByIdUseCase(userId);
       notifyListeners();
     } catch (e, stackTrace) {
       _errorMessage = 'Failed to load customer: $e';
@@ -285,6 +286,17 @@ class CustomerProvider extends ChangeNotifier {
       notifyListeners();
 
       return true;
+    } on ValidationException catch (e, stackTrace) {
+      // Show validation error message directly (e.g., "User already has access to the organization")
+      _errorMessage = e.message;
+      AppLogger.error(
+        'Error creating customer: $e',
+        tag: 'CustomerProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      notifyListeners();
+      return false;
     } catch (e, stackTrace) {
       _errorMessage = 'Failed to create customer: $e';
       AppLogger.error(
@@ -312,8 +324,8 @@ class CustomerProvider extends ChangeNotifier {
       // Refresh the customer in the list
       final index = _customers.indexWhere((c) => c.userId == userId);
       if (index != -1) {
-        // Reload customer data
-        final updatedCustomer = await _getCustomerByIdUseCase(_customers[index].id);
+        // Reload customer data using userId (not organization_user id)
+        final updatedCustomer = await _getCustomerByIdUseCase(_customers[index].userId);
         _customers[index] = updatedCustomer;
 
         if (_selectedCustomer?.userId == userId) {

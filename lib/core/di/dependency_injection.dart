@@ -52,6 +52,7 @@ import '../../features/conversations/domain/usecases/get_filter_options_usecase.
 import '../../features/conversations/presentation/providers/conversation_provider.dart';
 
 import '../services/http_client.dart';
+import '../services/value_definitions_service.dart';
 
 class DependencyInjection {
   // Auth dependencies
@@ -71,6 +72,7 @@ class DependencyInjection {
 
   // Shared dependencies
   static late final HttpClient _httpClient;
+  static late final ValueDefinitionsService _valueDefinitionsService;
 
   // Dashboard dependencies
   static late final DashboardRemoteDataSource _dashboardRemoteDataSource;
@@ -126,6 +128,7 @@ class DependencyInjection {
   static void _initializeAuth() {
     // Shared services (needed for user remote data source)
     _httpClient = HttpClient();
+    _valueDefinitionsService = ValueDefinitionsService(_httpClient);
 
     // Data sources
     _authDataSource = FirebaseAuthDataSourceImpl(firebaseAuth: _firebaseAuth);
@@ -260,4 +263,7 @@ class DependencyInjection {
   // Conversation getters
   static ConversationProvider get conversationProvider => _conversationProvider;
   static ConversationRepository get conversationRepository => _conversationRepository;
+
+  // Value Definitions getters
+  static ValueDefinitionsService get valueDefinitionsService => _valueDefinitionsService;
 }

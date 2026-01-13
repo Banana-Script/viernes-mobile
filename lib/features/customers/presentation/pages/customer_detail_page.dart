@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
@@ -24,7 +25,6 @@ import '../../../../shared/widgets/customer_detail/interactions_panel.dart';
 import '../../../../shared/widgets/customer_detail/conversation_history_table.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../providers/customer_provider.dart';
-import '../widgets/delete_customer_dialog.dart';
 import 'customer_form_page.dart';
 
 /// Customer Detail Page
@@ -41,12 +41,12 @@ import 'customer_form_page.dart';
 /// - Uses DateFormatters for date formatting
 /// - Proper disposal handling to prevent setState after dispose
 class CustomerDetailPage extends ConsumerStatefulWidget {
-  final int customerId;
+  final int userId;
   final CustomerEntity? customer; // Optional - for hero animation
 
   const CustomerDetailPage({
     super.key,
-    required this.customerId,
+    required this.userId,
     this.customer,
   });
 
@@ -86,7 +86,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
 
     try {
       final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
-      await provider.getCustomerById(widget.customerId);
+      await provider.getCustomerById(widget.userId);
     } catch (e) {
       if (!_isDisposed) {
         setState(() {
@@ -107,150 +107,6 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     await _loadCustomerDetail();
   }
 
-  void _showOptionsMenu(CustomerEntity customer, bool isDark) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: isDark ? ViernesColors.panelDark : ViernesColors.panelLight,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(ViernesSpacing.radius24),
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: ViernesSpacing.sm),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
-                      .withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: ViernesSpacing.md),
-              _buildMenuItem(
-                icon: Icons.edit_rounded,
-                title: 'Edit Customer',
-                isDark: isDark,
-                onTap: () {
-                  Navigator.pop(context);
-                  _navigateToEditForm(customer);
-                },
-              ),
-              _buildMenuItem(
-                icon: Icons.chat_bubble_rounded,
-                title: 'New Chat',
-                isDark: isDark,
-                onTap: () {
-                  Navigator.pop(context);
-                  _startNewChat(customer);
-                },
-              ),
-              _buildMenuItem(
-                icon: Icons.delete_rounded,
-                title: 'Delete Customer',
-                isDark: isDark,
-                isDestructive: true,
-                onTap: () {
-                  Navigator.pop(context);
-                  _confirmDelete(customer, isDark);
-                },
-              ),
-              const SizedBox(height: ViernesSpacing.md),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String title,
-    required bool isDark,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: ViernesSpacing.lg,
-            vertical: ViernesSpacing.md,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: isDestructive
-                    ? ViernesColors.danger
-                    : (isDark ? ViernesColors.accent : ViernesColors.primary),
-                size: ViernesDimensions.iconSizeRegular,
-              ),
-              const SizedBox(width: ViernesSpacing.md),
-              Text(
-                title,
-                style: ViernesTextStyles.bodyText.copyWith(
-                  color: isDestructive
-                      ? ViernesColors.danger
-                      : (isDark ? ViernesColors.textDark : ViernesColors.textLight),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _confirmDelete(CustomerEntity customer, bool isDark) async {
-    final confirmed = await DeleteCustomerDialog.show(
-      context,
-      customerName: customer.name,
-      isDark: isDark,
-    );
-
-    if (confirmed && mounted) {
-      final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
-      final success = await provider.deleteCustomer(customer.id);
-
-      if (success && mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${customer.name} deleted successfully'),
-            backgroundColor: ViernesColors.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
-            ),
-            margin: const EdgeInsets.all(ViernesSpacing.md),
-          ),
-        );
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Failed to delete customer'),
-            backgroundColor: ViernesColors.danger,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
-            ),
-            margin: const EdgeInsets.all(ViernesSpacing.md),
-          ),
-        );
-      }
-    }
-  }
-
   void _navigateToEditForm(CustomerEntity customer) {
     Navigator.push(
       context,
@@ -267,23 +123,10 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     });
   }
 
-  void _startNewChat(CustomerEntity customer) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Starting chat with ${customer.name}...'),
-        backgroundColor: ViernesColors.info,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
-        ),
-        margin: const EdgeInsets.all(ViernesSpacing.md),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = ref.watch(isDarkModeProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: ViernesBackground(
@@ -293,18 +136,18 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
               final customer = provider.selectedCustomer;
 
               if (_isLoading && customer == null) {
-                return _buildLoadingState(isDark);
+                return _buildLoadingState(isDark, l10n);
               }
 
               if (_errorMessage != null && customer == null) {
-                return _buildErrorState(isDark);
+                return _buildErrorState(isDark, l10n);
               }
 
               if (customer == null) {
-                return _buildNotFoundState(isDark);
+                return _buildNotFoundState(isDark, l10n);
               }
 
-              return _buildContent(customer, isDark);
+              return _buildContent(customer, isDark, l10n);
             },
           ),
         ),
@@ -312,7 +155,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildContent(CustomerEntity customer, bool isDark) {
+  Widget _buildContent(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     return Column(
       children: [
         // App Bar with customer name
@@ -325,10 +168,10 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
             ViernesSpacing.md,
             ViernesSpacing.sm,
           ),
-          child: _buildHeroSection(customer, isDark),
+          child: _buildHeroSection(customer, isDark, l10n),
         ),
         // Tab Bar
-        _buildTabBar(isDark),
+        _buildTabBar(isDark, l10n),
         // Tab Content
         Expanded(
           child: RefreshIndicator(
@@ -339,9 +182,9 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
               controller: _tabController,
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                _buildOverviewTab(customer, isDark),
-                _buildAnalysisTab(customer, isDark),
-                _buildActivityTab(customer, isDark),
+                _buildOverviewTab(customer, isDark, l10n),
+                _buildAnalysisTab(customer, isDark, l10n),
+                _buildActivityTab(customer, isDark, l10n),
               ],
             ),
           ),
@@ -377,17 +220,17 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
           ),
           IconButton(
             icon: Icon(
-              Icons.more_vert,
+              Icons.edit_rounded,
               color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
             ),
-            onPressed: () => _showOptionsMenu(customer, isDark),
+            onPressed: () => _navigateToEditForm(customer),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHeroSection(CustomerEntity customer, bool isDark) {
+  Widget _buildHeroSection(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     return ViernesGlassmorphismCard(
       borderRadius: ViernesSpacing.radius24,
       padding: const EdgeInsets.all(ViernesSpacing.lg),
@@ -452,7 +295,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
               borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
             ),
             child: Text(
-              'Member since ${DateFormatters.monthYear.format(customer.createdAt)}',
+              '${l10n?.memberSince ?? 'Member since'} ${DateFormatters.monthYear.format(customer.createdAt)}',
               style: ViernesTextStyles.labelSmall.copyWith(
                 color: isDark ? ViernesColors.accent : ViernesColors.primary,
                 fontWeight: FontWeight.w600,
@@ -464,7 +307,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildTabBar(bool isDark) {
+  Widget _buildTabBar(bool isDark, AppLocalizations? l10n) {
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: ViernesSpacing.md,
@@ -537,17 +380,17 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         tabs: [
           _buildTab(
             icon: Icons.person_rounded,
-            label: 'Overview',
+            label: l10n?.overviewTab ?? 'Overview',
             isDark: isDark,
           ),
           _buildTab(
             icon: Icons.analytics_rounded,
-            label: 'Analysis',
+            label: l10n?.analysisTab ?? 'Analysis',
             isDark: isDark,
           ),
           _buildTab(
             icon: Icons.history_rounded,
-            label: 'Activity',
+            label: l10n?.activityTab ?? 'Activity',
             isDark: isDark,
           ),
         ],
@@ -575,16 +418,16 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   // ==================== TAB 1: OVERVIEW ====================
-  Widget _buildOverviewTab(CustomerEntity customer, bool isDark) {
+  Widget _buildOverviewTab(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     return ListView(
       padding: const EdgeInsets.all(ViernesSpacing.md),
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         // Personal Information Section
-        _buildContactSection(customer, isDark),
+        _buildContactSection(customer, isDark, l10n),
         const SizedBox(height: ViernesSpacing.md),
         // Segment Section
-        _buildSegmentSection(customer, isDark),
+        _buildSegmentSection(customer, isDark, l10n),
         const SizedBox(height: ViernesSpacing.md),
         // Summary Panel - no longer passes languageCode, accesses context internally
         _buildSummaryPanel(customer, isDark),
@@ -596,7 +439,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildContactSection(CustomerEntity customer, bool isDark) {
+  Widget _buildContactSection(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     return ViernesGlassmorphismCard(
       borderRadius: ViernesSpacing.radius14,
       padding: const EdgeInsets.all(ViernesSpacing.md),
@@ -605,25 +448,25 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         children: [
           SectionHeader(
             icon: Icons.contact_phone_rounded,
-            title: 'Contact Information',
+            title: l10n?.contactInformation ?? 'Contact Information',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.sm),
           InfoRow(
             icon: Icons.email_rounded,
-            label: 'Email',
+            label: l10n?.email ?? 'Email',
             value: customer.email,
             isDark: isDark,
           ),
           InfoRow(
             icon: Icons.phone_rounded,
-            label: 'Phone',
+            label: l10n?.phone ?? 'Phone',
             value: customer.phoneNumber,
             isDark: isDark,
           ),
           InfoRow(
             icon: Icons.calendar_today_rounded,
-            label: 'Created',
+            label: l10n?.created ?? 'Created',
             value: DateFormatters.fullDate.format(customer.createdAt),
             isDark: isDark,
           ),
@@ -632,7 +475,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildSegmentSection(CustomerEntity customer, bool isDark) {
+  Widget _buildSegmentSection(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     if (customer.segment == null && customer.segmentSummary == null) {
       return const SizedBox.shrink();
     }
@@ -649,7 +492,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         children: [
           SectionHeader(
             icon: Icons.category_rounded,
-            title: 'Customer Segment',
+            title: l10n?.customerSegment ?? 'Customer Segment',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.sm),
@@ -693,7 +536,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   // ==================== TAB 2: ANALYSIS ====================
-  Widget _buildAnalysisTab(CustomerEntity customer, bool isDark) {
+  Widget _buildAnalysisTab(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     final locale = Localizations.localeOf(context);
     final languageCode = locale.languageCode;
 
@@ -705,10 +548,10 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         _buildSentimentAnalysisPanel(customer, isDark),
         const SizedBox(height: ViernesSpacing.md),
         // Purchase Intention Chart
-        _buildPurchaseIntentionChart(customer, isDark, languageCode),
+        _buildPurchaseIntentionChart(customer, isDark, languageCode, l10n),
         const SizedBox(height: ViernesSpacing.md),
         // Main Interest Panel (includes NPS)
-        _buildMainInterestPanel(customer, isDark, languageCode),
+        _buildMainInterestPanel(customer, isDark, languageCode, l10n),
         const SizedBox(height: ViernesSpacing.xl),
       ],
     );
@@ -721,7 +564,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildPurchaseIntentionChart(CustomerEntity customer, bool isDark, String languageCode) {
+  Widget _buildPurchaseIntentionChart(CustomerEntity customer, bool isDark, String languageCode, AppLocalizations? l10n) {
     // Use CustomerInsightHelper with constant
     final purchaseIntention = CustomerInsightHelper.getInsightValue(
       customer,
@@ -741,7 +584,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         children: [
           SectionHeader(
             icon: Icons.shopping_bag_rounded,
-            title: 'Purchase Intention',
+            title: l10n?.purchaseIntention ?? 'Purchase Intention',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.md),
@@ -755,7 +598,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildMainInterestPanel(CustomerEntity customer, bool isDark, String languageCode) {
+  Widget _buildMainInterestPanel(CustomerEntity customer, bool isDark, String languageCode, AppLocalizations? l10n) {
     // Use CustomerInsightHelper with constants
     final mainInterest = CustomerInsightHelper.getInsightValue(
       customer,
@@ -796,7 +639,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         children: [
           SectionHeader(
             icon: Icons.interests_rounded,
-            title: 'Main Interest & NPS',
+            title: l10n?.mainInterestNps ?? 'Main Interest & NPS',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.md),
@@ -813,7 +656,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   // ==================== TAB 3: ACTIVITY ====================
-  Widget _buildActivityTab(CustomerEntity customer, bool isDark) {
+  Widget _buildActivityTab(CustomerEntity customer, bool isDark, AppLocalizations? l10n) {
     final locale = Localizations.localeOf(context);
     final languageCode = locale.languageCode;
 
@@ -822,7 +665,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         // Metrics Grid
-        _buildMetricsGrid(customer, isDark, languageCode),
+        _buildMetricsGrid(customer, isDark, languageCode, l10n),
         const SizedBox(height: ViernesSpacing.md),
         // Interactions Panel
         _buildInteractionsPanel(customer, isDark, languageCode),
@@ -834,7 +677,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildMetricsGrid(CustomerEntity customer, bool isDark, String languageCode) {
+  Widget _buildMetricsGrid(CustomerEntity customer, bool isDark, String languageCode, AppLocalizations? l10n) {
     // Use CustomerInsightHelper with constant
     final purchaseIntention = CustomerInsightHelper.getInsightValue(
       customer,
@@ -852,31 +695,31 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
       children: [
         MetricCard(
           icon: Icons.chat_bubble_rounded,
-          label: 'Conversations',
+          label: l10n?.conversationsLabel ?? 'Conversations',
           value: customer.lastConversation != null ? '1+' : '0',
           isDark: isDark,
           iconColor: ViernesColors.info,
         ),
         MetricCard(
           icon: Icons.access_time_rounded,
-          label: 'Last Interaction',
+          label: l10n?.lastContact ?? 'Last Interaction',
           value: customer.lastInteraction != null
               ? DateFormatters.formatRelative(customer.lastInteraction!)
-              : 'Never',
+              : l10n?.never ?? 'Never',
           isDark: isDark,
           iconColor: ViernesColors.warning,
         ),
         MetricCard(
           icon: Icons.insights_rounded,
-          label: 'Insights',
+          label: l10n?.insightsLabel ?? 'Insights',
           value: customer.insightsInfo.length.toString(),
           isDark: isDark,
           iconColor: ViernesColors.accent,
         ),
         MetricCard(
           icon: Icons.shopping_bag_rounded,
-          label: 'Purchase Intent',
-          value: purchaseIntention.isNotEmpty ? purchaseIntention : 'Unknown',
+          label: l10n?.purchaseIntent ?? 'Purchase Intent',
+          value: purchaseIntention.isNotEmpty ? purchaseIntention : l10n?.unknown ?? 'Unknown',
           isDark: isDark,
           iconColor: ViernesColors.success,
         ),
@@ -933,9 +776,11 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
       onViewConversation: (conversation) {
         // TODO: Navigate to conversation detail page
         // Will show full conversation thread with messages
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Viewing conversation #${conversation.id}'),
+            content: Text(l10n?.viewingConversation(conversation.id.toString()) ??
+                'Viewing conversation #${conversation.id}'),
             backgroundColor: ViernesColors.info,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
@@ -949,7 +794,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   // ==================== STATE WIDGETS ====================
-  Widget _buildLoadingState(bool isDark) {
+  Widget _buildLoadingState(bool isDark, AppLocalizations? l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -959,7 +804,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
           ),
           const SizedBox(height: ViernesSpacing.md),
           Text(
-            'Loading customer details...',
+            l10n?.loadingCustomerDetails ?? 'Loading customer details...',
             style: ViernesTextStyles.bodyText.copyWith(
               color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                   .withValues(alpha: 0.6),
@@ -970,7 +815,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildErrorState(bool isDark) {
+  Widget _buildErrorState(bool isDark, AppLocalizations? l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(ViernesSpacing.lg),
@@ -984,14 +829,14 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
             ),
             const SizedBox(height: ViernesSpacing.md),
             Text(
-              'Error Loading Customer',
+              l10n?.errorLoadingCustomer ?? 'Error Loading Customer',
               style: ViernesTextStyles.h5.copyWith(
                 color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
               ),
             ),
             const SizedBox(height: ViernesSpacing.sm),
             Text(
-              _errorMessage ?? 'An error occurred',
+              _errorMessage ?? (l10n?.anErrorOccurred ?? 'An error occurred'),
               style: ViernesTextStyles.bodyText.copyWith(
                 color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                     .withValues(alpha: 0.6),
@@ -1002,7 +847,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
             ElevatedButton.icon(
               onPressed: _onRefresh,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(l10n?.retry ?? 'Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark ? ViernesColors.accent : ViernesColors.primary,
                 foregroundColor: Colors.white,
@@ -1014,7 +859,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     );
   }
 
-  Widget _buildNotFoundState(bool isDark) {
+  Widget _buildNotFoundState(bool isDark, AppLocalizations? l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(ViernesSpacing.lg),
@@ -1029,14 +874,14 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
             ),
             const SizedBox(height: ViernesSpacing.md),
             Text(
-              'Customer Not Found',
+              l10n?.customerNotFound ?? 'Customer Not Found',
               style: ViernesTextStyles.h5.copyWith(
                 color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
               ),
             ),
             const SizedBox(height: ViernesSpacing.sm),
             Text(
-              'The customer you are looking for does not exist.',
+              l10n?.customerNotFoundMessage ?? 'The customer you are looking for does not exist.',
               style: ViernesTextStyles.bodyText.copyWith(
                 color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                     .withValues(alpha: 0.6),
@@ -1047,7 +892,7 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
             ElevatedButton.icon(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back),
-              label: const Text('Go Back'),
+              label: Text(l10n?.goBack ?? 'Go Back'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: isDark ? ViernesColors.accent : ViernesColors.primary,
                 foregroundColor: Colors.white,

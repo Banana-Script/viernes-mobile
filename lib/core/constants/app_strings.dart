@@ -8,27 +8,27 @@ class AppStrings {
 
   // Navigation & Headers
   static const String dashboard = 'DASHBOARD';
-  static const String profile = 'PERFIL';
+  static const String profile = 'PROFILE';
 
   // Settings
-  static const String settings = 'Configuración';
-  static const String notifications = 'Notificaciones';
-  static const String appearance = 'Apariencia';
-  static const String signOut = 'CERRAR SESIÓN';
+  static const String settings = 'Settings';
+  static const String notifications = 'Notifications';
+  static const String appearance = 'Appearance';
+  static const String signOut = 'SIGN OUT';
 
   // Theme
-  static const String lightMode = 'Modo Claro';
-  static const String darkMode = 'Modo Oscuro';
-  static const String autoMode = 'Automático';
-  static const String lightModeDesc = 'Tema claro para usar durante el día';
-  static const String darkModeDesc = 'Tema oscuro para reducir la fatiga visual';
-  static const String autoModeDesc = 'Sigue la configuración del sistema';
+  static const String lightMode = 'Light Mode';
+  static const String darkMode = 'Dark Mode';
+  static const String autoMode = 'Automatic';
+  static const String lightModeDesc = 'Light theme for daytime use';
+  static const String darkModeDesc = 'Dark theme to reduce eye strain';
+  static const String autoModeDesc = 'Follows system settings';
 
   // Dialogs
-  static const String signOutConfirmTitle = 'Cerrar Sesión';
-  static const String signOutConfirmMessage = '¿Estás seguro que deseas cerrar sesión?';
-  static const String cancel = 'Cancelar';
-  static const String confirm = 'SALIR';
+  static const String signOutConfirmTitle = 'Sign Out';
+  static const String signOutConfirmMessage = 'Are you sure you want to sign out?';
+  static const String cancel = 'Cancel';
+  static const String confirm = 'CONFIRM';
   static const String exportDataTitle = 'Export Data';
   static const String exportDataMessage = 'Export conversation statistics as CSV?';
   static const String export = 'EXPORT';
@@ -57,14 +57,14 @@ class AppStrings {
   static const String unexpectedError = 'An unexpected error occurred';
   static const String retry = 'RETRY';
   static const String noAdvisorData = 'No advisor data available';
-  static const String themeChangeError = 'Error al cambiar el tema';
+  static const String themeChangeError = 'Error changing theme';
   static const String exportSuccess = 'Data exported successfully';
   static const String exportFailed = 'Export failed';
 
   // Accessibility labels
-  static const String exportDataButton = 'Exportar datos';
-  static const String signOutButton = 'Cerrar sesión';
-  static const String themeSelectorPrefix = 'Selector de tema: ';
-  static const String selected = 'Seleccionado';
-  static const String notSelected = 'No seleccionado';
+  static const String exportDataButton = 'Export data';
+  static const String signOutButton = 'Sign out';
+  static const String themeSelectorPrefix = 'Theme selector: ';
+  static const String selected = 'Selected';
+  static const String notSelected = 'Not selected';
 }

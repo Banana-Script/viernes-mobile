@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import 'package:phone_form_field/phone_form_field.dart';
-import '../../../../core/constants/app_constants.dart';
+import '../../../../core/di/dependency_injection.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
@@ -72,17 +73,20 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
       _fullNameController.text = customer.name;
       _emailController.text = customer.email;
       _phoneController.value = PhoneNumber.parse(customer.phoneNumber);
-      // Note: Identification, age, and occupation would need to be added to CustomerEntity
-      // For now, we'll leave them empty in edit mode
+
+      // Load optional fields from entity
+      _identificationController.text = customer.identification ?? '';
+      _ageController.text = customer.age?.toString() ?? '';
+      _occupationController.text = customer.occupation ?? '';
 
       // Store initial values for change detection
       _initialValues = {
         'fullName': customer.name,
         'email': customer.email,
         'phone': customer.phoneNumber,
-        'identification': '',
-        'age': '',
-        'occupation': '',
+        'identification': customer.identification ?? '',
+        'age': customer.age?.toString() ?? '',
+        'occupation': customer.occupation ?? '',
       };
     } else {
       _initialValues = {
@@ -178,10 +182,16 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
   }
 
   Future<void> _createCustomer(CustomerProvider provider) async {
+    // Get role and status IDs from value definitions service
+    final valueDefsService = DependencyInjection.valueDefinitionsService;
+    final roleId = valueDefsService.getCustomerRoleId();
+    final statusId = valueDefsService.getActiveStatusId();
+
     final userData = {
       'fullname': _fullNameController.text.trim(),
       'email': _emailController.text.trim(),
-      'phone_number': _phoneController.value.international,
+      'session_id': _phoneController.value.international,
+      'verified': 1,
       if (_identificationController.text.isNotEmpty)
         'identification': _identificationController.text.trim(),
       if (_ageController.text.isNotEmpty) 'age': int.parse(_ageController.text),
@@ -189,17 +199,37 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     };
 
     final success = await provider.createCustomer(
-      roleId: AppConstants.customerRoleId,
-      statusId: AppConstants.activeStatusId,
+      roleId: roleId,
+      statusId: statusId,
       userData: userData,
     );
 
     if (success && mounted) {
-      _showSuccessSnackbar('Customer created successfully');
+      final l10n = AppLocalizations.of(context);
+      _showSuccessSnackbar(l10n?.customerCreatedSuccess ?? 'Customer created successfully');
       Navigator.pop(context, true); // Return true to indicate success
     } else if (mounted) {
-      _showErrorSnackbar(provider.errorMessage ?? 'Failed to create customer');
+      _showErrorSnackbar(_mapErrorMessage(provider.errorMessage));
     }
+  }
+
+  /// Maps backend error messages to localized strings
+  String _mapErrorMessage(String? errorMessage) {
+    final l10n = AppLocalizations.of(context);
+    if (errorMessage == null) {
+      return l10n?.errorCreatingCustomer ?? 'Error creating customer';
+    }
+
+    // Map known backend error messages to localized strings
+    if (errorMessage.contains('already has access to the organization')) {
+      return l10n?.errorUserAlreadyExists ?? errorMessage;
+    }
+    if (errorMessage.contains('Invalid') || errorMessage.contains('invalid')) {
+      return l10n?.errorInvalidCustomerData ?? errorMessage;
+    }
+
+    // Return original message if no mapping found
+    return errorMessage;
   }
 
   Future<void> _updateCustomer(CustomerProvider provider) async {
@@ -239,10 +269,11 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     );
 
     if (success && mounted) {
-      _showSuccessSnackbar('Customer updated successfully');
+      final l10n = AppLocalizations.of(context);
+      _showSuccessSnackbar(l10n?.customerUpdatedSuccess ?? 'Customer updated successfully');
       Navigator.pop(context, true); // Return true to indicate success
     } else if (mounted) {
-      _showErrorSnackbar(provider.errorMessage ?? 'Failed to update customer');
+      _showErrorSnackbar(_mapErrorMessage(provider.errorMessage));
     }
   }
 
@@ -277,6 +308,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = ref.watch(isDarkModeProvider);
+    final l10n = AppLocalizations.of(context);
 
     return PopScope(
       canPop: !_hasChanges || _isSubmitting,
@@ -310,7 +342,9 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
             },
           ),
           title: Text(
-            widget.mode == CustomerFormMode.add ? 'Add Customer' : 'Edit Customer',
+            widget.mode == CustomerFormMode.add
+                ? (l10n?.addCustomer ?? 'Add Customer')
+                : (l10n?.editCustomer ?? 'Edit Customer'),
             style: ViernesTextStyles.h6.copyWith(
               color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
             ),
@@ -328,24 +362,24 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _buildFullNameField(isDark),
+                          _buildFullNameField(isDark, l10n),
                           const SizedBox(height: ViernesSpacing.md),
-                          _buildEmailField(isDark),
+                          _buildEmailField(isDark, l10n),
                           const SizedBox(height: ViernesSpacing.md),
-                          _buildPhoneField(isDark),
+                          _buildPhoneField(isDark, l10n),
                           const SizedBox(height: ViernesSpacing.md),
-                          _buildIdentificationField(isDark),
+                          _buildIdentificationField(isDark, l10n),
                           const SizedBox(height: ViernesSpacing.md),
-                          _buildAgeField(isDark),
+                          _buildAgeField(isDark, l10n),
                           const SizedBox(height: ViernesSpacing.md),
-                          _buildOccupationField(isDark),
+                          _buildOccupationField(isDark, l10n),
                           const SizedBox(height: ViernesSpacing.xl),
                         ],
                       ),
                     ),
                   ),
                 ),
-                _buildActionButtons(isDark),
+                _buildActionButtons(isDark, l10n),
               ],
             ),
           ),
@@ -354,44 +388,44 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     );
   }
 
-  Widget _buildFullNameField(bool isDark) {
+  Widget _buildFullNameField(bool isDark, AppLocalizations? l10n) {
     return _buildTextField(
       controller: _fullNameController,
-      label: 'Full Name',
-      hint: 'Enter customer full name',
+      label: l10n?.fullName ?? 'Full Name',
+      hint: l10n?.enterFullName ?? 'Enter customer full name',
       icon: Icons.person_rounded,
       isDark: isDark,
       isRequired: true,
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
-          return 'Full name is required';
+          return l10n?.fullNameRequired ?? 'Full name is required';
         }
         if (value.trim().length < 2) {
-          return 'Name must be at least 2 characters';
+          return l10n?.nameMinLength ?? 'Name must be at least 2 characters';
         }
         return null;
       },
     );
   }
 
-  Widget _buildEmailField(bool isDark) {
+  Widget _buildEmailField(bool isDark, AppLocalizations? l10n) {
     final isRequired = widget.mode == CustomerFormMode.add;
     return _buildTextField(
       controller: _emailController,
-      label: 'Email',
-      hint: 'Enter email address',
+      label: l10n?.email ?? 'Email',
+      hint: l10n?.enterEmail ?? 'Enter email address',
       icon: Icons.email_rounded,
       isDark: isDark,
       isRequired: isRequired,
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
         if (isRequired && (value == null || value.trim().isEmpty)) {
-          return 'Email is required';
+          return l10n?.emailRequired ?? 'Email is required';
         }
         if (value != null && value.trim().isNotEmpty) {
           final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
           if (!emailRegex.hasMatch(value.trim())) {
-            return 'Please enter a valid email';
+            return l10n?.pleaseEnterValidEmail ?? 'Please enter a valid email';
           }
         }
         return null;
@@ -399,7 +433,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     );
   }
 
-  Widget _buildPhoneField(bool isDark) {
+  Widget _buildPhoneField(bool isDark, AppLocalizations? l10n) {
     final isEditMode = widget.mode == CustomerFormMode.edit;
 
     return Column(
@@ -408,7 +442,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
         Row(
           children: [
             Text(
-              'Phone Number',
+              l10n?.phoneNumber ?? 'Phone Number',
               style: ViernesTextStyles.label.copyWith(
                 color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
               ),
@@ -436,7 +470,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
           controller: _phoneController,
           enabled: !isEditMode, // Read-only in edit mode
           decoration: InputDecoration(
-            hintText: 'Enter phone number',
+            hintText: l10n?.enterPhoneNumber ?? 'Enter phone number',
             prefixIcon: Icon(
               Icons.phone_rounded,
               color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
@@ -485,7 +519,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
           countrySelectorNavigator: const CountrySelectorNavigator.page(),
           validator: (phoneNumber) {
             if (phoneNumber == null || !phoneNumber.isValid()) {
-              return 'Phone number is required';
+              return l10n?.phoneRequired ?? 'Phone number is required';
             }
             return null;
           },
@@ -495,7 +529,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
           Padding(
             padding: const EdgeInsets.only(top: ViernesSpacing.xs, left: ViernesSpacing.sm),
             child: Text(
-              'Phone number cannot be changed',
+              l10n?.phoneCannotBeChanged ?? 'Phone number cannot be changed',
               style: ViernesTextStyles.helper.copyWith(
                 color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                     .withValues(alpha: 0.5),
@@ -506,21 +540,21 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     );
   }
 
-  Widget _buildIdentificationField(bool isDark) {
+  Widget _buildIdentificationField(bool isDark, AppLocalizations? l10n) {
     return _buildTextField(
       controller: _identificationController,
-      label: 'Identification',
-      hint: 'Enter ID number (optional)',
+      label: l10n?.identification ?? 'Identification',
+      hint: l10n?.enterIdentification ?? 'Enter ID number (optional)',
       icon: Icons.badge_rounded,
       isDark: isDark,
     );
   }
 
-  Widget _buildAgeField(bool isDark) {
+  Widget _buildAgeField(bool isDark, AppLocalizations? l10n) {
     return _buildTextField(
       controller: _ageController,
-      label: 'Age',
-      hint: 'Enter age (optional)',
+      label: l10n?.age ?? 'Age',
+      hint: l10n?.enterAge ?? 'Enter age (optional)',
       icon: Icons.cake_rounded,
       isDark: isDark,
       keyboardType: TextInputType.number,
@@ -529,15 +563,15 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
         if (value != null && value.trim().isNotEmpty) {
           final age = int.tryParse(value);
           if (age == null) {
-            return 'Please enter a valid age';
+            return l10n?.invalidAge ?? 'Please enter a valid age';
           }
           if (widget.mode == CustomerFormMode.add) {
             if (age < 1 || age > 120) {
-              return 'Age must be between 1 and 120';
+              return l10n?.ageMustBeBetween ?? 'Age must be between 1 and 120';
             }
           } else {
             if (age < 0 || age > 120) {
-              return 'Age must be between 0 and 120';
+              return l10n?.ageMustBeBetweenEdit ?? 'Age must be between 0 and 120';
             }
           }
         }
@@ -546,11 +580,11 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     );
   }
 
-  Widget _buildOccupationField(bool isDark) {
+  Widget _buildOccupationField(bool isDark, AppLocalizations? l10n) {
     return _buildTextField(
       controller: _occupationController,
-      label: 'Occupation',
-      hint: 'Enter occupation (optional)',
+      label: l10n?.occupation ?? 'Occupation',
+      hint: l10n?.enterOccupation ?? 'Enter occupation (optional)',
       icon: Icons.work_rounded,
       isDark: isDark,
     );
@@ -654,7 +688,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
     );
   }
 
-  Widget _buildActionButtons(bool isDark) {
+  Widget _buildActionButtons(bool isDark, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(ViernesSpacing.md),
       decoration: BoxDecoration(
@@ -673,7 +707,7 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
         children: [
           Expanded(
             child: ViernesButton.outline(
-              text: 'Cancel',
+              text: l10n?.cancel ?? 'Cancel',
               onPressed: _isSubmitting
                   ? null
                   : () async {
@@ -693,7 +727,9 @@ class _CustomerFormPageState extends ConsumerState<CustomerFormPage> {
           Expanded(
             flex: 2,
             child: ViernesButton.primary(
-              text: widget.mode == CustomerFormMode.add ? 'Create Customer' : 'Save Changes',
+              text: widget.mode == CustomerFormMode.add
+                  ? (l10n?.createCustomer ?? 'Create Customer')
+                  : (l10n?.saveChanges ?? 'Save Changes'),
               isLoading: _isSubmitting,
               onPressed: _isSubmitting ? null : _onSubmit,
             ),

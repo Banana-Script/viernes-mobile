@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/viernes_colors.dart';
 import '../../core/theme/viernes_text_styles.dart';
 import '../../core/theme/viernes_spacing.dart';
+import '../../gen_l10n/app_localizations.dart';
 import 'viernes_glassmorphism_card.dart';
 import 'viernes_button.dart';
 
@@ -33,6 +34,8 @@ class UnsavedChangesDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: ViernesGlassmorphismCard(
@@ -57,7 +60,7 @@ class UnsavedChangesDialog extends StatelessWidget {
             const SizedBox(height: ViernesSpacing.md),
             // Title
             Text(
-              'Unsaved Changes',
+              l10n?.unsavedChangesTitle ?? 'Unsaved Changes',
               style: ViernesTextStyles.h5.copyWith(
                 color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
                 fontWeight: FontWeight.w700,
@@ -67,7 +70,7 @@ class UnsavedChangesDialog extends StatelessWidget {
             const SizedBox(height: ViernesSpacing.sm),
             // Message
             Text(
-              'You have unsaved changes. Are you sure you want to leave?',
+              l10n?.unsavedChangesMessage ?? 'You have unsaved changes. Are you sure you want to leave?',
               style: ViernesTextStyles.bodyText.copyWith(
                 color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                     .withValues(alpha: 0.8),
@@ -80,14 +83,14 @@ class UnsavedChangesDialog extends StatelessWidget {
               children: [
                 Expanded(
                   child: ViernesButton.outline(
-                    text: 'Stay',
+                    text: l10n?.stay ?? 'Stay',
                     onPressed: () => Navigator.of(context).pop(false),
                   ),
                 ),
                 const SizedBox(width: ViernesSpacing.sm),
                 Expanded(
                   child: ViernesButton.danger(
-                    text: 'Discard',
+                    text: l10n?.discard ?? 'Discard',
                     onPressed: () => Navigator.of(context).pop(true),
                   ),
                 ),

@@ -3,6 +3,7 @@ import '../../../core/theme/viernes_colors.dart';
 import '../../../core/theme/viernes_text_styles.dart';
 import '../../../core/theme/viernes_spacing.dart';
 import '../../../core/utils/insight_parser.dart';
+import '../../../gen_l10n/app_localizations.dart';
 import '../viernes_glassmorphism_card.dart';
 import 'section_header.dart';
 import 'insight_badge.dart';
@@ -84,6 +85,7 @@ class InteractionsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final parsedInteractions = _parseField(interactionsPerMonth);
     final reasonsList = _parseList(lastInteractionReasons);
     final actionsList = _parseNewlineList(actionsToCall);
@@ -102,26 +104,26 @@ class InteractionsPanel extends StatelessWidget {
           // Section Header
           SectionHeader(
             icon: Icons.timeline_rounded,
-            title: 'Interactions & Actions',
+            title: l10n?.interactionsAndActions ?? 'Interactions & Actions',
             isDark: isDark,
           ),
           const SizedBox(height: ViernesSpacing.lg),
 
           // Interactions Per Month
           if (parsedInteractions.isNotEmpty) ...[
-            _buildInteractionsPerMonth(parsedInteractions),
+            _buildInteractionsPerMonth(parsedInteractions, l10n),
             const SizedBox(height: ViernesSpacing.lg),
           ],
 
           // Last Interaction Reasons
           if (reasonsList.isNotEmpty) ...[
-            _buildLastInteractionReasons(reasonsList),
+            _buildLastInteractionReasons(reasonsList, l10n),
             const SizedBox(height: ViernesSpacing.lg),
           ],
 
           // Actions to Call
           if (actionsList.isNotEmpty) ...[
-            _buildActionsToCall(actionsList),
+            _buildActionsToCall(actionsList, l10n),
           ],
         ],
       ),
@@ -129,12 +131,12 @@ class InteractionsPanel extends StatelessWidget {
   }
 
   /// Build interactions per month display
-  Widget _buildInteractionsPerMonth(String interactions) {
+  Widget _buildInteractionsPerMonth(String interactions, AppLocalizations? l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Interactions per month',
+          l10n?.interactionsPerMonth ?? 'Interactions per month',
           style: ViernesTextStyles.label.copyWith(
             color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                 .withValues(alpha: 0.6),
@@ -154,12 +156,12 @@ class InteractionsPanel extends StatelessWidget {
   }
 
   /// Build last interaction reasons badges
-  Widget _buildLastInteractionReasons(List<String> reasons) {
+  Widget _buildLastInteractionReasons(List<String> reasons, AppLocalizations? l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Last Interaction Reasons',
+          l10n?.lastInteractionReasons ?? 'Last Interaction Reasons',
           style: ViernesTextStyles.label.copyWith(
             color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                 .withValues(alpha: 0.6),
@@ -182,12 +184,12 @@ class InteractionsPanel extends StatelessWidget {
   }
 
   /// Build actions to call bullet list
-  Widget _buildActionsToCall(List<String> actions) {
+  Widget _buildActionsToCall(List<String> actions, AppLocalizations? l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Actions to Call:',
+          l10n?.actionsToCall ?? 'Actions to Call:',
           style: ViernesTextStyles.label.copyWith(
             color: (isDark ? ViernesColors.textDark : ViernesColors.textLight)
                 .withValues(alpha: 0.6),

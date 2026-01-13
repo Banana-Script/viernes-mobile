@@ -21,7 +21,7 @@ class CustomerEmptyState extends StatelessWidget {
 
   const CustomerEmptyState({
     super.key,
-    this.message = 'No customers found',
+    required this.message,
     this.description,
     this.onActionPressed,
     this.actionLabel,

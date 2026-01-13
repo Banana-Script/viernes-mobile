@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../providers/customer_provider.dart';
 
 /// Customer View Toggle Widget
@@ -20,6 +21,7 @@ class CustomerViewToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Consumer<CustomerProvider>(
       builder: (context, provider, _) {
@@ -41,7 +43,7 @@ class CustomerViewToggle extends StatelessWidget {
           child: Row(
             children: [
               _buildOption(
-                label: 'All Customers',
+                label: l10n?.allCustomers ?? 'All Customers',
                 isSelected: showAllCustomers,
                 onTap: () => provider.toggleMyCustomers(false),
                 isDark: isDark,
@@ -58,7 +60,7 @@ class CustomerViewToggle extends StatelessWidget {
                     : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
               ),
               _buildOption(
-                label: 'My Customers',
+                label: l10n?.myCustomers ?? 'My Customers',
                 isSelected: !showAllCustomers,
                 onTap: () => provider.toggleMyCustomers(true),
                 isDark: isDark,

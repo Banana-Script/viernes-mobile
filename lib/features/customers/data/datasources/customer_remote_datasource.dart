@@ -175,37 +175,23 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
   }
 
   @override
-  Future<CustomerModel> getCustomerById(int customerId) async {
-    const endpoint = '/organization_users/customers';
-    final queryParams = {
-      'page': '1',
-      'page_size': '1',
-      'filters': '[id=$customerId]',
-    };
+  Future<CustomerModel> getCustomerById(int userId) async {
+    final endpoint = '/users/$userId';
 
     try {
-      AppLogger.apiRequest('GET', endpoint, params: queryParams);
+      AppLogger.apiRequest('GET', endpoint);
 
-      final response = await _httpClient.dio.get(
-        endpoint,
-        queryParameters: queryParams,
-      );
+      final response = await _httpClient.dio.get(endpoint);
 
       AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
-        final customers = data['customers'] as List;
 
-        if (customers.isEmpty) {
-          throw NotFoundException(
-            'Customer not found',
-            resourceType: 'Customer',
-            resourceId: customerId,
-          );
-        }
-
-        return CustomerModel.fromJson(customers.first as Map<String, dynamic>);
+        // The /users/{userId} endpoint returns user data directly with a different structure
+        // Use fromUserDetail to parse it correctly
+        // This endpoint includes optional fields: identification, age, occupation
+        return CustomerModel.fromUserDetail(data);
       } else {
         throw NetworkException(
           'Failed to load customer',
@@ -220,7 +206,7 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
         throw NotFoundException(
           'Customer not found',
           resourceType: 'Customer',
-          resourceId: customerId,
+          resourceId: userId,
           stackTrace: stackTrace,
           originalError: e,
         );
@@ -286,14 +272,32 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
       AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
 
       if (e.response?.statusCode == 400) {
+        // Extract error message from response if available
+        final responseData = e.response?.data;
+        String errorMessage = 'Invalid customer data';
+        if (responseData is Map<String, dynamic> && responseData['detail'] != null) {
+          errorMessage = responseData['detail'] as String;
+        }
         throw ValidationException(
-          'Invalid customer data',
+          errorMessage,
           stackTrace: stackTrace,
           originalError: e,
         );
       } else if (e.response?.statusCode == 401) {
         throw UnauthorizedException(
           'Authentication required',
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else if (e.response?.statusCode == 422) {
+        // Validation error from backend
+        final responseData = e.response?.data;
+        String errorMessage = 'Validation error';
+        if (responseData is Map<String, dynamic> && responseData['detail'] != null) {
+          errorMessage = responseData['detail'].toString();
+        }
+        throw ValidationException(
+          errorMessage,
           stackTrace: stackTrace,
           originalError: e,
         );
@@ -333,7 +337,7 @@ class CustomerRemoteDataSourceImpl implements CustomerRemoteDataSource {
 
       AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 200 && response.statusCode != 204) {
         throw NetworkException(
           'Failed to update customer',
           statusCode: response.statusCode,

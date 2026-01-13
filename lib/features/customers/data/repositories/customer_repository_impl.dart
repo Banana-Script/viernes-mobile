@@ -44,9 +44,9 @@ class CustomerRepositoryImpl implements CustomerRepository {
   }
 
   @override
-  Future<CustomerEntity> getCustomerById(int customerId) async {
+  Future<CustomerEntity> getCustomerById(int userId) async {
     try {
-      return await _remoteDataSource.getCustomerById(customerId);
+      return await _remoteDataSource.getCustomerById(userId);
     } catch (e, stackTrace) {
       if (e is ViernesException) {
         rethrow;

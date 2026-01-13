@@ -6,6 +6,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/theme_manager.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/list_components/index.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -106,7 +107,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
       context,
       MaterialPageRoute(
         builder: (context) => CustomerDetailPage(
-          customerId: customer.id,
+          userId: customer.userId,
           customer: customer, // For hero animation
         ),
       ),
@@ -137,6 +138,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = ref.watch(isDarkModeProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: ViernesBackground(
@@ -158,7 +160,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
                     Expanded(
                       child: ViernesSearchBar(
                         controller: _searchController,
-                        hintText: 'Search customers...',
+                        hintText: l10n?.searchCustomers ?? 'Search customers...',
                         onSearchChanged: (value) {
                           final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
                           provider.updateSearchTerm(value);
@@ -187,7 +189,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
 
               // Customer list or states
               Expanded(
-                child: _buildContent(isDark),
+                child: _buildContent(isDark, l10n),
               ),
             ],
           ),
@@ -199,7 +201,8 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
   }
 
   Widget _buildHeader(bool isDark) {
-    return const ViernesPageHeader(title: 'Customers');
+    final l10n = AppLocalizations.of(context);
+    return ViernesPageHeader(title: l10n?.customers ?? 'Customers');
   }
 
   Widget _buildFilterButton(bool isDark) {
@@ -304,7 +307,7 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
     );
   }
 
-  Widget _buildContent(bool isDark) {
+  Widget _buildContent(bool isDark, AppLocalizations? l10n) {
     return provider_pkg.Consumer<CustomerProvider>(
       builder: (context, provider, _) {
         // Error state
@@ -325,13 +328,15 @@ class _CustomerListPageState extends ConsumerState<CustomerListPage> {
         // Empty state
         if (provider.customers.isEmpty && provider.status == CustomerStatus.loaded) {
           return ViernesEmptyState(
-            message: 'No customers found',
+            message: l10n?.noCustomersFound ?? 'No customers found',
             icon: Icons.people_outline,
             hasFilters: provider.filters.hasActiveFilters || provider.searchTerm.isNotEmpty,
             description: provider.filters.hasActiveFilters || provider.searchTerm.isNotEmpty
-                ? 'Try adjusting your filters or search query'
-                : 'No customers have been added yet',
-            actionLabel: provider.filters.hasActiveFilters ? 'Clear Filters' : 'Add Customer',
+                ? l10n?.tryAdjustingFilters ?? 'Try adjusting your filters or search query'
+                : l10n?.noCustomersYet ?? 'No customers have been added yet',
+            actionLabel: provider.filters.hasActiveFilters
+                ? l10n?.clearFilters ?? 'Clear Filters'
+                : l10n?.addCustomer ?? 'Add Customer',
             onActionPressed: provider.filters.hasActiveFilters
                 ? () => provider.clearFilters()
                 : _onAddCustomer,

@@ -203,5 +203,548 @@
   "passwordsDoNotMatch": "Passwords do not match",
   "@passwordsDoNotMatch": {
     "description": "Password match validation error"
-  }
+  },
+
+  "profile": "PROFILE",
+  "@profile": {
+    "description": "Profile section title"
+  },
+
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications section title"
+  },
+
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Appearance settings section title"
+  },
+
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Light theme mode"
+  },
+
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark theme mode"
+  },
+
+  "autoMode": "Automatic",
+  "@autoMode": {
+    "description": "Automatic theme mode"
+  },
+
+  "lightModeDesc": "Light theme for daytime use",
+  "@lightModeDesc": {
+    "description": "Light mode description"
+  },
+
+  "darkModeDesc": "Dark theme to reduce eye strain",
+  "@darkModeDesc": {
+    "description": "Dark mode description"
+  },
+
+  "autoModeDesc": "Follows system settings",
+  "@autoModeDesc": {
+    "description": "Auto mode description"
+  },
+
+  "signOutConfirmTitle": "Sign Out",
+  "@signOutConfirmTitle": {
+    "description": "Sign out confirmation dialog title"
+  },
+
+  "signOutConfirmMessage": "Are you sure you want to sign out?",
+  "@signOutConfirmMessage": {
+    "description": "Sign out confirmation message"
+  },
+
+  "confirm": "CONFIRM",
+  "@confirm": {
+    "description": "Confirm button text"
+  },
+
+  "exportDataTitle": "Export Data",
+  "@exportDataTitle": {
+    "description": "Export data dialog title"
+  },
+
+  "exportDataMessage": "Export conversation statistics as CSV?",
+  "@exportDataMessage": {
+    "description": "Export data confirmation message"
+  },
+
+  "export": "EXPORT",
+  "@export": {
+    "description": "Export button text"
+  },
+
+  "overview": "Overview",
+  "@overview": {
+    "description": "Overview tab"
+  },
+
+  "analytics": "Analytics",
+  "@analytics": {
+    "description": "Analytics tab"
+  },
+
+  "insights": "Insights",
+  "@insights": {
+    "description": "Insights tab"
+  },
+
+  "totalInteractions": "Total Interactions",
+  "@totalInteractions": {
+    "description": "Total interactions stat"
+  },
+
+  "uniqueAttendees": "Unique Attendees",
+  "@uniqueAttendees": {
+    "description": "Unique attendees stat"
+  },
+
+  "aiConversations": "AI Conversations",
+  "@aiConversations": {
+    "description": "AI conversations stat"
+  },
+
+  "humanAssisted": "Human Assisted",
+  "@humanAssisted": {
+    "description": "Human assisted stat"
+  },
+
+  "thisMonth": "This month",
+  "@thisMonth": {
+    "description": "This month label"
+  },
+
+  "activeUsers": "Active users",
+  "@activeUsers": {
+    "description": "Active users label"
+  },
+
+  "conversations": "conversations",
+  "@conversations": {
+    "description": "Conversations label"
+  },
+
+  "topAdvisors": "Top Advisors",
+  "@topAdvisors": {
+    "description": "Top advisors section"
+  },
+
+  "failedToLoadDashboard": "Failed to load dashboard",
+  "@failedToLoadDashboard": {
+    "description": "Dashboard load error"
+  },
+
+  "unexpectedError": "An unexpected error occurred",
+  "@unexpectedError": {
+    "description": "Unexpected error message"
+  },
+
+  "retry": "RETRY",
+  "@retry": {
+    "description": "Retry button text"
+  },
+
+  "noAdvisorData": "No advisor data available",
+  "@noAdvisorData": {
+    "description": "No advisor data message"
+  },
+
+  "themeChangeError": "Error changing theme",
+  "@themeChangeError": {
+    "description": "Theme change error message"
+  },
+
+  "exportSuccess": "Data exported successfully",
+  "@exportSuccess": {
+    "description": "Export success message"
+  },
+
+  "exportFailed": "Export failed",
+  "@exportFailed": {
+    "description": "Export failed message"
+  },
+
+  "exportDataButton": "Export data",
+  "@exportDataButton": {
+    "description": "Export data button accessibility label"
+  },
+
+  "signOutButton": "Sign out",
+  "@signOutButton": {
+    "description": "Sign out button accessibility label"
+  },
+
+  "themeSelectorPrefix": "Theme selector: ",
+  "@themeSelectorPrefix": {
+    "description": "Theme selector accessibility prefix"
+  },
+
+  "selected": "Selected",
+  "@selected": {
+    "description": "Selected accessibility label"
+  },
+
+  "notSelected": "Not selected",
+  "@notSelected": {
+    "description": "Not selected accessibility label"
+  },
+
+  "used": "Used",
+  "@used": {
+    "description": "Used label for consumption chart"
+  },
+
+  "totalMinutes": "Total Minutes",
+  "@totalMinutes": {
+    "description": "Total minutes label"
+  },
+
+  "totalMessages": "Total Messages",
+  "@totalMessages": {
+    "description": "Total messages label"
+  },
+
+  "consumedMinutes": "Consumed Minutes",
+  "@consumedMinutes": {
+    "description": "Consumed minutes label"
+  },
+
+  "consumedMessages": "Consumed Messages",
+  "@consumedMessages": {
+    "description": "Consumed messages label"
+  },
+
+  "remaining": "Remaining",
+  "@remaining": {
+    "description": "Remaining label"
+  },
+
+  "rechargedMinutes": "Recharged Minutes",
+  "@rechargedMinutes": {
+    "description": "Recharged minutes label"
+  },
+
+  "theme": "Theme",
+  "@theme": {
+    "description": "Theme label"
+  },
+
+  "preview": "Preview",
+  "@preview": {
+    "description": "Preview label"
+  },
+
+  "currentTheme": "Current theme",
+  "@currentTheme": {
+    "description": "Current theme label"
+  },
+
+  "disabled": "Disabled",
+  "@disabled": {
+    "description": "Disabled label"
+  },
+
+  "activeTypes": "active types",
+  "@activeTypes": {
+    "description": "Active types label for notifications"
+  },
+
+  "enableNotifications": "Enable notifications",
+  "@enableNotifications": {
+    "description": "Enable notifications option"
+  },
+
+  "receiveAlerts": "Receive alerts for new messages, assignments, and conversations",
+  "@receiveAlerts": {
+    "description": "Receive alerts description"
+  },
+
+  "soundAndVibration": "Sound and Vibration",
+  "@soundAndVibration": {
+    "description": "Sound and vibration section"
+  },
+
+  "sound": "Sound",
+  "@sound": {
+    "description": "Sound label"
+  },
+
+  "vibration": "Vibration",
+  "@vibration": {
+    "description": "Vibration label"
+  },
+
+  "playSound": "Play sound when receiving notifications",
+  "@playSound": {
+    "description": "Play sound description"
+  },
+
+  "vibrateOnNotification": "Vibrate when receiving notifications",
+  "@vibrateOnNotification": {
+    "description": "Vibrate on notification description"
+  },
+
+  "notificationTypes": "Notification Types",
+  "@notificationTypes": {
+    "description": "Notification types section"
+  },
+
+  "newMessages": "New Messages",
+  "@newMessages": {
+    "description": "New messages notification type"
+  },
+
+  "newMessagesDesc": "Alerts when customers send new messages",
+  "@newMessagesDesc": {
+    "description": "New messages description"
+  },
+
+  "assignments": "Assignments",
+  "@assignments": {
+    "description": "Assignments notification type"
+  },
+
+  "assignmentsDesc": "Alerts when conversations are assigned to you",
+  "@assignmentsDesc": {
+    "description": "Assignments description"
+  },
+
+  "newConversations": "New Conversations",
+  "@newConversations": {
+    "description": "New conversations notification type"
+  },
+
+  "newConversationsDesc": "Alerts when new conversations are initiated",
+  "@newConversationsDesc": {
+    "description": "New conversations description"
+  },
+
+  "language": "Language",
+  "@language": {
+    "description": "Language settings label"
+  },
+
+  "languageSettingsDesc": "Choose your preferred language",
+  "@languageSettingsDesc": {
+    "description": "Description for language settings option"
+  },
+
+  "systemLanguage": "System Language",
+  "@systemLanguage": {
+    "description": "System language option"
+  },
+
+  "systemLanguageDesc": "Follow device language settings",
+  "@systemLanguageDesc": {
+    "description": "Description for system language option"
+  },
+
+  "englishDesc": "English language",
+  "@englishDesc": {
+    "description": "Description for English language option"
+  },
+
+  "spanishDesc": "Spanish language",
+  "@spanishDesc": {
+    "description": "Description for Spanish language option"
+  },
+
+  "currentLanguage": "Current Language",
+  "@currentLanguage": {
+    "description": "Label for current language section"
+  },
+
+  "activeLanguage": "Active Language",
+  "@activeLanguage": {
+    "description": "Label for active language"
+  },
+
+  "errorUserAlreadyExists": "User already has access to the organization",
+  "@errorUserAlreadyExists": {
+    "description": "Error when trying to create a customer that already exists"
+  },
+
+  "errorInvalidCustomerData": "Invalid customer data",
+  "@errorInvalidCustomerData": {
+    "description": "Error when customer data validation fails"
+  },
+
+  "errorCreatingCustomer": "Error creating customer",
+  "@errorCreatingCustomer": {
+    "description": "Generic error when creating customer fails"
+  },
+
+  "customerCreatedSuccess": "Customer created successfully",
+  "@customerCreatedSuccess": {
+    "description": "Success message when customer is created"
+  },
+
+  "customerUpdatedSuccess": "Customer updated successfully",
+  "@customerUpdatedSuccess": {
+    "description": "Success message when customer is updated"
+  },
+
+  "unsavedChangesTitle": "Unsaved Changes",
+  "@unsavedChangesTitle": {
+    "description": "Title for unsaved changes dialog"
+  },
+
+  "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to leave?",
+  "@unsavedChangesMessage": {
+    "description": "Message for unsaved changes dialog"
+  },
+
+  "stay": "Stay",
+  "@stay": {
+    "description": "Button to stay on the current page"
+  },
+
+  "discard": "Discard",
+  "@discard": {
+    "description": "Button to discard changes and leave"
+  },
+
+  "customers": "Customers",
+  "addCustomer": "Add Customer",
+  "editCustomer": "Edit Customer",
+  "customerDetails": "Customer Details",
+  "searchCustomers": "Search customers...",
+
+  "fullName": "Full Name",
+  "enterFullName": "Enter customer full name",
+  "phoneNumber": "Phone Number",
+  "enterPhoneNumber": "Enter phone number",
+  "identification": "Identification",
+  "enterIdentification": "Enter ID number (optional)",
+  "enterAge": "Enter age (optional)",
+  "enterOccupation": "Enter occupation (optional)",
+  "enterEmail": "Enter email address",
+
+  "fullNameRequired": "Full name is required",
+  "nameMinLength": "Name must be at least 2 characters",
+  "emailRequired": "Email is required",
+  "phoneRequired": "Phone number is required",
+  "phoneCannotBeChanged": "Phone number cannot be changed",
+  "invalidAge": "Please enter a valid age",
+  "ageMustBeBetween": "Age must be between 1 and 120",
+  "ageMustBeBetweenEdit": "Age must be between 0 and 120",
+
+  "noCustomersFound": "No customers found",
+  "noCustomersYet": "No customers have been added yet",
+  "tryAdjustingFilters": "Try adjusting your filters or search query",
+  "loadingCustomerDetails": "Loading customer details...",
+  "errorLoadingCustomer": "Error Loading Customer",
+  "anErrorOccurred": "An error occurred",
+  "customerNotFound": "Customer Not Found",
+  "customerNotFoundMessage": "The customer you are looking for does not exist.",
+
+  "createCustomer": "Create Customer",
+  "saveChanges": "Save Changes",
+  "clearFilters": "Clear Filters",
+  "applyFilters": "Apply Filters",
+  "goBack": "Go Back",
+  "delete": "Delete",
+
+  "filters": "Filters",
+  "ownerAgent": "Owner/Agent",
+  "segmentFilter": "Segment",
+  "dateCreated": "Date Created",
+  "selectDateRange": "Select date range",
+  "allCustomers": "All Customers",
+  "myCustomers": "My Customers",
+  "viernesUnassigned": "Viernes (Unassigned)",
+  "noSegmentsAvailable": "No segments available",
+
+  "memberSince": "Member since",
+  "contactInformation": "Contact Information",
+  "phone": "Phone",
+  "created": "Created",
+  "customerSegment": "Customer Segment",
+  "purchaseIntention": "Purchase Intention",
+  "mainInterestNps": "Main Interest & NPS",
+  "conversationsLabel": "Conversations",
+  "insightsLabel": "Insights",
+  "purchaseIntent": "Purchase Intent",
+  "unknown": "Unknown",
+  "never": "Never",
+  "lastContact": "Last Contact",
+
+  "overviewTab": "Overview",
+  "analysisTab": "Analysis",
+  "activityTab": "Activity",
+
+  "viewingConversation": "Viewing conversation #{id}",
+  "@viewingConversation": {
+    "placeholders": {
+      "id": {"type": "String"}
+    }
+  },
+
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "yesterdayTime": "Yesterday",
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "weeksAgo": "{count}w ago",
+  "@weeksAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "deleteCustomerTitle": "Delete Customer?",
+  "deleteCustomerConfirm": "Are you sure you want to delete ",
+  "actionCannotBeUndone": "This action cannot be undone.",
+
+  "oops": "Oops!",
+  "failedToLoadCustomers": "Failed to load customers",
+
+  "age": "Age",
+  "@age": {
+    "description": "Age field label"
+  },
+  "occupation": "Occupation",
+  "@occupation": {
+    "description": "Occupation field label"
+  },
+
+  "profileSummary": "Profile Summary",
+  "detailedInsights": "Detailed Insights",
+  "sentimentAnalysis": "Sentiment Analysis",
+  "emotions": "Emotions",
+  "attitudes": "Attitudes",
+  "personality": "Personality",
+  "intentions": "Intentions",
+  "interactionsAndActions": "Interactions & Actions",
+  "interactionsPerMonth": "Interactions per month",
+  "lastInteractionReasons": "Last Interaction Reasons",
+  "actionsToCall": "Actions to Call:",
+  "conversationHistory": "Conversation History",
+  "agent": "Agent",
+  "statusLabel": "Status: ",
+  "lastActivity": "Last activity",
+  "loadMore": "Load More",
+  "noConversationsYet": "No conversations yet",
+  "conversationHistoryWillAppear": "Conversation history will appear here",
+  "justNow": "Just now"
 }

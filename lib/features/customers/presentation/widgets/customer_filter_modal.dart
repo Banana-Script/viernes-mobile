@@ -5,6 +5,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../domain/entities/customer_filters.dart';
 import '../providers/customer_provider.dart';
 
@@ -153,6 +154,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
@@ -167,7 +169,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
         ),
         child: Column(
           children: [
-            _buildHeader(isDark),
+            _buildHeader(isDark, l10n),
             Expanded(
               child: Consumer<CustomerProvider>(
                 builder: (context, provider, _) {
@@ -178,27 +180,27 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
                       vertical: ViernesSpacing.sm,
                     ),
                     children: [
-                      _buildOwnerFilter(provider, isDark),
+                      _buildOwnerFilter(provider, isDark, l10n),
                       const SizedBox(height: ViernesSpacing.md),
-                      _buildSegmentFilter(provider, isDark),
+                      _buildSegmentFilter(provider, isDark, l10n),
                       const SizedBox(height: ViernesSpacing.md),
-                      _buildDateCreatedFilter(isDark),
+                      _buildDateCreatedFilter(isDark, l10n),
                       const SizedBox(height: ViernesSpacing.md),
-                      _buildLastInteractionFilter(isDark),
+                      _buildLastInteractionFilter(isDark, l10n),
                       const SizedBox(height: ViernesSpacing.xl),
                     ],
                   );
                 },
               ),
             ),
-            _buildFooter(isDark),
+            _buildFooter(isDark, l10n),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader(bool isDark, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(ViernesSpacing.md),
       decoration: BoxDecoration(
@@ -212,7 +214,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
       child: Row(
         children: [
           Text(
-            'Filters',
+            l10n?.filters ?? 'Filters',
             style: ViernesTextStyles.h6.copyWith(
               color: ViernesColors.getTextColor(isDark),
             ),
@@ -230,7 +232,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
     );
   }
 
-  Widget _buildFooter(bool isDark) {
+  Widget _buildFooter(bool isDark, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(ViernesSpacing.md),
       decoration: BoxDecoration(
@@ -266,7 +268,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
                     borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
                     child: Center(
                       child: Text(
-                        'Clear Filters',
+                        l10n?.clearFilters ?? 'Clear Filters',
                         style: ViernesTextStyles.bodyText.copyWith(
                           fontWeight: FontWeight.w600,
                           color: _hasActiveFilters
@@ -284,7 +286,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
             Expanded(
               flex: 2,
               child: ViernesGradientButton(
-                text: 'Apply Filters',
+                text: l10n?.applyFilters ?? 'Apply Filters',
                 onPressed: _applyFilters,
                 height: 44,
               ),
@@ -295,15 +297,15 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
     );
   }
 
-  Widget _buildOwnerFilter(CustomerProvider provider, bool isDark) {
+  Widget _buildOwnerFilter(CustomerProvider provider, bool isDark, AppLocalizations? l10n) {
     final owners = provider.availableOwners;
     final options = <Map<String, dynamic>>[
-      {'id': -1, 'name': 'Viernes (Unassigned)'},
+      {'id': -1, 'name': l10n?.viernesUnassigned ?? 'Viernes (Unassigned)'},
       ...owners,
     ];
 
     return _buildFilterSection(
-      title: 'Owner/Agent',
+      title: l10n?.ownerAgent ?? 'Owner/Agent',
       isDark: isDark,
       child: Wrap(
         spacing: ViernesSpacing.sm,
@@ -356,15 +358,15 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
     );
   }
 
-  Widget _buildSegmentFilter(CustomerProvider provider, bool isDark) {
+  Widget _buildSegmentFilter(CustomerProvider provider, bool isDark, AppLocalizations? l10n) {
     final segments = provider.availableSegments;
 
     if (segments.isEmpty) {
       return _buildFilterSection(
-        title: 'Segment',
+        title: l10n?.segmentFilter ?? 'Segment',
         isDark: isDark,
         child: Text(
-          'No segments available',
+          l10n?.noSegmentsAvailable ?? 'No segments available',
           style: ViernesTextStyles.bodySmall.copyWith(
             color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
             fontStyle: FontStyle.italic,
@@ -374,7 +376,7 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
     }
 
     return _buildFilterSection(
-      title: 'Segment',
+      title: l10n?.segmentFilter ?? 'Segment',
       isDark: isDark,
       child: Wrap(
         spacing: ViernesSpacing.sm,
@@ -409,13 +411,13 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
     );
   }
 
-  Widget _buildDateCreatedFilter(bool isDark) {
+  Widget _buildDateCreatedFilter(bool isDark, AppLocalizations? l10n) {
     return _buildFilterSection(
-      title: 'Date Created',
+      title: l10n?.dateCreated ?? 'Date Created',
       isDark: isDark,
       child: _buildDateRangeField(
         label: _dateCreatedRange == null
-            ? 'Select date range'
+            ? l10n?.selectDateRange ?? 'Select date range'
             : _formatDateRange(_dateCreatedRange!),
         isDark: isDark,
         onTap: () => _selectDateRange(context, true),
@@ -426,13 +428,13 @@ class _CustomerFilterModalState extends State<CustomerFilterModal> {
     );
   }
 
-  Widget _buildLastInteractionFilter(bool isDark) {
+  Widget _buildLastInteractionFilter(bool isDark, AppLocalizations? l10n) {
     return _buildFilterSection(
-      title: 'Last Interaction',
+      title: l10n?.lastContact ?? 'Last Interaction',
       isDark: isDark,
       child: _buildDateRangeField(
         label: _lastInteractionRange == null
-            ? 'Select date range'
+            ? l10n?.selectDateRange ?? 'Select date range'
             : _formatDateRange(_lastInteractionRange!),
         isDark: isDark,
         onTap: () => _selectDateRange(context, false),
