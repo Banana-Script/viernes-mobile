@@ -16,6 +16,7 @@ class ConversationFilters {
   final bool? unreadOnly; // Show only unread conversations
   final bool? lockedOnly; // Show only locked conversations
   final ConversationType? type; // Filter by type (chat, call)
+  final int? userId; // Filter by user ID (for customer conversations)
 
   const ConversationFilters({
     this.statusIds = const [],
@@ -27,6 +28,7 @@ class ConversationFilters {
     this.unreadOnly,
     this.lockedOnly,
     this.type,
+    this.userId,
   });
 
   /// Check if any filters are active
@@ -39,7 +41,8 @@ class ConversationFilters {
       dateTo != null ||
       unreadOnly == true ||
       lockedOnly == true ||
-      type != null;
+      type != null ||
+      userId != null;
 
   /// Count of active filters
   int get activeFilterCount {
@@ -69,11 +72,13 @@ class ConversationFilters {
     bool? unreadOnly,
     bool? lockedOnly,
     ConversationType? type,
+    int? userId,
     bool clearDateFrom = false,
     bool clearDateTo = false,
     bool clearUnreadOnly = false,
     bool clearLockedOnly = false,
     bool clearType = false,
+    bool clearUserId = false,
   }) {
     return ConversationFilters(
       statusIds: statusIds ?? this.statusIds,
@@ -85,6 +90,7 @@ class ConversationFilters {
       unreadOnly: clearUnreadOnly ? null : (unreadOnly ?? this.unreadOnly),
       lockedOnly: clearLockedOnly ? null : (lockedOnly ?? this.lockedOnly),
       type: clearType ? null : (type ?? this.type),
+      userId: clearUserId ? null : (userId ?? this.userId),
     );
   }
 
@@ -136,6 +142,11 @@ class ConversationFilters {
     // Type filter
     if (type != null) {
       filters.add('type=${type!.toApiString()}');
+    }
+
+    // User ID filter (for customer conversations)
+    if (userId != null) {
+      filters.add('user_id=$userId');
     }
 
     return filters.isEmpty ? '' : '[${filters.join(',')}]';

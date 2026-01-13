@@ -1417,6 +1417,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not available'**
   String get timezoneNotAvailable;
+
+  /// Message shown when 24h chat window has expired
+  ///
+  /// In en, this message translates to:
+  /// **'Chat window expired. Use template to start new conversation.'**
+  String get chatWindowExpired;
+
+  /// Edit action label
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// Start chat action label
+  ///
+  /// In en, this message translates to:
+  /// **'Start Chat'**
+  String get startChat;
+
+  /// Chat conversation type label
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatType;
+
+  /// Phone call conversation type label
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Call'**
+  String get phoneCallType;
 }
 
 class _AppLocalizationsDelegate

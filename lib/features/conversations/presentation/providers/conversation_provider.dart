@@ -727,8 +727,9 @@ class ConversationProvider extends ChangeNotifier {
   /// Assign conversation to current user (self-assignment)
   ///
   /// Uses the dedicated /assign_agent endpoint for self-assignment.
+  /// Set [reopen] to true when continuing a conversation from customer detail.
   /// Returns true on success, false on failure.
-  Future<bool> assignConversationToMe(int conversationId) async {
+  Future<bool> assignConversationToMe(int conversationId, {bool reopen = false}) async {
     if (_currentUserAgentId == null) {
       _errorMessage = 'No se pudo identificar el usuario actual';
       notifyListeners();
@@ -739,7 +740,7 @@ class ConversationProvider extends ChangeNotifier {
       await _assignAgentUseCase(
         conversationId: conversationId,
         userId: _currentUserAgentId!,
-        reopen: false,
+        reopen: reopen,
       );
 
       // Reload conversation to get updated assignment
@@ -768,6 +769,61 @@ class ConversationProvider extends ChangeNotifier {
       );
       notifyListeners();
       return false;
+    }
+  }
+
+  /// Get conversation detail by ID without selecting it
+  ///
+  /// Useful for checking conversation state (e.g., 24h window check)
+  /// without changing the currently selected conversation.
+  Future<ConversationEntity?> getConversationDetail(int conversationId) async {
+    try {
+      return await _getConversationDetailUseCase(conversationId);
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Error getting conversation detail: $e',
+        tag: 'ConversationProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  /// Load conversations for a specific user (for customer conversation history)
+  ///
+  /// Uses the user_id filter to fetch all conversations belonging to a customer.
+  /// This is used in the customer detail page to show conversation history.
+  /// Returns a list of conversations and pagination info.
+  Future<({List<ConversationEntity> conversations, int totalPages, int currentPage})> loadUserConversations({
+    required int userId,
+    int page = 1,
+    int pageSize = 10,
+  }) async {
+    try {
+      final filters = ConversationFilters(userId: userId);
+
+      final response = await _getConversationsUseCase(
+        page: page,
+        pageSize: pageSize,
+        filters: filters,
+        orderBy: 'updated_at',
+        orderDirection: 'desc',
+      );
+
+      return (
+        conversations: response.conversations,
+        totalPages: response.totalPages,
+        currentPage: response.currentPage,
+      );
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Error loading user conversations for user $userId: $e',
+        tag: 'ConversationProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      rethrow;
     }
   }
 

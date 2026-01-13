@@ -88,7 +88,10 @@ class CustomerModel extends CustomerEntity {
           : null,
       insightsInfo: const [],
       assignedAgent: null,
-      lastConversation: null,
+      // Parse last_conversation if available (needed for 24h chat window check)
+      lastConversation: json['last_conversation'] != null && json['last_conversation'] is Map<String, dynamic>
+          ? LastConversationModel.fromJson(json['last_conversation'] as Map<String, dynamic>)
+          : null,
     );
   }
 

@@ -771,5 +771,25 @@
   "timezoneNotAvailable": "Not available",
   "@timezoneNotAvailable": {
     "description": "Message when organization timezone is not available"
+  },
+  "chatWindowExpired": "Chat window expired. Use template to start new conversation.",
+  "@chatWindowExpired": {
+    "description": "Message shown when 24h chat window has expired"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit action label"
+  },
+  "startChat": "Start Chat",
+  "@startChat": {
+    "description": "Start chat action label"
+  },
+  "chatType": "Chat",
+  "@chatType": {
+    "description": "Chat conversation type label"
+  },
+  "phoneCallType": "Phone Call",
+  "@phoneCallType": {
+    "description": "Phone call conversation type label"
   }
 }

@@ -26,6 +26,9 @@ import '../../../../shared/widgets/customer_detail/interactions_panel.dart';
 import '../../../../shared/widgets/customer_detail/conversation_history_table.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../providers/customer_provider.dart';
+import '../../../conversations/presentation/pages/conversation_detail_page.dart';
+import '../../../conversations/presentation/providers/conversation_provider.dart';
+import '../../../customers/domain/entities/conversation_entity.dart';
 import 'customer_form_page.dart';
 
 /// Customer Detail Page
@@ -58,9 +61,17 @@ class CustomerDetailPage extends ConsumerStatefulWidget {
 class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     with SingleTickerProviderStateMixin {
   bool _isLoading = true;
+  bool _isStartingChat = false; // Loading state for chat action
+  bool _canDirectChat = false; // Whether conversation is within 24h window
   String? _errorMessage;
   late TabController _tabController;
   bool _isDisposed = false; // Disposal flag to prevent setState after dispose
+
+  // Conversation history state
+  List<ConversationEntity> _userConversations = [];
+  bool _isLoadingConversations = false;
+  bool _hasMoreConversationPages = false;
+  int _conversationCurrentPage = 1;
 
   @override
   void initState() {
@@ -83,11 +94,21 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _canDirectChat = false;
     });
 
     try {
-      final provider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
-      await provider.getCustomerById(widget.userId);
+      final customerProvider = provider_pkg.Provider.of<CustomerProvider>(context, listen: false);
+      await customerProvider.getCustomerById(widget.userId);
+
+      // Check 24h window if customer has a conversation
+      final customer = customerProvider.selectedCustomer;
+      if (customer?.lastConversation != null && !customer!.lastConversation!.locked) {
+        await _checkConversation24hWindow(customer.lastConversation!.id);
+      }
+
+      // Load user's conversation history
+      await _loadUserConversations(resetPage: true);
     } catch (e) {
       if (!_isDisposed) {
         setState(() {
@@ -102,6 +123,77 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         });
       }
     }
+  }
+
+  /// Check if conversation is within 24h window
+  Future<void> _checkConversation24hWindow(int conversationId) async {
+    if (_isDisposed) return;
+
+    try {
+      final conversationProvider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
+      final conversation = await conversationProvider.getConversationDetail(conversationId);
+
+      if (conversation != null && !_isDisposed) {
+        setState(() {
+          _canDirectChat = _isWithin24HourWindow(conversation);
+        });
+      }
+    } catch (e) {
+      // Silently fail - just don't show chat option
+      debugPrint('[CustomerDetail] Error checking 24h window: $e');
+    }
+  }
+
+  /// Load user's conversation history
+  Future<void> _loadUserConversations({bool resetPage = false, int? targetPage}) async {
+    if (_isDisposed) return;
+
+    final pageToLoad = targetPage ?? (resetPage ? 1 : _conversationCurrentPage);
+
+    if (resetPage) {
+      _userConversations = [];
+    }
+
+    setState(() {
+      _isLoadingConversations = true;
+    });
+
+    try {
+      final conversationProvider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
+      final result = await conversationProvider.loadUserConversations(
+        userId: widget.userId,
+        page: pageToLoad,
+        pageSize: 10,
+      );
+
+      if (!_isDisposed) {
+        setState(() {
+          if (resetPage) {
+            _userConversations = result.conversations;
+          } else {
+            // Create new list to ensure proper change detection
+            _userConversations = [..._userConversations, ...result.conversations];
+          }
+          _conversationCurrentPage = result.currentPage;
+          _hasMoreConversationPages = result.currentPage < result.totalPages;
+          _isLoadingConversations = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('[CustomerDetail] Error loading user conversations: $e');
+      if (!_isDisposed) {
+        setState(() {
+          _isLoadingConversations = false;
+        });
+      }
+    }
+  }
+
+  /// Load more conversations (pagination)
+  void _loadMoreConversations() {
+    if (_isLoadingConversations || !_hasMoreConversationPages) return;
+    // Pass target page to avoid race condition - page only updates on success
+    _loadUserConversations(targetPage: _conversationCurrentPage + 1);
   }
 
   Future<void> _onRefresh() async {
@@ -122,6 +214,59 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
         _onRefresh();
       }
     });
+  }
+
+  /// Check if conversation is within 24h window for direct chat
+  /// Similar to frontend's isTemplateSelectionNeeded()
+  bool _isWithin24HourWindow(ConversationEntity conversation) {
+    if (conversation.locked) return false;
+
+    final now = DateTime.now().toUtc();
+    final lastUpdate = conversation.updatedAt.toUtc();
+    final diffInHours = now.difference(lastUpdate).inHours;
+    return diffInHours < 24;
+  }
+
+  Future<void> _navigateToChat(CustomerEntity customer) async {
+    if (customer.lastConversation == null) return;
+    if (_isStartingChat) return; // Prevent multiple taps
+
+    final conversationId = customer.lastConversation!.id;
+    final l10n = AppLocalizations.of(context);
+
+    setState(() => _isStartingChat = true);
+
+    try {
+      final conversationProvider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
+
+      // Reopen conversation and assign to current agent (like frontend does)
+      final success = await conversationProvider.assignConversationToMe(conversationId, reopen: true);
+
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(conversationProvider.errorMessage ?? l10n?.anErrorOccurred ?? 'Error opening conversation'),
+            backgroundColor: ViernesColors.danger,
+          ),
+        );
+        return;
+      }
+
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConversationDetailPage(
+              conversationId: conversationId,
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isStartingChat = false);
+      }
+    }
   }
 
   @override
@@ -195,6 +340,8 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
   }
 
   Widget _buildAppBar(CustomerEntity customer, bool isDark) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: ViernesSpacing.sm,
@@ -219,13 +366,143 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          IconButton(
-            icon: Icon(
-              Icons.edit_rounded,
-              color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+          // Show loading indicator when starting chat
+          if (_isStartingChat)
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                ),
+              ),
+            )
+          else
+            // 3-dot menu with actions - styled with Viernes glassmorphism design
+            PopupMenuButton<String>(
+              icon: Icon(
+                Icons.more_vert,
+                color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+              ),
+              // Glassmorphism-styled popup surface
+              color: isDark
+                  ? const Color(0xFF1a1a1a).withValues(alpha: 0.95)
+                  : Colors.white.withValues(alpha: 0.95),
+              surfaceTintColor: Colors.transparent,
+              shadowColor: isDark
+                  ? Colors.black.withValues(alpha: 0.5)
+                  : Colors.black.withValues(alpha: 0.15),
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+                side: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF2d2d2d).withValues(alpha: 0.5)
+                      : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
+                  width: 1,
+                ),
+              ),
+              offset: const Offset(0, ViernesSpacing.xs),
+              position: PopupMenuPosition.under,
+              onSelected: (value) {
+                switch (value) {
+                  case 'edit':
+                    _navigateToEditForm(customer);
+                    break;
+                  case 'chat':
+                    _navigateToChat(customer);
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                // Edit option - always visible
+                PopupMenuItem<String>(
+                  value: 'edit',
+                  height: ViernesDimensions.listItemHeightCompact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ViernesSpacing.md,
+                    vertical: ViernesSpacing.sm,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: (isDark ? ViernesColors.accent : ViernesColors.primary)
+                              .withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+                        ),
+                        child: Icon(
+                          Icons.edit_rounded,
+                          color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: ViernesSpacing.sm),
+                      Text(
+                        l10n?.edit ?? 'Edit',
+                        style: ViernesTextStyles.bodyText.copyWith(
+                          color: isDark ? ViernesColors.textDark : ViernesColors.textLight,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Chat option - only visible if within 24h window
+                if (_canDirectChat)
+                  PopupMenuItem<String>(
+                    value: 'chat',
+                    height: ViernesDimensions.listItemHeightCompact,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ViernesSpacing.md,
+                      vertical: ViernesSpacing.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: isDark
+                                  ? [ViernesColors.accent, ViernesColors.accentLight]
+                                  : [ViernesColors.primary, ViernesColors.primaryLight],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isDark ? ViernesColors.accent : ViernesColors.primary)
+                                    .withValues(alpha: 0.3),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.chat_bubble_rounded,
+                            color: isDark ? Colors.black : Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: ViernesSpacing.sm),
+                        Text(
+                          l10n?.startChat ?? 'Start Chat',
+                          style: ViernesTextStyles.bodyText.copyWith(
+                            color: isDark ? ViernesColors.accent : ViernesColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
-            onPressed: () => _navigateToEditForm(customer),
-          ),
         ],
       ),
     );
@@ -767,40 +1044,28 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
 
   /// Build conversation history table
   ///
-  /// Future enhancement: Connect to actual conversation data API
-  /// For now shows empty state with proper placeholder structure
+  /// Displays customer's conversation history loaded from the API.
   Widget _buildConversationHistoryTable(CustomerEntity customer, bool isDark) {
     final timezone = ref.watch(currentTimezoneProvider);
 
     return ConversationHistoryTable(
-      conversations: const [], // TODO: Load actual conversation data from API
+      conversations: _userConversations,
       isDark: isDark,
       timezone: timezone,
-      isLoading: false,
-      hasMorePages: false,
+      isLoading: _isLoadingConversations,
+      hasMorePages: _hasMoreConversationPages,
       onRefresh: () async {
-        // TODO: Implement conversation data refresh
-        // This will call the conversation API endpoint when available
-        await Future.delayed(const Duration(milliseconds: 500));
+        await _loadUserConversations(resetPage: true);
       },
-      onLoadMore: () {
-        // TODO: Implement pagination for conversation history
-        // Load next page of conversations when user scrolls to bottom
-      },
+      onLoadMore: _loadMoreConversations,
       onViewConversation: (conversation) {
-        // TODO: Navigate to conversation detail page
-        // Will show full conversation thread with messages
-        final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n?.viewingConversation(conversation.id.toString()) ??
-                'Viewing conversation #${conversation.id}'),
-            backgroundColor: ViernesColors.info,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ViernesSpacing.radius14),
+        // Navigate to conversation detail page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConversationDetailPage(
+              conversationId: conversation.id,
             ),
-            margin: const EdgeInsets.all(ViernesSpacing.md),
           ),
         );
       },

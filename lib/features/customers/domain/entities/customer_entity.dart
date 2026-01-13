@@ -102,4 +102,22 @@ class LastConversation {
     required this.locked,
     this.updatedAt,
   });
+
+  /// Check if conversation is within 24h window for direct chat
+  ///
+  /// Returns true only if:
+  /// - Not locked
+  /// - Has updatedAt timestamp
+  /// - updatedAt is within last 24 hours
+  ///
+  /// This matches the frontend's isTemplateSelectionNeeded logic.
+  bool get canDirectChat {
+    if (locked) return false;
+    if (updatedAt == null) return false;
+
+    final now = DateTime.now().toUtc();
+    final lastUpdate = updatedAt!.toUtc();
+    final diffInHours = now.difference(lastUpdate).inHours;
+    return diffInHours < 24;
+  }
 }

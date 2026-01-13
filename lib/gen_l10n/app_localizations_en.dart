@@ -688,4 +688,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timezoneNotAvailable => 'Not available';
+
+  @override
+  String get chatWindowExpired =>
+      'Chat window expired. Use template to start new conversation.';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get startChat => 'Start Chat';
+
+  @override
+  String get chatType => 'Chat';
+
+  @override
+  String get phoneCallType => 'Phone Call';
 }

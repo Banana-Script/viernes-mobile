@@ -251,9 +251,46 @@ class CustomerProvider extends ChangeNotifier {
   }
 
   /// Get customer by user ID
+  ///
+  /// Note: The /users/{userId} endpoint doesn't return last_conversation,
+  /// so we preserve it from the existing customer in the list if available.
   Future<void> getCustomerById(int userId) async {
     try {
-      _selectedCustomer = await _getCustomerByIdUseCase(userId);
+      final freshCustomer = await _getCustomerByIdUseCase(userId);
+
+      // Try to preserve lastConversation from the list (since /users/{userId} doesn't return it)
+      final existingCustomer = _customers.cast<CustomerEntity?>().firstWhere(
+        (c) => c?.userId == userId,
+        orElse: () => null,
+      );
+
+      if (existingCustomer?.lastConversation != null && freshCustomer.lastConversation == null) {
+        // Merge: use fresh data but keep lastConversation from list
+        _selectedCustomer = CustomerEntity(
+          id: freshCustomer.id,
+          userId: freshCustomer.userId,
+          name: freshCustomer.name,
+          email: freshCustomer.email,
+          phoneNumber: freshCustomer.phoneNumber,
+          identification: freshCustomer.identification,
+          age: freshCustomer.age,
+          occupation: freshCustomer.occupation,
+          createdAt: freshCustomer.createdAt,
+          segment: freshCustomer.segment ?? existingCustomer?.segment,
+          segmentSummary: freshCustomer.segmentSummary ?? existingCustomer?.segmentSummary,
+          segmentDescription: freshCustomer.segmentDescription ?? existingCustomer?.segmentDescription,
+          segmentDate: freshCustomer.segmentDate ?? existingCustomer?.segmentDate,
+          lastInteraction: freshCustomer.lastInteraction ?? existingCustomer?.lastInteraction,
+          insightsInfo: freshCustomer.insightsInfo.isNotEmpty
+              ? freshCustomer.insightsInfo
+              : existingCustomer?.insightsInfo ?? const [],
+          assignedAgent: freshCustomer.assignedAgent ?? existingCustomer?.assignedAgent,
+          lastConversation: existingCustomer!.lastConversation, // Preserve from list
+        );
+      } else {
+        _selectedCustomer = freshCustomer;
+      }
+
       notifyListeners();
     } catch (e, stackTrace) {
       _errorMessage = 'Failed to load customer: $e';

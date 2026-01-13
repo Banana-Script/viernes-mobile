@@ -277,5 +277,10 @@
   "deviceTimezone": "Zona horaria del dispositivo",
   "currentTimezone": "Zona Horaria Actual",
   "timezoneDescription": "Todas las fechas y horas en la aplicación se mostrarán según la zona horaria seleccionada.",
-  "timezoneNotAvailable": "No disponible"
+  "timezoneNotAvailable": "No disponible",
+  "chatWindowExpired": "Ventana de chat expirada. Usa una plantilla para iniciar nueva conversación.",
+  "edit": "Editar",
+  "startChat": "Iniciar Chat",
+  "chatType": "Chat",
+  "phoneCallType": "Llamada"
 }

@@ -693,4 +693,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get timezoneNotAvailable => 'No disponible';
+
+  @override
+  String get chatWindowExpired =>
+      'Ventana de chat expirada. Usa una plantilla para iniciar nueva conversación.';
+
+  @override
+  String get edit => 'Editar';
+
+  @override
+  String get startChat => 'Iniciar Chat';
+
+  @override
+  String get chatType => 'Chat';
+
+  @override
+  String get phoneCallType => 'Llamada';
 }
