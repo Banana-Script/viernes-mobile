@@ -37,6 +37,20 @@
   "welcomeToViernes": "¡Bienvenido a Viernes!",
   "aiBusinessAssistant": "Tu asistente de negocios impulsado por IA",
 
+  "aiVsHumanConversations": "Conversaciones IA vs Humano",
+  "loadingChart": "Cargando gráfico...",
+  "noConversationData": "Sin datos de conversaciones",
+  "aiOnly": "Solo IA",
+  "humanAssisted": "Asistido por Humano",
+  "totalConversations": "Total de Conversaciones",
+  "sentimentAnalysis": "Análisis de Sentimiento",
+  "noSentimentData": "Sin datos de sentimiento",
+  "topCategories": "Categorías Principales",
+  "noCategoryData": "Sin datos de categorías",
+  "conversationTags": "Etiquetas de Conversación",
+  "noTagData": "Sin datos de etiquetas",
+  "viernesConversationStats": "Estadísticas de Conversaciones Viernes",
+
   "accountInformation": "Información de la Cuenta",
 
   "name": "Nombre",
@@ -67,7 +81,7 @@
   "pleaseConfirmPassword": "Por favor confirma tu contraseña",
   "passwordsDoNotMatch": "Las contraseñas no coinciden",
 
-  "profile": "PERFIL",
+  "profile": "Perfil",
   "notifications": "Notificaciones",
   "appearance": "Apariencia",
 

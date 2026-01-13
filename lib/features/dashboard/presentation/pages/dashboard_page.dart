@@ -5,7 +5,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/utils/logger.dart';
 import '../../../../gen_l10n/app_localizations.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/theme_manager.dart';
@@ -74,7 +73,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               const SizedBox(height: 16),
 
               // Tab bar with glassmorphism
-              _buildTabBar(isDark),
+              _buildTabBar(context, isDark),
 
               const SizedBox(height: 16),
 
@@ -89,9 +88,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     return TabBarView(
                       controller: _tabController,
                       children: [
-                        _buildOverviewTab(provider, isDark),
-                        _buildAnalyticsTab(provider, isDark),
-                        _buildInsightsTab(provider, isDark),
+                        _buildOverviewTab(context, provider, isDark),
+                        _buildAnalyticsTab(context, provider, isDark),
+                        _buildInsightsTab(context, provider, isDark),
                       ],
                     );
                   },
@@ -107,7 +106,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   Widget _buildHeader(bool isDark) {
     return provider_pkg.Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        final organizationName = authProvider.organizationName ?? AppStrings.dashboard;
+        final l10n = AppLocalizations.of(context);
+        final organizationName = authProvider.organizationName ?? l10n?.dashboard ?? 'Dashboard';
 
         return Container(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
@@ -136,7 +136,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                   children: [
                     // Export button
                     Semantics(
-                      label: AppStrings.exportDataButton,
+                      label: l10n?.exportDataButton ?? 'Export data',
                       button: true,
                       child: ViernesCircularIconButton(
                         onTap: () => _showExportDialog(context),
@@ -157,7 +157,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Widget _buildTabBar(bool isDark) {
+  Widget _buildTabBar(BuildContext context, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -189,10 +190,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         dividerColor: Colors.transparent,
         labelStyle: ViernesTextStyles.bodyText.copyWith(fontWeight: FontWeight.w600),
         unselectedLabelStyle: ViernesTextStyles.bodyText,
-        tabs: const [
-          Tab(text: AppStrings.overview),
-          Tab(text: AppStrings.analytics),
-          Tab(text: AppStrings.insights),
+        tabs: [
+          Tab(text: l10n?.overview ?? 'Overview'),
+          Tab(text: l10n?.analytics ?? 'Analytics'),
+          Tab(text: l10n?.insights ?? 'Insights'),
         ],
       ),
     );
@@ -206,7 +207,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Widget _buildOverviewTab(DashboardProvider provider, bool isDark) {
+  Widget _buildOverviewTab(BuildContext context, DashboardProvider provider, bool isDark) {
     final isLoading = provider.status == DashboardStatus.loading;
 
     return SmartRefresher(
@@ -217,7 +218,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildStatsCards(provider, isLoading),
+            _buildStatsCards(context, provider, isLoading),
             const SizedBox(height: 16),
             AiHumanChart(
               stats: provider.aiHumanStats,
@@ -241,7 +242,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
           children: [
             // Messages Chart
             ConsumptionChart(
-              title: AppLocalizations.of(context)!.consumedMessages,
+              title: AppLocalizations.of(context)?.consumedMessages ?? 'Consumed Messages',
               total: (org?.totalMessageCount ?? 0).toDouble(),
               consumed: (org?.currentMessageCount ?? 0).toDouble(),
               isMinutes: false,
@@ -250,7 +251,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             const SizedBox(height: 16),
             // Minutes Chart
             ConsumptionChart(
-              title: AppLocalizations.of(context)!.consumedMinutes,
+              title: AppLocalizations.of(context)?.consumedMinutes ?? 'Consumed Minutes',
               total: org?.totalMinutes ?? 0,
               consumed: org?.consumedMinutes ?? 0,
               recharged: org?.totalMinutesRecharged,
@@ -263,7 +264,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Widget _buildAnalyticsTab(DashboardProvider provider, bool isDark) {
+  Widget _buildAnalyticsTab(BuildContext context, DashboardProvider provider, bool isDark) {
     final isLoading = provider.status == DashboardStatus.loading;
 
     return SmartRefresher(
@@ -289,7 +290,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Widget _buildInsightsTab(DashboardProvider provider, bool isDark) {
+  Widget _buildInsightsTab(BuildContext context, DashboardProvider provider, bool isDark) {
     final isLoading = provider.status == DashboardStatus.loading;
 
     return SmartRefresher(
@@ -305,14 +306,23 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               isLoading: isLoading,
             ),
             const SizedBox(height: 16),
-            _buildAdvisorsBreakdown(provider, isLoading, isDark),
+            _buildAdvisorsBreakdown(context, provider, isLoading, isDark),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatsCards(DashboardProvider provider, bool isLoading) {
+  Widget _buildStatsCards(BuildContext context, DashboardProvider provider, bool isLoading) {
+    final l10n = AppLocalizations.of(context);
+    final totalInteractions = l10n?.totalInteractions ?? 'Total Interactions';
+    final uniqueAttendees = l10n?.uniqueAttendees ?? 'Unique Attendees';
+    final aiConversations = l10n?.aiConversations ?? 'AI Conversations';
+    final humanAssisted = l10n?.humanAssisted ?? 'Human Assisted';
+    final thisMonth = l10n?.thisMonth ?? 'This month';
+    final activeUsers = l10n?.activeUsers ?? 'Active users';
+    final conversations = l10n?.conversations ?? 'conversations';
+
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -322,52 +332,52 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       mainAxisSpacing: 12,
       children: [
         Semantics(
-          label: '${AppStrings.totalInteractions}: ${isLoading ? '...' : (provider.monthlyStats?.interactions.toString() ?? '0')}',
-          value: AppStrings.thisMonth,
+          label: '$totalInteractions: ${isLoading ? '...' : (provider.monthlyStats?.interactions.toString() ?? '0')}',
+          value: thisMonth,
           child: ViernesStatsCard(
-            title: AppStrings.totalInteractions,
+            title: totalInteractions,
             value: isLoading ? '...' : (provider.monthlyStats?.interactions.toString() ?? '0'),
-            subtitle: AppStrings.thisMonth,
+            subtitle: thisMonth,
             icon: Icons.chat_bubble_outline,
             isPrimary: true,
             isLoading: isLoading,
           ),
         ),
         Semantics(
-          label: '${AppStrings.uniqueAttendees}: ${isLoading ? '...' : (provider.monthlyStats?.attendees.toString() ?? '0')}',
-          value: AppStrings.activeUsers,
+          label: '$uniqueAttendees: ${isLoading ? '...' : (provider.monthlyStats?.attendees.toString() ?? '0')}',
+          value: activeUsers,
           child: ViernesStatsCard(
-            title: AppStrings.uniqueAttendees,
+            title: uniqueAttendees,
             value: isLoading ? '...' : (provider.monthlyStats?.attendees.toString() ?? '0'),
-            subtitle: AppStrings.activeUsers,
+            subtitle: activeUsers,
             icon: Icons.people_outline,
             accentColor: ViernesColors.success,
             isLoading: isLoading,
           ),
         ),
         Semantics(
-          label: '${AppStrings.aiConversations}: ${isLoading ? '...' : '${provider.monthlyStats?.aiPercentage.toStringAsFixed(1) ?? '0'}%'}',
-          value: '${provider.monthlyStats?.aiOnlyConversations ?? 0} ${AppStrings.conversations}',
+          label: '$aiConversations: ${isLoading ? '...' : '${provider.monthlyStats?.aiPercentage.toStringAsFixed(1) ?? '0'}%'}',
+          value: '${provider.monthlyStats?.aiOnlyConversations ?? 0} $conversations',
           child: ViernesStatsCard(
-            title: AppStrings.aiConversations,
+            title: aiConversations,
             value: isLoading
                 ? '...'
                 : '${provider.monthlyStats?.aiPercentage.toStringAsFixed(1) ?? '0'}%',
-            subtitle: '${provider.monthlyStats?.aiOnlyConversations ?? 0} ${AppStrings.conversations}',
+            subtitle: '${provider.monthlyStats?.aiOnlyConversations ?? 0} $conversations',
             icon: Icons.smart_toy_outlined,
             accentColor: ViernesColors.accent,
             isLoading: isLoading,
           ),
         ),
         Semantics(
-          label: '${AppStrings.humanAssisted}: ${isLoading ? '...' : '${provider.monthlyStats?.humanPercentage.toStringAsFixed(1) ?? '0'}%'}',
-          value: '${provider.monthlyStats?.humanAssistedConversations ?? 0} ${AppStrings.conversations}',
+          label: '$humanAssisted: ${isLoading ? '...' : '${provider.monthlyStats?.humanPercentage.toStringAsFixed(1) ?? '0'}%'}',
+          value: '${provider.monthlyStats?.humanAssistedConversations ?? 0} $conversations',
           child: ViernesStatsCard(
-            title: AppStrings.humanAssisted,
+            title: humanAssisted,
             value: isLoading
                 ? '...'
                 : '${provider.monthlyStats?.humanPercentage.toStringAsFixed(1) ?? '0'}%',
-            subtitle: '${provider.monthlyStats?.humanAssistedConversations ?? 0} ${AppStrings.conversations}',
+            subtitle: '${provider.monthlyStats?.humanAssistedConversations ?? 0} $conversations',
             icon: Icons.support_agent_outlined,
             accentColor: ViernesColors.warning,
             isLoading: isLoading,
@@ -377,7 +387,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     );
   }
 
-  Widget _buildAdvisorsBreakdown(DashboardProvider provider, bool isLoading, bool isDark) {
+  Widget _buildAdvisorsBreakdown(BuildContext context, DashboardProvider provider, bool isLoading, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     final advisors = provider.aiHumanStats?.advisors ?? [];
 
     return ViernesGlassmorphismCard(
@@ -387,7 +398,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppStrings.topAdvisors,
+            l10n?.topAdvisors ?? 'Top Advisors',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -412,7 +423,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  AppStrings.noAdvisorData,
+                  l10n?.noAdvisorData ?? 'No advisor data available',
                   style: ViernesTextStyles.bodyText.copyWith(
                     color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
                   ),
@@ -501,6 +512,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
   Widget _buildErrorWidget(DashboardProvider provider) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Padding(
@@ -533,7 +545,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               const SizedBox(height: 24),
 
               Text(
-                AppStrings.failedToLoadDashboard,
+                l10n?.failedToLoadDashboard ?? 'Failed to load dashboard',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -544,7 +556,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               const SizedBox(height: 12),
 
               Text(
-                provider.errorMessage ?? AppStrings.unexpectedError,
+                provider.errorMessage ?? l10n?.unexpectedError ?? 'An unexpected error occurred',
                 style: ViernesTextStyles.bodyText.copyWith(
                   color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                 ),
@@ -553,7 +565,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               const SizedBox(height: 32),
 
               ViernesGradientButton(
-                text: AppStrings.retry,
+                text: l10n?.retry ?? 'RETRY',
                 onPressed: () => provider.retry(),
                 isLoading: false,
                 width: 200,
@@ -595,6 +607,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   void _showExportDialog(BuildContext context) {
     final provider = context.read<DashboardProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
@@ -630,7 +643,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
               // Title
               Text(
-                AppStrings.exportDataTitle,
+                l10n?.exportDataTitle ?? 'Export Data',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -641,7 +654,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
               // Message
               Text(
-                AppStrings.exportDataMessage,
+                l10n?.exportDataMessage ?? 'Export conversation statistics as CSV?',
                 style: ViernesTextStyles.bodyText.copyWith(
                   color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                 ),
@@ -672,7 +685,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                           borderRadius: BorderRadius.circular(12),
                           child: Center(
                             child: Text(
-                              AppStrings.cancel,
+                              l10n?.cancel ?? 'Cancel',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -687,7 +700,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                   const SizedBox(width: 12),
                   Expanded(
                     child: ViernesGradientButton(
-                      text: AppStrings.export,
+                      text: l10n?.export ?? 'EXPORT',
                       onPressed: () async {
                         // Capture references before popping dialog
                         final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -696,6 +709,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                         final successMessage = l10n?.exportSavedToDownloads ?? 'CSV saved to Downloads';
                         final shareCanceledMessage = l10n?.exportSavedShareCanceled ?? 'File saved. Tap to share again.';
                         final failedMessage = l10n?.exportFailed ?? 'Export failed';
+                        final shareText = l10n?.viernesConversationStats ?? 'Viernes Conversation Statistics';
 
                         navigator.pop();
                         AppLogger.info('Export button pressed, calling provider...', tag: 'DashboardPage');
@@ -707,7 +721,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                           try {
                             final result = await Share.shareXFiles(
                               [XFile(filePath)],
-                              text: 'Viernes Conversation Statistics',
+                              text: shareText,
                             );
                             AppLogger.info('Share result: ${result.status}', tag: 'DashboardPage');
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -108,7 +109,7 @@ class _AiHumanChartState extends State<AiHumanChart>
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'AI vs Human Conversations',
+                      AppLocalizations.of(context)?.aiVsHumanConversations ?? 'AI vs Human Conversations',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -125,7 +126,7 @@ class _AiHumanChartState extends State<AiHumanChart>
                 child: widget.isLoading
                     ? _buildLoadingChart(context)
                     : widget.stats == null
-                        ? _buildEmptyChart(isDark)
+                        ? _buildEmptyChart(context, isDark)
                         : AnimatedBuilder(
                             animation: _animation,
                             builder: (context, child) {
@@ -134,7 +135,7 @@ class _AiHumanChartState extends State<AiHumanChart>
                           ),
               ),
               const SizedBox(height: 24),
-              if (!widget.isLoading && widget.stats != null) _buildSummary(isDark),
+              if (!widget.isLoading && widget.stats != null) _buildSummary(context, isDark),
             ],
           ),
         ),
@@ -158,7 +159,7 @@ class _AiHumanChartState extends State<AiHumanChart>
           ),
           const SizedBox(height: 12),
           Text(
-            'Loading chart...',
+            AppLocalizations.of(context)?.loadingChart ?? 'Loading chart...',
             style: ViernesTextStyles.caption.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
             ),
@@ -168,7 +169,7 @@ class _AiHumanChartState extends State<AiHumanChart>
     );
   }
 
-  Widget _buildEmptyChart(bool isDark) {
+  Widget _buildEmptyChart(BuildContext context, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -180,7 +181,7 @@ class _AiHumanChartState extends State<AiHumanChart>
           ),
           const SizedBox(height: 12),
           Text(
-            'No conversation data available',
+            AppLocalizations.of(context)?.noConversationData ?? 'No conversation data available',
             style: ViernesTextStyles.bodyText.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
             ),
@@ -294,12 +295,12 @@ class _AiHumanChartState extends State<AiHumanChart>
     );
   }
 
-  Widget _buildSummary(bool isDark) {
+  Widget _buildSummary(BuildContext context, bool isDark) {
     return Column(
       children: [
         // Legend items with icons
         _buildLegendItem(
-          'AI Only',
+          AppLocalizations.of(context)?.aiOnly ?? 'AI Only',
           widget.stats!.aiOnly.count,
           widget.stats!.aiOnly.percentage,
           aiColor,
@@ -309,7 +310,7 @@ class _AiHumanChartState extends State<AiHumanChart>
         ),
         const SizedBox(height: ViernesSpacing.md),
         _buildLegendItem(
-          'Human Assisted',
+          AppLocalizations.of(context)?.humanAssisted ?? 'Human Assisted',
           widget.stats!.humanAssisted.count,
           widget.stats!.humanAssisted.percentage,
           humanColor,
@@ -353,7 +354,7 @@ class _AiHumanChartState extends State<AiHumanChart>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Total Conversations',
+                    AppLocalizations.of(context)?.totalConversations ?? 'Total Conversations',
                     style: ViernesTextStyles.bodyText.copyWith(
                       color: ViernesColors.getTextColor(isDark),
                       fontWeight: FontWeight.w500,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -26,7 +27,7 @@ class TagsChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Conversation Tags',
+            AppLocalizations.of(context)?.conversationTags ?? 'Conversation Tags',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -40,7 +41,7 @@ class TagsChart extends StatelessWidget {
             child: isLoading
                 ? _buildLoadingChart(context)
                 : tags.isEmpty
-                    ? _buildEmptyChart(isDark)
+                    ? _buildEmptyChart(context, isDark)
                     : _buildChart(isDark),
           ),
           const SizedBox(height: 20),
@@ -64,10 +65,10 @@ class TagsChart extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyChart(bool isDark) {
+  Widget _buildEmptyChart(BuildContext context, bool isDark) {
     return Center(
       child: Text(
-        'No tag data available',
+        AppLocalizations.of(context)?.noTagData ?? 'No tag data available',
         style: ViernesTextStyles.bodyText.copyWith(
           color: ViernesColors.getTextColor(isDark).withValues(alpha:0.6),
         ),

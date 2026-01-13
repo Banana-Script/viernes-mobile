@@ -130,7 +130,7 @@ class ConsumptionChart extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              AppLocalizations.of(context)!.used,
+              AppLocalizations.of(context)?.used ?? 'Used',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -157,14 +157,16 @@ class ConsumptionChart extends StatelessWidget {
   }
 
   Widget _buildMetrics(BuildContext context, bool isDark, double remaining) {
-    final formatter = NumberFormat('#,###', 'es');
+    final locale = Localizations.localeOf(context).languageCode;
+    final formatter = NumberFormat('#,###', locale);
     final textColor = isDark ? ViernesColors.textDark : ViernesColors.textLight;
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       children: [
         // Total
         _buildMetricRow(
-          label: isMinutes ? '${AppLocalizations.of(context)!.totalMinutes}:' : '${AppLocalizations.of(context)!.totalMessages}:',
+          label: isMinutes ? '${l10n?.totalMinutes ?? 'Total Minutes'}:' : '${l10n?.totalMessages ?? 'Total Messages'}:',
           value: isMinutes
               ? formatter.format(total.round())
               : formatter.format(total.toInt()),
@@ -175,7 +177,7 @@ class ConsumptionChart extends StatelessWidget {
 
         // Consumed
         _buildMetricRow(
-          label: isMinutes ? '${AppLocalizations.of(context)!.consumedMinutes}:' : '${AppLocalizations.of(context)!.consumedMessages}:',
+          label: isMinutes ? '${l10n?.consumedMinutes ?? 'Consumed Minutes'}:' : '${l10n?.consumedMessages ?? 'Consumed Messages'}:',
           value: isMinutes
               ? consumed.toStringAsFixed(2)
               : formatter.format(consumed.toInt()),
@@ -186,7 +188,7 @@ class ConsumptionChart extends StatelessWidget {
 
         // Remaining
         _buildMetricRow(
-          label: '${AppLocalizations.of(context)!.remaining}:',
+          label: '${l10n?.remaining ?? 'Remaining'}:',
           value: isMinutes
               ? remaining.toStringAsFixed(2)
               : formatter.format(remaining.toInt()),
@@ -198,7 +200,7 @@ class ConsumptionChart extends StatelessWidget {
         if (isMinutes && recharged != null && recharged! > 0) ...[
           const SizedBox(height: 8),
           _buildMetricRow(
-            label: '${AppLocalizations.of(context)!.rechargedMinutes}:',
+            label: '${l10n?.rechargedMinutes ?? 'Recharged Minutes'}:',
             value: formatter.format(recharged!.round()),
             valueColor: ViernesColors.accent,
             isDark: isDark,

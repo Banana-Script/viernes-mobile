@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -26,7 +27,7 @@ class CategoriesChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Top Categories',
+            AppLocalizations.of(context)?.topCategories ?? 'Top Categories',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -40,7 +41,7 @@ class CategoriesChart extends StatelessWidget {
             child: isLoading
                 ? _buildLoadingChart(context)
                 : categories.isEmpty
-                    ? _buildEmptyChart(isDark)
+                    ? _buildEmptyChart(context, isDark)
                     : _buildChart(isDark),
           ),
         ],
@@ -62,10 +63,10 @@ class CategoriesChart extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyChart(bool isDark) {
+  Widget _buildEmptyChart(BuildContext context, bool isDark) {
     return Center(
       child: Text(
-        'No category data available',
+        AppLocalizations.of(context)?.noCategoryData ?? 'No category data available',
         style: ViernesTextStyles.bodyText.copyWith(
           color: ViernesColors.getTextColor(isDark).withValues(alpha:0.6),
         ),

@@ -230,6 +230,84 @@ abstract class AppLocalizations {
   /// **'Your AI-powered business assistant'**
   String get aiBusinessAssistant;
 
+  /// Chart title for AI vs Human conversations
+  ///
+  /// In en, this message translates to:
+  /// **'AI vs Human Conversations'**
+  String get aiVsHumanConversations;
+
+  /// Loading state for charts
+  ///
+  /// In en, this message translates to:
+  /// **'Loading chart...'**
+  String get loadingChart;
+
+  /// Empty state for conversation chart
+  ///
+  /// In en, this message translates to:
+  /// **'No conversation data available'**
+  String get noConversationData;
+
+  /// Label for AI-only conversations
+  ///
+  /// In en, this message translates to:
+  /// **'AI Only'**
+  String get aiOnly;
+
+  /// Human assisted stat
+  ///
+  /// In en, this message translates to:
+  /// **'Human Assisted'**
+  String get humanAssisted;
+
+  /// Label for total conversations count
+  ///
+  /// In en, this message translates to:
+  /// **'Total Conversations'**
+  String get totalConversations;
+
+  /// Chart title for sentiment analysis
+  ///
+  /// In en, this message translates to:
+  /// **'Sentiment Analysis'**
+  String get sentimentAnalysis;
+
+  /// Empty state for sentiment chart
+  ///
+  /// In en, this message translates to:
+  /// **'No sentiment data available'**
+  String get noSentimentData;
+
+  /// Chart title for top categories
+  ///
+  /// In en, this message translates to:
+  /// **'Top Categories'**
+  String get topCategories;
+
+  /// Empty state for categories chart
+  ///
+  /// In en, this message translates to:
+  /// **'No category data available'**
+  String get noCategoryData;
+
+  /// Chart title for conversation tags
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Tags'**
+  String get conversationTags;
+
+  /// Empty state for tags chart
+  ///
+  /// In en, this message translates to:
+  /// **'No tag data available'**
+  String get noTagData;
+
+  /// Share text for exported statistics
+  ///
+  /// In en, this message translates to:
+  /// **'Viernes Conversation Statistics'**
+  String get viernesConversationStats;
+
   /// Account information section title
   ///
   /// In en, this message translates to:
@@ -347,7 +425,7 @@ abstract class AppLocalizations {
   /// Profile section title
   ///
   /// In en, this message translates to:
-  /// **'PROFILE'**
+  /// **'Profile'**
   String get profile;
 
   /// Notifications section title
@@ -469,12 +547,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI Conversations'**
   String get aiConversations;
-
-  /// Human assisted stat
-  ///
-  /// In en, this message translates to:
-  /// **'Human Assisted'**
-  String get humanAssisted;
 
   /// This month label
   ///
@@ -1291,12 +1363,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Detailed Insights'**
   String get detailedInsights;
-
-  /// No description provided for @sentimentAnalysis.
-  ///
-  /// In en, this message translates to:
-  /// **'Sentiment Analysis'**
-  String get sentimentAnalysis;
 
   /// No description provided for @emotions.
   ///

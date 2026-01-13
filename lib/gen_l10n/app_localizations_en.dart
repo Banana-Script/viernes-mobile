@@ -77,6 +77,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiBusinessAssistant => 'Your AI-powered business assistant';
 
   @override
+  String get aiVsHumanConversations => 'AI vs Human Conversations';
+
+  @override
+  String get loadingChart => 'Loading chart...';
+
+  @override
+  String get noConversationData => 'No conversation data available';
+
+  @override
+  String get aiOnly => 'AI Only';
+
+  @override
+  String get humanAssisted => 'Human Assisted';
+
+  @override
+  String get totalConversations => 'Total Conversations';
+
+  @override
+  String get sentimentAnalysis => 'Sentiment Analysis';
+
+  @override
+  String get noSentimentData => 'No sentiment data available';
+
+  @override
+  String get topCategories => 'Top Categories';
+
+  @override
+  String get noCategoryData => 'No category data available';
+
+  @override
+  String get conversationTags => 'Conversation Tags';
+
+  @override
+  String get noTagData => 'No tag data available';
+
+  @override
+  String get viernesConversationStats => 'Viernes Conversation Statistics';
+
+  @override
   String get accountInformation => 'Account Information';
 
   @override
@@ -135,7 +174,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsDoNotMatch => 'Passwords do not match';
 
   @override
-  String get profile => 'PROFILE';
+  String get profile => 'Profile';
 
   @override
   String get notifications => 'Notifications';
@@ -196,9 +235,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiConversations => 'AI Conversations';
-
-  @override
-  String get humanAssisted => 'Human Assisted';
 
   @override
   String get thisMonth => 'This month';
@@ -623,9 +659,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get detailedInsights => 'Detailed Insights';
-
-  @override
-  String get sentimentAnalysis => 'Sentiment Analysis';
 
   @override
   String get emotions => 'Emotions';

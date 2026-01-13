@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
@@ -83,23 +84,23 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(
               _currentIndex == 0 ? Icons.dashboard : Icons.dashboard_outlined,
             ),
-            label: 'Dashboard',
+            label: AppLocalizations.of(context)?.dashboard ?? 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               _currentIndex == 1 ? Icons.people : Icons.people_outline,
             ),
-            label: 'Customers',
+            label: AppLocalizations.of(context)?.customers ?? 'Customers',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               _currentIndex == 2 ? Icons.chat : Icons.chat_outlined,
             ),
-            label: 'Conversations',
+            label: AppLocalizations.of(context)?.conversationsLabel ?? 'Conversations',
           ),
           BottomNavigationBarItem(
             icon: _ProfileIconWithBadge(isSelected: _currentIndex == 3),
-            label: 'Profile',
+            label: AppLocalizations.of(context)?.profile ?? 'Profile',
           ),
         ],
       ),

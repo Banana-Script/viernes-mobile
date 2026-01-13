@@ -110,6 +110,71 @@
     "description": "Viernes description"
   },
 
+  "aiVsHumanConversations": "AI vs Human Conversations",
+  "@aiVsHumanConversations": {
+    "description": "Chart title for AI vs Human conversations"
+  },
+
+  "loadingChart": "Loading chart...",
+  "@loadingChart": {
+    "description": "Loading state for charts"
+  },
+
+  "noConversationData": "No conversation data available",
+  "@noConversationData": {
+    "description": "Empty state for conversation chart"
+  },
+
+  "aiOnly": "AI Only",
+  "@aiOnly": {
+    "description": "Label for AI-only conversations"
+  },
+
+  "humanAssisted": "Human Assisted",
+  "@humanAssisted": {
+    "description": "Label for human-assisted conversations"
+  },
+
+  "totalConversations": "Total Conversations",
+  "@totalConversations": {
+    "description": "Label for total conversations count"
+  },
+
+  "sentimentAnalysis": "Sentiment Analysis",
+  "@sentimentAnalysis": {
+    "description": "Chart title for sentiment analysis"
+  },
+
+  "noSentimentData": "No sentiment data available",
+  "@noSentimentData": {
+    "description": "Empty state for sentiment chart"
+  },
+
+  "topCategories": "Top Categories",
+  "@topCategories": {
+    "description": "Chart title for top categories"
+  },
+
+  "noCategoryData": "No category data available",
+  "@noCategoryData": {
+    "description": "Empty state for categories chart"
+  },
+
+  "conversationTags": "Conversation Tags",
+  "@conversationTags": {
+    "description": "Chart title for conversation tags"
+  },
+
+  "noTagData": "No tag data available",
+  "@noTagData": {
+    "description": "Empty state for tags chart"
+  },
+
+  "viernesConversationStats": "Viernes Conversation Statistics",
+  "@viernesConversationStats": {
+    "description": "Share text for exported statistics"
+  },
+
   "accountInformation": "Account Information",
   "@accountInformation": {
     "description": "Account information section title"
@@ -205,7 +270,7 @@
     "description": "Password match validation error"
   },
 
-  "profile": "PROFILE",
+  "profile": "Profile",
   "@profile": {
     "description": "Profile section title"
   },

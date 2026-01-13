@@ -77,6 +77,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String get aiBusinessAssistant => 'Tu asistente de negocios impulsado por IA';
 
   @override
+  String get aiVsHumanConversations => 'Conversaciones IA vs Humano';
+
+  @override
+  String get loadingChart => 'Cargando gráfico...';
+
+  @override
+  String get noConversationData => 'Sin datos de conversaciones';
+
+  @override
+  String get aiOnly => 'Solo IA';
+
+  @override
+  String get humanAssisted => 'Asistencia Humana';
+
+  @override
+  String get totalConversations => 'Total de Conversaciones';
+
+  @override
+  String get sentimentAnalysis => 'Análisis de Sentimiento';
+
+  @override
+  String get noSentimentData => 'Sin datos de sentimiento';
+
+  @override
+  String get topCategories => 'Categorías Principales';
+
+  @override
+  String get noCategoryData => 'Sin datos de categorías';
+
+  @override
+  String get conversationTags => 'Etiquetas de Conversación';
+
+  @override
+  String get noTagData => 'Sin datos de etiquetas';
+
+  @override
+  String get viernesConversationStats =>
+      'Estadísticas de Conversaciones Viernes';
+
+  @override
   String get accountInformation => 'Información de la Cuenta';
 
   @override
@@ -137,7 +177,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
 
   @override
-  String get profile => 'PERFIL';
+  String get profile => 'Perfil';
 
   @override
   String get notifications => 'Notificaciones';
@@ -199,9 +239,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get aiConversations => 'Conversaciones con IA';
-
-  @override
-  String get humanAssisted => 'Asistencia Humana';
 
   @override
   String get thisMonth => 'Este mes';
@@ -629,9 +666,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get detailedInsights => 'Insights Detallados';
-
-  @override
-  String get sentimentAnalysis => 'Análisis de Sentimiento';
 
   @override
   String get emotions => 'Emociones';

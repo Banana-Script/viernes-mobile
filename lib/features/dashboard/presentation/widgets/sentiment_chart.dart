@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -26,7 +27,7 @@ class SentimentChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Sentiment Analysis',
+            AppLocalizations.of(context)?.sentimentAnalysis ?? 'Sentiment Analysis',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
@@ -40,7 +41,7 @@ class SentimentChart extends StatelessWidget {
               child: isLoading
                   ? _buildLoadingChart(context)
                   : sentiments.isEmpty
-                      ? _buildEmptyChart(isDark)
+                      ? _buildEmptyChart(context, isDark)
                       : _buildChart(isDark),
             ),
           const SizedBox(height: 20),
@@ -64,10 +65,10 @@ class SentimentChart extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyChart(bool isDark) {
+  Widget _buildEmptyChart(BuildContext context, bool isDark) {
     return Center(
       child: Text(
-        'No sentiment data available',
+        AppLocalizations.of(context)?.noSentimentData ?? 'No sentiment data available',
         style: ViernesTextStyles.bodyText.copyWith(
           color: ViernesColors.getTextColor(isDark).withValues(alpha:0.6),
         ),
