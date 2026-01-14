@@ -1156,6 +1156,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reassignUnavailableBadge => 'Unavailable';
 
   @override
+  String get noAgentsAvailable => 'No agents available for reassignment';
+
+  @override
+  String get reassignSuccess => 'Conversation reassigned successfully';
+
+  @override
   String get newInternalNoteTitle => 'New internal note';
 
   @override

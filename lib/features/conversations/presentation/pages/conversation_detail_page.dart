@@ -419,35 +419,60 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
     );
   }
 
-  void _showReassignModal(
+  Future<void> _showReassignModal(
     BuildContext context,
     ConversationEntity conversation,
-  ) {
-    // Note: A full implementation would load agents from the provider
-    // For now, we show a placeholder with sample agents
-    final sampleAgents = <ReassignAgentOption>[
-      // Would be loaded from conversationProvider.availableAgents
-    ];
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
 
-    if (sampleAgents.isEmpty) {
-      // Show info message when no agents available
-      final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
+    // Load organization agents
+    await provider.loadOrganizationAgents();
+
+    if (!mounted) return;
+
+    if (provider.organizationAgents.isEmpty) {
+      scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(l10n?.reassignmentComingSoon ?? 'Reassignment feature coming soon'),
-          backgroundColor: ViernesColors.info,
+          content: Text(l10n?.noAgentsAvailable ?? 'No agents available for reassignment'),
+          backgroundColor: ViernesColors.warning,
         ),
       );
       return;
     }
 
+    // Convert AgentOption to ReassignAgentOption
+    final agents = provider.organizationAgents.map((agent) => ReassignAgentOption(
+      id: agent.id,
+      fullname: agent.name,
+      email: agent.email,
+    )).toList();
+
+    if (!mounted) return;
+
     ReassignAgentModal.show(
       context: context,
-      agents: sampleAgents,
+      agents: agents,
       currentAgentId: conversation.agentId,
       onReassign: (agentId) async {
-        // Would call provider.reassignConversation(conversation.id, agentId)
-        return false;
+        final success = await provider.reassignConversation(conversation.id, agentId);
+        if (success && mounted) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(l10n?.reassignSuccess ?? 'Conversation reassigned successfully'),
+              backgroundColor: ViernesColors.success,
+            ),
+          );
+        } else if (!success && mounted) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(provider.errorMessage ?? l10n?.reassignError ?? 'Error reassigning conversation'),
+              backgroundColor: ViernesColors.danger,
+            ),
+          );
+        }
+        return success;
       },
     );
   }

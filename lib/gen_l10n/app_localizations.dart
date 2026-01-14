@@ -2294,6 +2294,18 @@ abstract class AppLocalizations {
   /// **'Unavailable'**
   String get reassignUnavailableBadge;
 
+  /// No description provided for @noAgentsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No agents available for reassignment'**
+  String get noAgentsAvailable;
+
+  /// No description provided for @reassignSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation reassigned successfully'**
+  String get reassignSuccess;
+
   /// No description provided for @newInternalNoteTitle.
   ///
   /// In en, this message translates to:

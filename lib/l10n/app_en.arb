@@ -1007,6 +1007,8 @@
   "reassignButton": "Reassign",
   "reassignCurrentBadge": "Current",
   "reassignUnavailableBadge": "Unavailable",
+  "noAgentsAvailable": "No agents available for reassignment",
+  "reassignSuccess": "Conversation reassigned successfully",
 
   "newInternalNoteTitle": "New internal note",
   "editInternalNoteTitle": "Edit note",

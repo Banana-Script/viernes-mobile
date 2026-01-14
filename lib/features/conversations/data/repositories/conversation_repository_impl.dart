@@ -366,4 +366,44 @@ class ConversationRepositoryImpl implements ConversationRepository {
       );
     }
   }
+
+  @override
+  Future<List<AgentOption>> getOrganizationAgents() async {
+    try {
+      return await _remoteDataSource.getOrganizationAgents();
+    } catch (e, stackTrace) {
+      if (e is ViernesException) {
+        rethrow;
+      }
+
+      throw NetworkException(
+        'Failed to get organization agents: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> reassignConversation({
+    required int conversationId,
+    required int newAgentId,
+  }) async {
+    try {
+      await _remoteDataSource.reassignConversation(
+        conversationId: conversationId,
+        newAgentId: newAgentId,
+      );
+    } catch (e, stackTrace) {
+      if (e is ViernesException) {
+        rethrow;
+      }
+
+      throw NetworkException(
+        'Failed to reassign conversation: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
 }

@@ -96,6 +96,15 @@ abstract class ConversationRemoteDataSource {
     required int userId,
     bool reopen = false,
   });
+
+  /// Get organization agents for reassignment
+  Future<List<AgentOptionModel>> getOrganizationAgents();
+
+  /// Reassign conversation to a different agent
+  Future<void> reassignConversation({
+    required int conversationId,
+    required int newAgentId,
+  });
 }
 
 /// Conversation Remote Data Source Implementation
@@ -989,6 +998,92 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw NetworkException(
           'Failed to assign agent',
+          statusCode: response.statusCode,
+          endpoint: endpoint,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+      _handleDioException(e, stackTrace, endpoint, conversationId);
+    } catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace);
+      _handleGenericException(e, stackTrace, endpoint);
+    }
+  }
+
+  @override
+  Future<List<AgentOptionModel>> getOrganizationAgents() async {
+    const endpoint = '/organization_users/agents';
+
+    try {
+      final queryParams = {
+        'page': '1',
+        'page_size': '100',
+        'order_by': 'status_id',
+        'order_direction': 'asc',
+      };
+
+      AppLogger.apiRequest('GET', endpoint, params: queryParams);
+
+      final response = await _httpClient.dio.get(
+        endpoint,
+        queryParameters: queryParams,
+      );
+
+      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        final results = data['results'] as List? ?? [];
+        return results
+            .map((a) => AgentOptionModel.fromJson(a as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw NetworkException(
+          'Failed to load organization agents',
+          statusCode: response.statusCode,
+          endpoint: endpoint,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+      throw NetworkException(
+        'Network error while fetching organization agents',
+        statusCode: e.response?.statusCode,
+        endpoint: endpoint,
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    } catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace);
+      throw ParseException(
+        'Error parsing organization agents response: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> reassignConversation({
+    required int conversationId,
+    required int newAgentId,
+  }) async {
+    final endpoint = '/conversations/reassign-agent/$conversationId/$newAgentId/';
+
+    try {
+      AppLogger.apiRequest('POST', endpoint);
+
+      final response = await _httpClient.dio.post(
+        endpoint,
+        data: {},
+      );
+
+      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw NetworkException(
+          'Failed to reassign conversation',
           statusCode: response.statusCode,
           endpoint: endpoint,
         );

@@ -439,6 +439,8 @@
   "reassignButton": "Reasignar",
   "reassignCurrentBadge": "Actual",
   "reassignUnavailableBadge": "No disponible",
+  "noAgentsAvailable": "No hay agentes disponibles para reasignación",
+  "reassignSuccess": "Conversación reasignada exitosamente",
 
   "newInternalNoteTitle": "Nueva nota interna",
   "editInternalNoteTitle": "Editar nota",

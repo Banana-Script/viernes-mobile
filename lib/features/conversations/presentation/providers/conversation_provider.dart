@@ -14,6 +14,8 @@ import '../../domain/usecases/send_media_usecase.dart';
 import '../../domain/usecases/update_conversation_status_usecase.dart';
 import '../../domain/usecases/assign_conversation_usecase.dart';
 import '../../domain/usecases/assign_agent_usecase.dart';
+import '../../domain/usecases/get_organization_agents_usecase.dart';
+import '../../domain/usecases/reassign_conversation_usecase.dart';
 import '../../domain/usecases/get_filter_options_usecase.dart';
 import '../../../customers/domain/entities/conversation_entity.dart';
 
@@ -35,6 +37,8 @@ class ConversationProvider extends ChangeNotifier {
   final UpdateConversationStatusUseCase _updateConversationStatusUseCase;
   final AssignConversationUseCase _assignConversationUseCase;
   final AssignAgentUseCase _assignAgentUseCase;
+  final GetOrganizationAgentsUseCase _getOrganizationAgentsUseCase;
+  final ReassignConversationUseCase _reassignConversationUseCase;
   final GetFilterOptionsUseCase _getFilterOptionsUseCase;
 
   // Current user's agent ID (for "My Conversations" filter)
@@ -49,6 +53,8 @@ class ConversationProvider extends ChangeNotifier {
     required UpdateConversationStatusUseCase updateConversationStatusUseCase,
     required AssignConversationUseCase assignConversationUseCase,
     required AssignAgentUseCase assignAgentUseCase,
+    required GetOrganizationAgentsUseCase getOrganizationAgentsUseCase,
+    required ReassignConversationUseCase reassignConversationUseCase,
     required GetFilterOptionsUseCase getFilterOptionsUseCase,
   })  : _getConversationsUseCase = getConversationsUseCase,
         _getConversationDetailUseCase = getConversationDetailUseCase,
@@ -58,6 +64,8 @@ class ConversationProvider extends ChangeNotifier {
         _updateConversationStatusUseCase = updateConversationStatusUseCase,
         _assignConversationUseCase = assignConversationUseCase,
         _assignAgentUseCase = assignAgentUseCase,
+        _getOrganizationAgentsUseCase = getOrganizationAgentsUseCase,
+        _reassignConversationUseCase = reassignConversationUseCase,
         _getFilterOptionsUseCase = getFilterOptionsUseCase;
 
   // Conversations list state
@@ -78,6 +86,10 @@ class ConversationProvider extends ChangeNotifier {
   List<ConversationStatusOption> _availableStatuses = [];
   List<TagOption> _availableTags = [];
   List<AgentOption> _availableAgents = [];
+
+  // Organization agents for reassignment
+  List<AgentOption> _organizationAgents = [];
+  bool _loadingOrganizationAgents = false;
 
   // Selected conversation (for detail view)
   ConversationEntity? _selectedConversation;
@@ -119,6 +131,8 @@ class ConversationProvider extends ChangeNotifier {
   List<ConversationStatusOption> get availableStatuses => _availableStatuses;
   List<TagOption> get availableTags => _availableTags;
   List<AgentOption> get availableAgents => _availableAgents;
+  List<AgentOption> get organizationAgents => _organizationAgents;
+  bool get loadingOrganizationAgents => _loadingOrganizationAgents;
   ConversationEntity? get selectedConversation => _selectedConversation;
   bool get hasMorePages => _currentPage < _totalPages;
   bool get isLoading => _status == ConversationStatus.loading;
@@ -763,6 +777,68 @@ class ConversationProvider extends ChangeNotifier {
       _errorMessage = 'Failed to assign conversation: $e';
       AppLogger.error(
         'Error assigning conversation to self: $e',
+        tag: 'ConversationProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Load organization agents for reassignment
+  ///
+  /// Fetches all agents in the organization that can receive reassigned conversations.
+  Future<void> loadOrganizationAgents() async {
+    _loadingOrganizationAgents = true;
+    notifyListeners();
+
+    try {
+      _organizationAgents = await _getOrganizationAgentsUseCase();
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Error loading organization agents: $e',
+        tag: 'ConversationProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      _organizationAgents = [];
+    } finally {
+      _loadingOrganizationAgents = false;
+      notifyListeners();
+    }
+  }
+
+  /// Reassign conversation to a different agent
+  ///
+  /// Returns true on success, false on failure.
+  Future<bool> reassignConversation(int conversationId, int newAgentId) async {
+    try {
+      await _reassignConversationUseCase(
+        conversationId: conversationId,
+        newAgentId: newAgentId,
+      );
+
+      // Reload conversation to get updated assignment
+      final updated = await _getConversationDetailUseCase(conversationId);
+
+      // Update in list if present
+      final index = _conversations.indexWhere((c) => c.id == conversationId);
+      if (index != -1) {
+        _conversations[index] = updated;
+      }
+
+      // Update selected conversation
+      if (_selectedConversation?.id == conversationId) {
+        _selectedConversation = updated;
+      }
+
+      notifyListeners();
+      return true;
+    } catch (e, stackTrace) {
+      _errorMessage = 'Failed to reassign conversation: $e';
+      AppLogger.error(
+        'Error reassigning conversation: $e',
         tag: 'ConversationProvider',
         error: e,
         stackTrace: stackTrace,

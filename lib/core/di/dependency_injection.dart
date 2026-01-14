@@ -48,6 +48,8 @@ import '../../features/conversations/domain/usecases/send_media_usecase.dart';
 import '../../features/conversations/domain/usecases/update_conversation_status_usecase.dart';
 import '../../features/conversations/domain/usecases/assign_conversation_usecase.dart';
 import '../../features/conversations/domain/usecases/assign_agent_usecase.dart';
+import '../../features/conversations/domain/usecases/get_organization_agents_usecase.dart';
+import '../../features/conversations/domain/usecases/reassign_conversation_usecase.dart';
 import '../../features/conversations/domain/usecases/get_filter_options_usecase.dart' as conversation_filters;
 import '../../features/conversations/presentation/providers/conversation_provider.dart';
 import '../../features/conversations/data/datasources/internal_notes_remote_datasource.dart';
@@ -109,6 +111,8 @@ class DependencyInjection {
   static late final UpdateConversationStatusUseCase _updateConversationStatusUseCase;
   static late final AssignConversationUseCase _assignConversationUseCase;
   static late final AssignAgentUseCase _assignAgentUseCase;
+  static late final GetOrganizationAgentsUseCase _getOrganizationAgentsUseCase;
+  static late final ReassignConversationUseCase _reassignConversationUseCase;
   static late final conversation_filters.GetFilterOptionsUseCase _getConversationFilterOptionsUseCase;
   static late final ConversationProvider _conversationProvider;
   static late final InternalNotesRemoteDataSource _internalNotesRemoteDataSource;
@@ -238,6 +242,8 @@ class DependencyInjection {
     _updateConversationStatusUseCase = UpdateConversationStatusUseCase(_conversationRepository);
     _assignConversationUseCase = AssignConversationUseCase(_conversationRepository);
     _assignAgentUseCase = AssignAgentUseCase(_conversationRepository);
+    _getOrganizationAgentsUseCase = GetOrganizationAgentsUseCase(_conversationRepository);
+    _reassignConversationUseCase = ReassignConversationUseCase(_conversationRepository);
     _getConversationFilterOptionsUseCase = conversation_filters.GetFilterOptionsUseCase(_conversationRepository);
 
     // Providers
@@ -250,6 +256,8 @@ class DependencyInjection {
       updateConversationStatusUseCase: _updateConversationStatusUseCase,
       assignConversationUseCase: _assignConversationUseCase,
       assignAgentUseCase: _assignAgentUseCase,
+      getOrganizationAgentsUseCase: _getOrganizationAgentsUseCase,
+      reassignConversationUseCase: _reassignConversationUseCase,
       getFilterOptionsUseCase: _getConversationFilterOptionsUseCase,
     );
 

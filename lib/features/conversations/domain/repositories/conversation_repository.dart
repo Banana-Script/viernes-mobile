@@ -92,6 +92,15 @@ abstract class ConversationRepository {
     required int userId,
     bool reopen = false,
   });
+
+  /// Get organization agents for reassignment
+  Future<List<AgentOption>> getOrganizationAgents();
+
+  /// Reassign conversation to a different agent
+  Future<void> reassignConversation({
+    required int conversationId,
+    required int newAgentId,
+  });
 }
 
 /// Conversations List Response

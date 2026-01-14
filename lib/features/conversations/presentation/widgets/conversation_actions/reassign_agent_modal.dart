@@ -27,6 +27,7 @@ class ReassignAgentModal extends StatefulWidget {
   final int? currentAgentId;
   final bool isLoading;
   final Future<bool> Function(int agentId)? onReassign;
+  final ScrollController? scrollController;
 
   const ReassignAgentModal({
     super.key,
@@ -34,6 +35,7 @@ class ReassignAgentModal extends StatefulWidget {
     this.currentAgentId,
     this.isLoading = false,
     this.onReassign,
+    this.scrollController,
   });
 
   /// Show the modal and return the selected agent ID or null if cancelled
@@ -57,6 +59,7 @@ class ReassignAgentModal extends StatefulWidget {
           currentAgentId: currentAgentId,
           isLoading: isLoading,
           onReassign: onReassign,
+          scrollController: scrollController,
         ),
       ),
     );
@@ -113,7 +116,9 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
     return Container(
       decoration: BoxDecoration(
         color: ViernesColors.getControlBackground(isDark),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(ViernesSpacing.radiusXxl),
+        ),
       ),
       child: SafeArea(
         child: Column(
@@ -158,15 +163,21 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                   hintText: l10n?.reassignSearchHint ?? 'Search agent...',
                   prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ViernesSpacing.radiusLg),
                     borderSide: BorderSide(
                       color: ViernesColors.getBorderColor(isDark),
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(ViernesSpacing.radiusLg),
                     borderSide: BorderSide(
                       color: ViernesColors.getBorderColor(isDark),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(ViernesSpacing.radiusLg),
+                    borderSide: const BorderSide(
+                      color: ViernesColors.primary,
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -192,6 +203,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                   : _filteredAgents.isEmpty
                       ? _buildEmptyState(isDark, l10n)
                       : ListView.builder(
+                          controller: widget.scrollController,
                           padding: const EdgeInsets.symmetric(
                             vertical: ViernesSpacing.sm,
                           ),
@@ -211,6 +223,8 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                               onTap: isCurrentAgent || !agent.isAvailable
                                   ? null
                                   : () {
+                                      // Dismiss keyboard when selecting
+                                      FocusScope.of(context).unfocus();
                                       setState(() {
                                         _selectedAgentId = agent.id;
                                       });
@@ -241,7 +255,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                           color: ViernesColors.getBorderColor(isDark),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(ViernesSpacing.radiusLg),
                         ),
                       ),
                       child: Text(
@@ -263,7 +277,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: ViernesSpacing.md),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(ViernesSpacing.radiusLg),
                         ),
                       ),
                       child: _isSubmitting
@@ -354,7 +368,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
               ),
               decoration: BoxDecoration(
                 color: ViernesColors.info.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(ViernesSpacing.radiusSm),
               ),
               child: Text(
                 l10n?.reassignCurrentBadge ?? 'Current',
@@ -372,7 +386,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
               ),
               decoration: BoxDecoration(
                 color: ViernesColors.warning.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(ViernesSpacing.radiusSm),
               ),
               child: Text(
                 l10n?.reassignUnavailableBadge ?? 'Unavailable',
@@ -390,9 +404,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
           color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
         ),
       ),
-      trailing: isSelected
-          ? const Icon(Icons.check_circle, color: ViernesColors.primary)
-          : null,
+      // Removed redundant trailing check icon - avatar already shows selection state
       enabled: !isCurrentAgent && agent.isAvailable,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: ViernesSpacing.md,
