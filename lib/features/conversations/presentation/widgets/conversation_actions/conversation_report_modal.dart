@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../customers/domain/entities/conversation_entity.dart';
 
 /// Conversation Report Modal
@@ -42,6 +43,7 @@ class ConversationReportModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -73,7 +75,7 @@ class ConversationReportModal extends StatelessWidget {
                   ),
                   const SizedBox(width: ViernesSpacing.sm),
                   Text(
-                    'Reporte de conversación',
+                    l10n?.reportTitle ?? 'Conversation report',
                     style: ViernesTextStyles.h6.copyWith(
                       color: ViernesColors.getTextColor(isDark),
                     ),
@@ -92,16 +94,16 @@ class ConversationReportModal extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Summary cards
-                          _buildMetricsGrid(context, isDark),
+                          _buildMetricsGrid(context, isDark, l10n),
                           const SizedBox(height: ViernesSpacing.lg),
 
                           // Timeline section
                           _buildSection(
                             context,
                             isDark,
-                            title: 'Línea de tiempo',
+                            title: l10n?.reportTimelineSection ?? 'Timeline',
                             icon: Icons.timeline,
-                            child: _buildTimeline(context, isDark),
+                            child: _buildTimeline(context, isDark, l10n),
                           ),
                           const SizedBox(height: ViernesSpacing.lg),
 
@@ -110,9 +112,9 @@ class ConversationReportModal extends StatelessWidget {
                             _buildSection(
                               context,
                               isDark,
-                              title: 'Agentes asignados',
+                              title: l10n?.reportAssignedAgents ?? 'Assigned agents',
                               icon: Icons.people_outline,
-                              child: _buildAssignedAgents(context, isDark),
+                              child: _buildAssignedAgents(context, isDark, l10n),
                             ),
                           if (conversation.assigns.isNotEmpty)
                             const SizedBox(height: ViernesSpacing.lg),
@@ -122,7 +124,7 @@ class ConversationReportModal extends StatelessWidget {
                             _buildSection(
                               context,
                               isDark,
-                              title: 'Etiquetas',
+                              title: l10n?.reportTags ?? 'Tags',
                               icon: Icons.label_outline,
                               child: _buildTags(context, isDark),
                             ),
@@ -138,7 +140,7 @@ class ConversationReportModal extends StatelessWidget {
     );
   }
 
-  Widget _buildMetricsGrid(BuildContext context, bool isDark) {
+  Widget _buildMetricsGrid(BuildContext context, bool isDark, AppLocalizations? l10n) {
     // Calculate metrics
     final createdAt = conversation.createdAt;
     final updatedAt = conversation.updatedAt;
@@ -165,7 +167,7 @@ class ConversationReportModal extends StatelessWidget {
         _buildMetricCard(
           context,
           isDark,
-          title: 'Duración',
+          title: l10n?.reportDuration ?? 'Duration',
           value: formatDuration(duration),
           icon: Icons.timer_outlined,
           color: ViernesColors.info,
@@ -173,24 +175,24 @@ class ConversationReportModal extends StatelessWidget {
         _buildMetricCard(
           context,
           isDark,
-          title: 'Tipo',
-          value: conversation.isCall ? 'Llamada' : 'Chat',
+          title: l10n?.reportType ?? 'Type',
+          value: conversation.isCall ? (l10n?.typeCall ?? 'Call') : (l10n?.chatType ?? 'Chat'),
           icon: conversation.isCall ? Icons.phone : Icons.chat_bubble_outline,
           color: ViernesColors.primary,
         ),
         _buildMetricCard(
           context,
           isDark,
-          title: 'Prioridad',
-          value: conversation.priority ?? 'Normal',
+          title: l10n?.reportPriority ?? 'Priority',
+          value: conversation.priority ?? (l10n?.priorityNormal ?? 'Normal'),
           icon: Icons.flag_outlined,
           color: _getPriorityColor(conversation.priority),
         ),
         _buildMetricCard(
           context,
           isDark,
-          title: 'Estado',
-          value: conversation.status?.description ?? 'Desconocido',
+          title: l10n?.reportStatus ?? 'Status',
+          value: conversation.status?.description ?? (l10n?.unknown ?? 'Unknown'),
           icon: Icons.info_outline,
           color: ViernesColors.success,
         ),
@@ -274,24 +276,24 @@ class ConversationReportModal extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeline(BuildContext context, bool isDark) {
+  Widget _buildTimeline(BuildContext context, bool isDark, AppLocalizations? l10n) {
     final events = <_TimelineEvent>[
       _TimelineEvent(
         time: conversation.createdAt,
-        title: 'Conversación iniciada',
+        title: l10n?.timelineConversationStarted ?? 'Conversation started',
         icon: Icons.play_circle_outline,
         color: ViernesColors.success,
       ),
       if (conversation.firstResponseAt != null)
         _TimelineEvent(
           time: conversation.firstResponseAt!,
-          title: 'Primera respuesta',
+          title: l10n?.timelineFirstResponse ?? 'First response',
           icon: Icons.reply,
           color: ViernesColors.info,
         ),
       _TimelineEvent(
         time: conversation.updatedAt,
-        title: 'Última actualización',
+        title: l10n?.timelineLastUpdated ?? 'Last updated',
         icon: Icons.update,
         color: ViernesColors.primary,
       ),
@@ -369,7 +371,7 @@ class ConversationReportModal extends StatelessWidget {
     );
   }
 
-  Widget _buildAssignedAgents(BuildContext context, bool isDark) {
+  Widget _buildAssignedAgents(BuildContext context, bool isDark, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(ViernesSpacing.md),
       decoration: BoxDecoration(
@@ -410,7 +412,8 @@ class ConversationReportModal extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Asignado: ${_formatDateTime(assign.createdAt)}',
+                        l10n?.assignedTimestamp(_formatDateTime(assign.createdAt)) ??
+                            'Assigned: ${_formatDateTime(assign.createdAt)}',
                         style: ViernesTextStyles.bodySmall.copyWith(
                           color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
                           fontSize: 11,
@@ -454,6 +457,8 @@ class ConversationReportModal extends StatelessWidget {
     );
   }
 
+  /// Returns color based on priority value from API.
+  /// Handles both English and Spanish API values for compatibility.
   Color _getPriorityColor(String? priority) {
     switch (priority?.toLowerCase()) {
       case 'urgent':

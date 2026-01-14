@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
@@ -30,6 +31,7 @@ class DeleteNoteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
       backgroundColor: ViernesColors.getControlBackground(isDark),
@@ -45,7 +47,7 @@ class DeleteNoteDialog extends StatelessWidget {
           ),
           const SizedBox(width: ViernesSpacing.sm),
           Text(
-            'Eliminar nota',
+            l10n?.deleteNoteTitle ?? 'Delete Note',
             style: ViernesTextStyles.h6.copyWith(
               color: ViernesColors.getTextColor(isDark),
             ),
@@ -53,7 +55,7 @@ class DeleteNoteDialog extends StatelessWidget {
         ],
       ),
       content: Text(
-        '¿Estás seguro de que deseas eliminar esta nota? Esta acción no se puede deshacer.',
+        l10n?.deleteNoteConfirmation ?? 'Are you sure you want to delete this note? This action cannot be undone.',
         style: ViernesTextStyles.bodyText.copyWith(
           color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.8),
         ),
@@ -62,7 +64,7 @@ class DeleteNoteDialog extends StatelessWidget {
         TextButton(
           onPressed: onCancel,
           child: Text(
-            'Cancelar',
+            l10n?.cancel ?? 'Cancel',
             style: ViernesTextStyles.buttonMedium.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
             ),
@@ -77,7 +79,7 @@ class DeleteNoteDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text('Eliminar'),
+          child: Text(l10n?.delete ?? 'Delete'),
         ),
       ],
     );

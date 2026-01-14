@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../../core/theme/viernes_colors.dart';
 import '../../../../../../core/theme/viernes_spacing.dart';
 
@@ -65,6 +66,8 @@ class EmojiPickerPanel extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, bool isDark) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: ViernesSpacing.md,
@@ -86,7 +89,7 @@ class EmojiPickerPanel extends StatelessWidget {
           ),
           const SizedBox(width: ViernesSpacing.sm),
           Text(
-            'Emojis',
+            l10n?.emojis ?? 'Emojis',
             style: TextStyle(
               color: ViernesColors.getTextColor(isDark),
               fontWeight: FontWeight.w600,

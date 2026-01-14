@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 
@@ -23,6 +24,7 @@ class PriorityBadge extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context);
     final config = _getPriorityConfig(priority!);
 
     return Container(
@@ -48,7 +50,7 @@ class PriorityBadge extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            priority!.toUpperCase(),
+            _getLocalizedPriority(priority!, l10n),
             style: ViernesTextStyles.labelSmall.copyWith(
               color: config.color,
               fontSize: fontSize ?? 10,
@@ -58,6 +60,19 @@ class PriorityBadge extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getLocalizedPriority(String priority, AppLocalizations? l10n) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return l10n?.priorityHigh ?? 'HIGH';
+      case 'medium':
+        return l10n?.priorityMedium ?? 'MEDIUM';
+      case 'low':
+        return l10n?.priorityLow ?? 'LOW';
+      default:
+        return priority.toUpperCase();
+    }
   }
 
   _PriorityConfig _getPriorityConfig(String priority) {

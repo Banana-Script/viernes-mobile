@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../customers/domain/entities/conversation_entity.dart';
@@ -162,6 +163,7 @@ class _ConversationCardState extends State<ConversationCard>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = ViernesColors.getTextColor(isDark);
     final priority = _getVisualPriority(context);
@@ -201,7 +203,7 @@ class _ConversationCardState extends State<ConversationCard>
                         children: [
                           Expanded(
                             child: Text(
-                              widget.conversation.user?.fullname ?? 'Unknown Customer',
+                              widget.conversation.user?.fullname ?? l10n?.unknownCustomer ?? 'Unknown Customer',
                               style: ViernesTextStyles.h6.copyWith(
                                 color: textColor,
                               ),
@@ -211,7 +213,7 @@ class _ConversationCardState extends State<ConversationCard>
                           ),
                           const SizedBox(width: ViernesSpacing.xs),
                           Text(
-                            _formatTimeAgo(widget.conversation.updatedAt),
+                            _formatTimeAgo(context, widget.conversation.updatedAt),
                             style: ViernesTextStyles.bodySmall.copyWith(
                               color: textColor.withValues(alpha: 0.5),
                               fontSize: 11,
@@ -234,7 +236,7 @@ class _ConversationCardState extends State<ConversationCard>
 
                           // Channel name
                           Text(
-                            _getChannelName(),
+                            _getChannelName(context),
                             style: ViernesTextStyles.bodySmall.copyWith(
                               color: textColor.withValues(alpha: 0.6),
                               fontSize: 11,
@@ -263,7 +265,7 @@ class _ConversationCardState extends State<ConversationCard>
                           // Agent name
                           Expanded(
                             child: Text(
-                              _getAgentName(),
+                              _getAgentName(context),
                               style: ViernesTextStyles.bodySmall.copyWith(
                                 color: textColor.withValues(alpha: 0.6),
                                 fontStyle: widget.conversation.agent == null
@@ -324,8 +326,9 @@ class _ConversationCardState extends State<ConversationCard>
                 }
 
                 return _buildMessagePreview(
+                  context: context,
                   textColor: textColor,
-                  message: firstMessage ?? _getMessagePreview(),
+                  message: firstMessage ?? _getMessagePreview(context),
                   isDark: isDark,
                 );
               },
@@ -532,10 +535,12 @@ class _ConversationCardState extends State<ConversationCard>
 
   /// Builds the message preview with sender and timestamp
   Widget _buildMessagePreview({
+    required BuildContext context,
     required Color textColor,
     required String message,
     required bool isDark,
   }) {
+    final l10n = AppLocalizations.of(context);
     // Determine sender based on agent assignment
     // If message starts with an agent indicator or we can infer it
     String senderLabel;
@@ -545,14 +550,14 @@ class _ConversationCardState extends State<ConversationCard>
     // Otherwise assume customer. For better accuracy, we'd need message metadata.
     if (widget.conversation.agent != null) {
       // Has agent assigned - could be agent or customer reply
-      senderLabel = 'Customer';
+      senderLabel = l10n?.senderCustomer ?? 'Customer';
       senderIcon = Icons.person_outline;
     } else if (message.toLowerCase().contains('[viernes]') ||
                message.toLowerCase().contains('asistente')) {
-      senderLabel = 'Viernes';
+      senderLabel = l10n?.senderViernes ?? 'Viernes';
       senderIcon = Icons.smart_toy_outlined;
     } else {
-      senderLabel = 'Customer';
+      senderLabel = l10n?.senderCustomer ?? 'Customer';
       senderIcon = Icons.person_outline;
     }
 
@@ -586,7 +591,7 @@ class _ConversationCardState extends State<ConversationCard>
               ),
             ),
             Text(
-              _formatTimeAgo(widget.conversation.updatedAt),
+              _formatTimeAgo(context, widget.conversation.updatedAt),
               style: ViernesTextStyles.bodySmall.copyWith(
                 color: textColor.withValues(alpha: 0.5),
                 fontSize: 10,
@@ -646,39 +651,43 @@ class _ConversationCardState extends State<ConversationCard>
     return Icons.chat_outlined;
   }
 
-  String _getChannelName() {
+  String _getChannelName(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final instance = widget.conversation.user?.instance;
 
     if (instance == null || instance.isEmpty) {
-      return widget.conversation.type == ConversationType.call ? 'Call' : 'Chat';
+      return widget.conversation.type == ConversationType.call
+          ? l10n?.channelCall ?? 'Call'
+          : l10n?.channelChat ?? 'Chat';
     }
 
     // Extract channel name from instance (e.g., "whatsapp_business" -> "WhatsApp")
     final lowerInstance = instance.toLowerCase();
 
     if (lowerInstance.contains('whatsapp')) {
-      return 'WhatsApp';
+      return l10n?.channelWhatsApp ?? 'WhatsApp';
     } else if (lowerInstance.contains('instagram')) {
-      return 'Instagram';
+      return l10n?.channelInstagram ?? 'Instagram';
     } else if (lowerInstance.contains('messenger')) {
-      return 'Messenger';
+      return l10n?.channelMessenger ?? 'Messenger';
     } else if (lowerInstance.contains('facebook')) {
-      return 'Facebook';
+      return l10n?.channelFacebook ?? 'Facebook';
     } else if (lowerInstance.contains('email') || lowerInstance.contains('mail')) {
-      return 'Email';
+      return l10n?.channelEmail ?? 'Email';
     } else if (lowerInstance.contains('web')) {
-      return 'Web';
+      return l10n?.channelWeb ?? 'Web';
     } else if (lowerInstance.contains('sms')) {
-      return 'SMS';
+      return l10n?.channelSms ?? 'SMS';
     }
 
     // Capitalize first letter of instance as fallback
-    if (instance.isEmpty) return 'Unknown';
+    if (instance.isEmpty) return l10n?.unknown ?? 'Unknown';
     return instance[0].toUpperCase() +
            (instance.length > 1 ? instance.substring(1).toLowerCase() : '');
   }
 
-  String _getAgentName() {
+  String _getAgentName(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Check if there's an agent assigned
     if (widget.conversation.agent != null) {
       return widget.conversation.agent!.fullname;
@@ -689,10 +698,11 @@ class _ConversationCardState extends State<ConversationCard>
       return widget.conversation.assigns.first.user.fullname;
     }
 
-    return 'Viernes';
+    return l10n?.senderViernes ?? 'Viernes';
   }
 
-  String _formatTimeAgo(DateTime dateTime) {
+  String _formatTimeAgo(BuildContext context, DateTime dateTime) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
@@ -703,11 +713,12 @@ class _ConversationCardState extends State<ConversationCard>
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m';
     } else {
-      return 'now';
+      return l10n?.timeNow ?? 'now';
     }
   }
 
-  String _getMessagePreview() {
+  String _getMessagePreview(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Fallback message when first message hasn't loaded yet
     // Check memory field first as a backup
     if (widget.conversation.memory != null && widget.conversation.memory!.isNotEmpty) {
@@ -715,9 +726,9 @@ class _ConversationCardState extends State<ConversationCard>
     }
 
     if (widget.conversation.type == ConversationType.call) {
-      return 'Phone call conversation';
+      return l10n?.messagePreviewCall ?? 'Phone call conversation';
     }
 
-    return 'No messages yet';
+    return l10n?.messagePreviewEmpty ?? 'No messages yet';
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../../core/theme/viernes_colors.dart';
 import '../../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../../core/theme/viernes_text_styles.dart';
@@ -60,6 +61,7 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       width: 300,
@@ -82,20 +84,20 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Header
-          _buildHeader(isDark),
+          _buildHeader(isDark, l10n),
           // Search field
-          _buildSearchField(isDark),
+          _buildSearchField(isDark, l10n),
           const Divider(height: 1),
           // Quick reply list
           Flexible(
-            child: _buildQuickReplyList(isDark),
+            child: _buildQuickReplyList(isDark, l10n),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader(bool isDark, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: ViernesSpacing.md,
@@ -117,7 +119,7 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
           ),
           const SizedBox(width: ViernesSpacing.sm),
           Text(
-            'Quick Replies',
+            l10n?.quickReplies ?? 'Quick Replies',
             style: TextStyle(
               color: ViernesColors.getTextColor(isDark),
               fontWeight: FontWeight.w600,
@@ -138,7 +140,7 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
     );
   }
 
-  Widget _buildSearchField(bool isDark) {
+  Widget _buildSearchField(bool isDark, AppLocalizations? l10n) {
     return Padding(
       padding: const EdgeInsets.all(ViernesSpacing.sm),
       child: TextField(
@@ -148,7 +150,7 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
           color: ViernesColors.getTextColor(isDark),
         ),
         decoration: InputDecoration(
-          hintText: 'Search quick replies...',
+          hintText: l10n?.searchQuickReplies ?? 'Search quick replies...',
           hintStyle: ViernesTextStyles.bodySmall.copyWith(
             color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.5),
           ),
@@ -184,7 +186,7 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
     );
   }
 
-  Widget _buildQuickReplyList(bool isDark) {
+  Widget _buildQuickReplyList(bool isDark, AppLocalizations? l10n) {
     if (widget.isLoading && widget.quickReplies.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(ViernesSpacing.lg),
@@ -197,7 +199,7 @@ class _QuickReplySelectorState extends State<QuickReplySelector> {
         padding: const EdgeInsets.all(ViernesSpacing.lg),
         child: Center(
           child: Text(
-            'No quick replies found',
+            l10n?.noQuickRepliesFound ?? 'No quick replies found',
             style: ViernesTextStyles.bodySmall.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
             ),

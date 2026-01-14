@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../../domain/entities/conversation_filters.dart';
 import '../providers/conversation_provider.dart';
@@ -43,9 +44,23 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     Navigator.pop(context);
   }
 
+  String _getPriorityLabel(String priority, AppLocalizations? l10n) {
+    switch (priority) {
+      case 'high':
+        return l10n?.priorityHigh ?? 'HIGH';
+      case 'medium':
+        return l10n?.priorityMedium ?? 'MEDIUM';
+      case 'low':
+        return l10n?.priorityLow ?? 'LOW';
+      default:
+        return priority.toUpperCase();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
@@ -60,7 +75,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
         ),
         child: Column(
           children: [
-            _buildHeader(isDark),
+            _buildHeader(isDark, l10n),
             Expanded(
               child: ListView(
                 controller: scrollController,
@@ -69,7 +84,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
                   vertical: ViernesSpacing.sm,
                 ),
                 children: [
-                  _buildStatusFilter(isDark),
+                  _buildStatusFilter(isDark, l10n),
                   const SizedBox(height: ViernesSpacing.md),
                   // Agent filter - only show in "All Conversations" mode
                   Consumer<ConversationProvider>(
@@ -77,7 +92,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
                       if (provider.viewMode == ConversationViewMode.all) {
                         return Column(
                           children: [
-                            _buildAgentFilter(isDark),
+                            _buildAgentFilter(isDark, l10n),
                             const SizedBox(height: ViernesSpacing.md),
                           ],
                         );
@@ -85,23 +100,23 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
                       return const SizedBox.shrink();
                     },
                   ),
-                  _buildPriorityFilter(isDark),
+                  _buildPriorityFilter(isDark, l10n),
                   const SizedBox(height: ViernesSpacing.md),
-                  _buildTagFilter(isDark),
+                  _buildTagFilter(isDark, l10n),
                   const SizedBox(height: ViernesSpacing.md),
-                  _buildDateRangeFilter(isDark),
+                  _buildDateRangeFilter(isDark, l10n),
                   const SizedBox(height: ViernesSpacing.xl),
                 ],
               ),
             ),
-            _buildFooter(isDark),
+            _buildFooter(isDark, l10n),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader(bool isDark, AppLocalizations? l10n) {
     return Container(
       padding: const EdgeInsets.all(ViernesSpacing.md),
       decoration: BoxDecoration(
@@ -115,7 +130,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
       child: Row(
         children: [
           Text(
-            'Filters',
+            l10n?.filtersTitle ?? 'Filters',
             style: ViernesTextStyles.h6.copyWith(
               color: ViernesColors.getTextColor(isDark),
             ),
@@ -133,7 +148,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     );
   }
 
-  Widget _buildFooter(bool isDark) {
+  Widget _buildFooter(bool isDark, AppLocalizations? l10n) {
     final hasActiveFilters = _filters.hasActiveFilters;
 
     return Container(
@@ -171,7 +186,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
                     borderRadius: BorderRadius.circular(ViernesSpacing.radiusMd),
                     child: Center(
                       child: Text(
-                        'Clear Filters',
+                        l10n?.clearFiltersButton ?? 'Clear Filters',
                         style: ViernesTextStyles.bodyText.copyWith(
                           fontWeight: FontWeight.w600,
                           color: hasActiveFilters
@@ -190,7 +205,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
             Expanded(
               flex: 2,
               child: ViernesGradientButton(
-                text: 'Apply Filters',
+                text: l10n?.applyFiltersButton ?? 'Apply Filters',
                 onPressed: _applyFilters,
                 height: 44,
               ),
@@ -201,13 +216,13 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     );
   }
 
-  Widget _buildStatusFilter(bool isDark) {
+  Widget _buildStatusFilter(bool isDark, AppLocalizations? l10n) {
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
         final statuses = provider.availableStatuses;
 
         return _buildFilterSection(
-          title: 'Status',
+          title: l10n?.filterStatus ?? 'Status',
           isDark: isDark,
           child: Wrap(
             spacing: ViernesSpacing.sm,
@@ -249,7 +264,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     );
   }
 
-  Widget _buildPriorityFilter(bool isDark) {
+  Widget _buildPriorityFilter(bool isDark, AppLocalizations? l10n) {
     final priorities = ['high', 'medium', 'low'];
     final priorityColors = {
       'high': ViernesColors.danger,
@@ -258,7 +273,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     };
 
     return _buildFilterSection(
-      title: 'Priority',
+      title: l10n?.filterPriority ?? 'Priority',
       isDark: isDark,
       child: Wrap(
         spacing: ViernesSpacing.sm,
@@ -279,7 +294,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
                   ),
                 ),
                 const SizedBox(width: 6),
-                Text(priority.toUpperCase()),
+                Text(_getPriorityLabel(priority, l10n)),
               ],
             ),
             selected: isSelected,
@@ -310,28 +325,28 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     );
   }
 
-  Widget _buildAgentFilter(bool isDark) {
+  Widget _buildAgentFilter(bool isDark, AppLocalizations? l10n) {
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
         final agents = provider.availableAgents;
 
         return _buildFilterSection(
-          title: 'Assigned To',
+          title: l10n?.filterAssignedTo ?? 'Assigned To',
           isDark: isDark,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Viernes (unassigned) option
               CheckboxListTile(
-                title: const Row(
+                title: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.smart_toy,
                       size: 20,
                       color: ViernesColors.accent,
                     ),
-                    SizedBox(width: 8),
-                    Text('Viernes (Unassigned)'),
+                    const SizedBox(width: 8),
+                    Text(l10n?.viernesUnassignedFilter ?? 'Viernes (Unassigned)'),
                   ],
                 ),
                 value: _filters.agentIds.contains(-1),
@@ -381,7 +396,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     );
   }
 
-  Widget _buildTagFilter(bool isDark) {
+  Widget _buildTagFilter(bool isDark, AppLocalizations? l10n) {
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
         final tags = provider.availableTags;
@@ -391,7 +406,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
         }
 
         return _buildFilterSection(
-          title: 'Tags',
+          title: l10n?.filterTags ?? 'Tags',
           isDark: isDark,
           child: Wrap(
             spacing: ViernesSpacing.sm,
@@ -431,17 +446,18 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     );
   }
 
-  Widget _buildDateRangeFilter(bool isDark) {
+  Widget _buildDateRangeFilter(bool isDark, AppLocalizations? l10n) {
     return _buildFilterSection(
-      title: 'Conversation Start Date',
+      title: l10n?.filterDateRange ?? 'Conversation Start Date',
       isDark: isDark,
       child: Row(
         children: [
           Expanded(
             child: _buildDateField(
-              label: 'From',
+              label: l10n?.from ?? 'From',
               date: _filters.dateFrom,
               isDark: isDark,
+              l10n: l10n,
               onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -460,9 +476,10 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
           const SizedBox(width: ViernesSpacing.md),
           Expanded(
             child: _buildDateField(
-              label: 'To',
+              label: l10n?.to ?? 'To',
               date: _filters.dateTo,
               isDark: isDark,
+              l10n: l10n,
               onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -487,6 +504,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
     required String label,
     required DateTime? date,
     required bool isDark,
+    required AppLocalizations? l10n,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -503,7 +521,7 @@ class _ConversationFilterModalState extends State<ConversationFilterModal> {
           ),
         ),
         child: Text(
-          date != null ? '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}' : 'Select date',
+          date != null ? '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}' : (l10n?.selectDate ?? 'Select date'),
           style: ViernesTextStyles.bodyText.copyWith(
             color: date != null
                 ? ViernesColors.getTextColor(isDark)

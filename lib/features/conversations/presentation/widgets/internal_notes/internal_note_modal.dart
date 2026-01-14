@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
@@ -61,6 +62,7 @@ class _InternalNoteModalState extends State<InternalNoteModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
       backgroundColor: ViernesColors.getControlBackground(isDark),
@@ -92,7 +94,7 @@ class _InternalNoteModalState extends State<InternalNoteModal> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Esta nota será visible solo para agentes',
+              l10n?.noteVisibleToAgents ?? 'This note will only be visible to agents',
               style: ViernesTextStyles.bodySmall.copyWith(
                 color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
               ),
@@ -103,7 +105,7 @@ class _InternalNoteModalState extends State<InternalNoteModal> {
               maxLines: 5,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: 'Escribe tu nota aquí...',
+                hintText: l10n?.writeNoteHint ?? 'Write your note here...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
@@ -139,10 +141,10 @@ class _InternalNoteModalState extends State<InternalNoteModal> {
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Por favor escribe una nota';
+                  return l10n?.pleaseWriteNote ?? 'Please write a note';
                 }
                 if (value.trim().length < 3) {
-                  return 'La nota debe tener al menos 3 caracteres';
+                  return l10n?.noteTooShort ?? 'Note must be at least 3 characters';
                 }
                 return null;
               },
@@ -154,7 +156,7 @@ class _InternalNoteModalState extends State<InternalNoteModal> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(
-            'Cancelar',
+            l10n?.cancel ?? 'Cancel',
             style: ViernesTextStyles.buttonMedium.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
             ),
@@ -170,7 +172,9 @@ class _InternalNoteModalState extends State<InternalNoteModal> {
             ),
           ),
           child: Text(
-            widget.initialContent != null ? 'Actualizar' : 'Guardar',
+            widget.initialContent != null
+                ? (l10n?.update ?? 'Update')
+                : (l10n?.save ?? 'Save'),
           ),
         ),
       ],

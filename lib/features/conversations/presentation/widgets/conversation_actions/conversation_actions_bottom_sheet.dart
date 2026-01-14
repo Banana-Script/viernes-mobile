@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../auth/domain/entities/user_entity.dart';
 import '../../../../customers/domain/entities/conversation_entity.dart';
 
@@ -82,6 +83,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -106,7 +108,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(ViernesSpacing.md),
               child: Text(
-                'Acciones',
+                l10n?.actionsTitle ?? 'Actions',
                 style: ViernesTextStyles.h6.copyWith(
                   color: ViernesColors.getTextColor(isDark),
                 ),
@@ -116,7 +118,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
             // Always available actions
             _ActionTile(
               icon: Icons.info_outline,
-              title: 'Ver información',
+              title: l10n?.actionViewInfo ?? 'View information',
               onTap: () {
                 Navigator.pop(context);
                 onViewInfo?.call();
@@ -124,7 +126,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
             ),
             _ActionTile(
               icon: Icons.analytics_outlined,
-              title: 'Ver reporte',
+              title: l10n?.actionViewReport ?? 'View report',
               onTap: () {
                 Navigator.pop(context);
                 onViewReport?.call();
@@ -132,7 +134,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
             ),
             _ActionTile(
               icon: Icons.note_alt_outlined,
-              title: 'Ver notas internas',
+              title: l10n?.actionViewInternalNotes ?? 'View internal notes',
               onTap: () {
                 Navigator.pop(context);
                 onViewInternalNotes?.call();
@@ -140,7 +142,9 @@ class ConversationActionsBottomSheet extends StatelessWidget {
             ),
             _ActionTile(
               icon: showToolCalls ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              title: showToolCalls ? 'Ocultar Tool Calls' : 'Mostrar Tool Calls',
+              title: showToolCalls
+                  ? (l10n?.actionHideToolCalls ?? 'Hide Tool Calls')
+                  : (l10n?.actionShowToolCalls ?? 'Show Tool Calls'),
               onTap: () {
                 Navigator.pop(context);
                 onToggleToolCalls?.call();
@@ -151,7 +155,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
               const Divider(height: 1),
               _ActionTile(
                 icon: Icons.check_circle_outline,
-                title: 'Completar exitosamente',
+                title: l10n?.actionCompleteSuccessful ?? 'Complete successfully',
                 iconColor: ViernesColors.success,
                 onTap: () {
                   Navigator.pop(context);
@@ -160,7 +164,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
               ),
               _ActionTile(
                 icon: Icons.cancel_outlined,
-                title: 'Completar sin éxito',
+                title: l10n?.actionCompleteUnsuccessful ?? 'Complete unsuccessfully',
                 iconColor: ViernesColors.danger,
                 onTap: () {
                   Navigator.pop(context);
@@ -171,7 +175,7 @@ class ConversationActionsBottomSheet extends StatelessWidget {
               if (_isAssignedAgent)
                 _ActionTile(
                   icon: Icons.swap_horiz,
-                  title: 'Solicitar reasignación',
+                  title: l10n?.actionRequestReassignment ?? 'Request reassignment',
                   onTap: () {
                     Navigator.pop(context);
                     onRequestReassignment?.call();

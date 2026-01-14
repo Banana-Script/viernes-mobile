@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -80,7 +81,7 @@ class MessageBubble extends StatelessWidget {
                         letterSpacing: 0.15,
                       ),
                     ),
-                  if (message.hasMedia) _buildMediaPreview(),
+                  if (message.hasMedia) _buildMediaPreview(context),
                   const SizedBox(height: 4),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -153,7 +154,9 @@ class MessageBubble extends StatelessWidget {
     }
   }
 
-  Widget _buildMediaPreview() {
+  Widget _buildMediaPreview(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (message.isImage) {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
@@ -191,7 +194,7 @@ class MessageBubble extends StatelessWidget {
             const SizedBox(width: 8),
             Flexible(
               child: Text(
-                message.fileName ?? 'File',
+                message.fileName ?? l10n?.file ?? 'File',
                 style: ViernesTextStyles.bodySmall.copyWith(
                   color: message.isAgentMessage
                       ? Colors.black

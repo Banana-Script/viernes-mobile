@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../../core/theme/viernes_colors.dart';
 import '../../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../../core/theme/viernes_text_styles.dart';
@@ -59,7 +60,7 @@ class FilePreviewChip extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
-                _buildStatusRow(isDark),
+                _buildStatusRow(context, isDark),
               ],
             ),
           ),
@@ -133,7 +134,9 @@ class FilePreviewChip extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusRow(bool isDark) {
+  Widget _buildStatusRow(BuildContext context, bool isDark) {
+    final l10n = AppLocalizations.of(context);
+
     if (attachment.isUploading) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -163,7 +166,7 @@ class FilePreviewChip extends StatelessWidget {
 
     if (attachment.hasError) {
       return Text(
-        'Error',
+        l10n?.errorLabel ?? 'Error',
         style: ViernesTextStyles.caption.copyWith(
           color: ViernesColors.danger,
           fontSize: 10,

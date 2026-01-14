@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
@@ -24,6 +25,7 @@ class ConversationViewToggle extends StatelessWidget {
 
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
+        final l10n = AppLocalizations.of(context);
         final showAllConversations = provider.viewMode == ConversationViewMode.all;
 
         return Container(
@@ -42,7 +44,7 @@ class ConversationViewToggle extends StatelessWidget {
           child: Row(
             children: [
               _buildOption(
-                label: 'All Conversations',
+                label: l10n?.allConversations ?? 'All Conversations',
                 isSelected: showAllConversations,
                 onTap: () => provider.setViewMode(ConversationViewMode.all),
                 isDark: isDark,
@@ -59,7 +61,7 @@ class ConversationViewToggle extends StatelessWidget {
                     : const Color(0xFFe5e7eb).withValues(alpha: 0.5),
               ),
               _buildOption(
-                label: 'My Conversations',
+                label: l10n?.myConversations ?? 'My Conversations',
                 isSelected: !showAllConversations,
                 onTap: () => provider.setViewMode(ConversationViewMode.my),
                 isDark: isDark,

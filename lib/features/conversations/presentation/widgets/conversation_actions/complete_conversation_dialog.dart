@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 
 /// Complete Conversation Dialog
 ///
@@ -41,16 +42,19 @@ class CompleteConversationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     final title = isSuccessful
-        ? 'Completar conversación exitosamente'
-        : 'Completar conversación sin éxito';
+        ? l10n?.completeDialogSuccessfulTitle ?? 'Complete conversation successfully'
+        : l10n?.completeDialogUnsuccessfulTitle ?? 'Complete conversation unsuccessfully';
 
     final message = isSuccessful
-        ? '¿Estás seguro de que deseas marcar esta conversación como completada exitosamente? Esta acción no se puede deshacer.'
-        : '¿Estás seguro de que deseas marcar esta conversación como completada sin éxito? Esta acción no se puede deshacer.';
+        ? l10n?.completeDialogSuccessfulMessage ?? 'Are you sure you want to mark this conversation as completed successfully? This action cannot be undone.'
+        : l10n?.completeDialogUnsuccessfulMessage ?? 'Are you sure you want to mark this conversation as completed unsuccessfully? This action cannot be undone.';
 
-    final confirmText = isSuccessful ? 'Completar' : 'Completar sin éxito';
+    final confirmText = isSuccessful
+        ? l10n?.completeButton ?? 'Complete'
+        : l10n?.completeUnsuccessfulButton ?? 'Complete unsuccessfully';
     final confirmColor = isSuccessful ? ViernesColors.success : ViernesColors.danger;
 
     return AlertDialog(
@@ -86,7 +90,7 @@ class CompleteConversationDialog extends StatelessWidget {
         TextButton(
           onPressed: isLoading ? null : onCancel,
           child: Text(
-            'Cancelar',
+            l10n?.cancel ?? 'Cancel',
             style: ViernesTextStyles.buttonMedium.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
             ),

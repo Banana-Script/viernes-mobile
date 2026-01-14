@@ -493,8 +493,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCustomersYet => 'No customers have been added yet';
 
   @override
-  String get tryAdjustingFilters =>
-      'Try adjusting your filters or search query';
+  String get tryAdjustingFilters => 'Try adjusting your filters';
 
   @override
   String get loadingCustomerDetails => 'Loading customer details...';
@@ -743,4 +742,587 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneCallType => 'Phone Call';
+
+  @override
+  String get searchConversations => 'Search conversations...';
+
+  @override
+  String get errorLoadingConversations => 'Error loading conversations';
+
+  @override
+  String get noConversationsFound => 'No conversations found';
+
+  @override
+  String get conversationsWillAppearHere => 'Conversations will appear here';
+
+  @override
+  String get errorConversationNotLoaded => 'Error: Conversation not loaded';
+
+  @override
+  String get errorStatusesNotLoaded =>
+      'Error: Status options not loaded. Please try again.';
+
+  @override
+  String errorStatusNotFound(Object statusValue) {
+    return 'Error: Status $statusValue not found';
+  }
+
+  @override
+  String get errorUpdatingStatus => 'Error updating status';
+
+  @override
+  String get internalNotesComingSoon => 'Internal notes feature coming soon';
+
+  @override
+  String get reassignmentComingSoon => 'Reassignment feature coming soon';
+
+  @override
+  String get unknownCustomer => 'Unknown Customer';
+
+  @override
+  String get errorLoadingMessages => 'Error loading messages';
+
+  @override
+  String get unknownError => 'Unknown error';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get startTheConversation => 'Start the conversation';
+
+  @override
+  String get aiIsThinking => 'AI is thinking...';
+
+  @override
+  String userIsTyping(Object userName) {
+    return '$userName is typing...';
+  }
+
+  @override
+  String get typing => 'Typing...';
+
+  @override
+  String get assignedSuccessfully => 'Conversation assigned successfully';
+
+  @override
+  String failedToSendMessage(Object error) {
+    return 'Failed to send message: $error';
+  }
+
+  @override
+  String get filtersTitle => 'Filters';
+
+  @override
+  String get clearFiltersButton => 'Clear Filters';
+
+  @override
+  String get applyFiltersButton => 'Apply Filters';
+
+  @override
+  String get filterStatus => 'Status';
+
+  @override
+  String get filterPriority => 'Priority';
+
+  @override
+  String get priorityHigh => 'High';
+
+  @override
+  String get priorityMedium => 'Medium';
+
+  @override
+  String get priorityLow => 'Low';
+
+  @override
+  String get priorityNormal => 'Normal';
+
+  @override
+  String get filterAssignedTo => 'Assigned To';
+
+  @override
+  String get viernesUnassignedFilter => 'Viernes (Unassigned)';
+
+  @override
+  String get filterTags => 'Tags';
+
+  @override
+  String get filterDateRange => 'Conversation Start Date';
+
+  @override
+  String get from => 'From';
+
+  @override
+  String get to => 'To';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get senderCustomer => 'Customer';
+
+  @override
+  String get senderViernes => 'Viernes';
+
+  @override
+  String get channelCall => 'Call';
+
+  @override
+  String get channelChat => 'Chat';
+
+  @override
+  String get channelWhatsApp => 'WhatsApp';
+
+  @override
+  String get channelInstagram => 'Instagram';
+
+  @override
+  String get channelMessenger => 'Messenger';
+
+  @override
+  String get channelFacebook => 'Facebook';
+
+  @override
+  String get channelEmail => 'Email';
+
+  @override
+  String get channelWeb => 'Web';
+
+  @override
+  String get channelSms => 'SMS';
+
+  @override
+  String get agentViernesDefault => 'Viernes';
+
+  @override
+  String get timeNow => 'now';
+
+  @override
+  String get messagePreviewCall => 'Phone call conversation';
+
+  @override
+  String get messagePreviewEmpty => 'No messages yet';
+
+  @override
+  String get conversationLocked =>
+      'Conversation locked. Use a template to reopen.';
+
+  @override
+  String get conversationClosedSuccessful =>
+      'This conversation was closed successfully.';
+
+  @override
+  String get conversationClosedUnsuccessful =>
+      'This conversation was closed unsuccessfully.';
+
+  @override
+  String get conversationUnassigned =>
+      'Unassigned conversation. Assign it first.';
+
+  @override
+  String conversationAssignedTo(Object agentName) {
+    return 'Conversation assigned to: $agentName';
+  }
+
+  @override
+  String fileTooLarge(Object maxSize) {
+    return 'File too large. Maximum is $maxSize.';
+  }
+
+  @override
+  String permissionDeniedMedia(Object permissionType) {
+    return 'Permission denied. Enable access to $permissionType in Settings.';
+  }
+
+  @override
+  String errorSelectingImage(Object errorMessage) {
+    return 'Error selecting image: $errorMessage';
+  }
+
+  @override
+  String get unexpectedErrorImage => 'Unexpected error selecting image.';
+
+  @override
+  String errorSelectingDocument(Object errorMessage) {
+    return 'Error selecting document: $errorMessage';
+  }
+
+  @override
+  String get unexpectedErrorDocument => 'Unexpected error selecting document.';
+
+  @override
+  String get errorSendFailed => 'Error sending message';
+
+  @override
+  String get errorSelfAssignFailed =>
+      'Error assigning conversation to yourself';
+
+  @override
+  String get disabledUnassignedTitle => 'Unassigned conversation';
+
+  @override
+  String get disabledUnassignedHint => 'Assign it to be able to respond';
+
+  @override
+  String get assignToMeButton => 'Assign to me';
+
+  @override
+  String get camera => 'camera';
+
+  @override
+  String get gallery => 'gallery';
+
+  @override
+  String get actionsTitle => 'Actions';
+
+  @override
+  String get actionViewInfo => 'View information';
+
+  @override
+  String get actionViewReport => 'View report';
+
+  @override
+  String get actionViewInternalNotes => 'View internal notes';
+
+  @override
+  String get actionHideToolCalls => 'Hide Tool Calls';
+
+  @override
+  String get actionShowToolCalls => 'Show Tool Calls';
+
+  @override
+  String get actionCompleteSuccessful => 'Complete successfully';
+
+  @override
+  String get actionCompleteUnsuccessful => 'Complete unsuccessfully';
+
+  @override
+  String get actionRequestReassignment => 'Request reassignment';
+
+  @override
+  String get completeDialogSuccessfulTitle =>
+      'Complete conversation successfully';
+
+  @override
+  String get completeDialogUnsuccessfulTitle =>
+      'Complete conversation unsuccessfully';
+
+  @override
+  String get completeDialogSuccessfulMessage =>
+      'Are you sure you want to mark this conversation as completed successfully? This action cannot be undone.';
+
+  @override
+  String get completeDialogUnsuccessfulMessage =>
+      'Are you sure you want to mark this conversation as completed unsuccessfully? This action cannot be undone.';
+
+  @override
+  String get completeButton => 'Complete';
+
+  @override
+  String get completeUnsuccessfulButton => 'Complete unsuccessfully';
+
+  @override
+  String get attachmentOptionsTitle => 'Options';
+
+  @override
+  String get attachmentQuickReplies => 'Quick Replies';
+
+  @override
+  String get attachmentQuickRepliesHint => 'Predefined quick responses';
+
+  @override
+  String get attachmentTakePhoto => 'Take photo';
+
+  @override
+  String get attachmentTakePhotoHint => 'Use device camera';
+
+  @override
+  String get attachmentGallery => 'Gallery';
+
+  @override
+  String get attachmentGalleryHint => 'Select existing image';
+
+  @override
+  String get attachmentDocument => 'Document';
+
+  @override
+  String get attachmentDocumentHint => 'PDF, Word, Excel and more';
+
+  @override
+  String get infoPanelTitle => 'Conversation information';
+
+  @override
+  String get infoSectionCustomer => 'Customer';
+
+  @override
+  String get infoSectionStatus => 'Status';
+
+  @override
+  String get infoSectionAssignedAgent => 'Assigned agent';
+
+  @override
+  String get infoSectionDates => 'Dates';
+
+  @override
+  String get infoCreated => 'Created';
+
+  @override
+  String get infoLastUpdated => 'Last updated';
+
+  @override
+  String get infoSectionType => 'Type';
+
+  @override
+  String get infoType => 'Type';
+
+  @override
+  String get typeCall => 'Call';
+
+  @override
+  String get infoOrigin => 'Origin';
+
+  @override
+  String get infoSectionIdentifier => 'Identifier';
+
+  @override
+  String get infoId => 'ID';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get reportTitle => 'Conversation report';
+
+  @override
+  String get reportDuration => 'Duration';
+
+  @override
+  String get reportType => 'Type';
+
+  @override
+  String get reportPriority => 'Priority';
+
+  @override
+  String get reportStatus => 'Status';
+
+  @override
+  String get reportTimelineSection => 'Timeline';
+
+  @override
+  String get reportAssignedAgents => 'Assigned agents';
+
+  @override
+  String get reportTags => 'Tags';
+
+  @override
+  String get timelineConversationStarted => 'Conversation started';
+
+  @override
+  String get timelineFirstResponse => 'First response';
+
+  @override
+  String get timelineLastUpdated => 'Last updated';
+
+  @override
+  String assignedTimestamp(Object timestamp) {
+    return 'Assigned: $timestamp';
+  }
+
+  @override
+  String get reassignTitle => 'Request reassignment';
+
+  @override
+  String get reassignSearchHint => 'Search agent...';
+
+  @override
+  String get reassignError => 'Error requesting reassignment';
+
+  @override
+  String get reassignNoAgents => 'No agents available';
+
+  @override
+  String get reassignNoMatch => 'No agents found';
+
+  @override
+  String get reassignButton => 'Reassign';
+
+  @override
+  String get reassignCurrentBadge => 'Current';
+
+  @override
+  String get reassignUnavailableBadge => 'Unavailable';
+
+  @override
+  String get newInternalNoteTitle => 'New internal note';
+
+  @override
+  String get editInternalNoteTitle => 'Edit note';
+
+  @override
+  String get errorCreateNote => 'Error creating note';
+
+  @override
+  String get errorUpdateNote => 'Error updating note';
+
+  @override
+  String get errorDeleteNote => 'Error deleting note';
+
+  @override
+  String get internalNotesTitle => 'Internal notes';
+
+  @override
+  String get addNoteTooltip => 'Add note';
+
+  @override
+  String get errorLoadingNotes => 'Error loading notes';
+
+  @override
+  String get noInternalNotesTitle => 'No internal notes';
+
+  @override
+  String get internalNotesAgentsOnly =>
+      'Internal notes are only visible to agents';
+
+  @override
+  String get addNoteButton => 'Add note';
+
+  @override
+  String get allConversations => 'All Conversations';
+
+  @override
+  String get myConversations => 'My Conversations';
+
+  @override
+  String allTagsCount(Object count) {
+    return 'All Tags ($count)';
+  }
+
+  @override
+  String get conversationCompletedSuccessfully =>
+      'Conversation completed successfully';
+
+  @override
+  String get conversationCompletedUnsuccessfully =>
+      'Conversation completed unsuccessfully';
+
+  @override
+  String assignedToAgent(Object agentName) {
+    return 'Assigned: $agentName';
+  }
+
+  @override
+  String get file => 'File';
+
+  @override
+  String get deleteNoteTitle => 'Delete Note';
+
+  @override
+  String get deleteNoteConfirmation =>
+      'Are you sure you want to delete this note? This action cannot be undone.';
+
+  @override
+  String get statusStarted => 'STARTED';
+
+  @override
+  String get statusInProgress => 'IN PROGRESS';
+
+  @override
+  String get statusCompleted => 'COMPLETED';
+
+  @override
+  String get statusClosed => 'CLOSED';
+
+  @override
+  String get edited => '(edited)';
+
+  @override
+  String get now => 'Now';
+
+  @override
+  String get noteVisibleToAgents => 'This note will only be visible to agents';
+
+  @override
+  String get writeNoteHint => 'Write your note here...';
+
+  @override
+  String get pleaseWriteNote => 'Please write a note';
+
+  @override
+  String get noteTooShort => 'Note must be at least 3 characters';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get weekdayMon => 'Mon';
+
+  @override
+  String get weekdayTue => 'Tue';
+
+  @override
+  String get weekdayWed => 'Wed';
+
+  @override
+  String get weekdayThu => 'Thu';
+
+  @override
+  String get weekdayFri => 'Fri';
+
+  @override
+  String get weekdaySat => 'Sat';
+
+  @override
+  String get weekdaySun => 'Sun';
+
+  @override
+  String get quickReplies => 'Quick Replies';
+
+  @override
+  String get searchQuickReplies => 'Search quick replies...';
+
+  @override
+  String get noQuickRepliesFound => 'No quick replies found';
+
+  @override
+  String get emojis => 'Emojis';
+
+  @override
+  String get typeMessage => 'Type a message...';
+
+  @override
+  String get errorLabel => 'Error';
+
+  @override
+  String get noMessageText => 'No message text';
+
+  @override
+  String get sessionIdNotAvailable =>
+      'Session ID not available for this conversation';
+
+  @override
+  String get sendMessageError => 'Failed to send message';
+
+  @override
+  String failedToSendMedia(Object error) {
+    return 'Failed to send media: $error';
+  }
+
+  @override
+  String failedToUpdateStatus(Object error) {
+    return 'Failed to update status: $error';
+  }
+
+  @override
+  String failedToAssignConversation(Object error) {
+    return 'Failed to assign conversation: $error';
+  }
+
+  @override
+  String get couldNotIdentifyCurrentUser => 'Could not identify current user';
 }

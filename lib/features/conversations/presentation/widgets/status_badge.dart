@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 
@@ -19,6 +20,7 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final color = customColor ?? _getStatusColor(status);
 
     return Container(
@@ -35,7 +37,7 @@ class StatusBadge extends StatelessWidget {
         ),
       ),
       child: Text(
-        _getStatusLabel(status).toUpperCase(),
+        _getStatusLabel(status, l10n).toUpperCase(),
         style: ViernesTextStyles.labelSmall.copyWith(
           color: color,
           fontSize: fontSize ?? 10,
@@ -45,23 +47,23 @@ class StatusBadge extends StatelessWidget {
     );
   }
 
-  String _getStatusLabel(String status) {
+  String _getStatusLabel(String status, AppLocalizations? l10n) {
     final statusLower = status.toLowerCase();
     // Started / Open
     if (statusLower.contains('started') || statusLower.contains('open')) {
-      return 'STARTED';
+      return l10n?.statusStarted ?? 'STARTED';
     }
     // In progress / Pending
     if (statusLower.contains('progress') || statusLower.contains('pending')) {
-      return 'IN PROGRESS';
+      return l10n?.statusInProgress ?? 'IN PROGRESS';
     }
     // Completed / Resolved (successful)
     if (statusLower == 'completed' || statusLower.contains('resolved')) {
-      return 'COMPLETED';
+      return l10n?.statusCompleted ?? 'COMPLETED';
     }
     // Completed Unsuccessfully / Abandoned
     if (statusLower.contains('unsuccessfully') || statusLower.contains('abandoned')) {
-      return 'CLOSED';
+      return l10n?.statusClosed ?? 'CLOSED';
     }
     return status.toUpperCase();
   }

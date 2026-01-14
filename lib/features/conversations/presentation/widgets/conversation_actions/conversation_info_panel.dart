@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../customers/domain/entities/conversation_entity.dart';
 import '../status_badge.dart';
 import '../priority_badge.dart';
@@ -40,6 +41,7 @@ class ConversationInfoPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -72,7 +74,7 @@ class ConversationInfoPanel extends StatelessWidget {
                   ),
                   const SizedBox(width: ViernesSpacing.sm),
                   Text(
-                    'Información de la conversación',
+                    l10n?.infoPanelTitle ?? 'Conversation information',
                     style: ViernesTextStyles.h6.copyWith(
                       color: ViernesColors.getTextColor(isDark),
                     ),
@@ -92,20 +94,20 @@ class ConversationInfoPanel extends StatelessWidget {
                     _buildSection(
                       context,
                       isDark,
-                      title: 'Cliente',
+                      title: l10n?.infoSectionCustomer ?? 'Customer',
                       icon: Icons.person_outline,
                       children: [
                         _buildInfoRow(
                           context,
                           isDark,
-                          label: 'Nombre',
-                          value: conversation.user?.fullname ?? 'Desconocido',
+                          label: l10n?.name ?? 'Name',
+                          value: conversation.user?.fullname ?? (l10n?.unknown ?? 'Unknown'),
                         ),
                         if (conversation.user != null)
                           _buildInfoRow(
                             context,
                             isDark,
-                            label: 'Email',
+                            label: l10n?.email ?? 'Email',
                             value: conversation.user!.email,
                           ),
                       ],
@@ -116,7 +118,7 @@ class ConversationInfoPanel extends StatelessWidget {
                     _buildSection(
                       context,
                       isDark,
-                      title: 'Estado',
+                      title: l10n?.infoSectionStatus ?? 'Status',
                       icon: Icons.flag_outlined,
                       children: [
                         Row(
@@ -137,19 +139,19 @@ class ConversationInfoPanel extends StatelessWidget {
                       _buildSection(
                         context,
                         isDark,
-                        title: 'Agente asignado',
+                        title: l10n?.infoSectionAssignedAgent ?? 'Assigned agent',
                         icon: Icons.support_agent,
                         children: [
                           _buildInfoRow(
                             context,
                             isDark,
-                            label: 'Nombre',
+                            label: l10n?.name ?? 'Name',
                             value: conversation.agent!.fullname,
                           ),
                           _buildInfoRow(
                             context,
                             isDark,
-                            label: 'Email',
+                            label: l10n?.email ?? 'Email',
                             value: conversation.agent!.email,
                           ),
                         ],
@@ -161,20 +163,20 @@ class ConversationInfoPanel extends StatelessWidget {
                     _buildSection(
                       context,
                       isDark,
-                      title: 'Fechas',
+                      title: l10n?.infoSectionDates ?? 'Dates',
                       icon: Icons.schedule,
                       children: [
                         _buildInfoRow(
                           context,
                           isDark,
-                          label: 'Creada',
-                          value: _formatDateTime(conversation.createdAt),
+                          label: l10n?.infoCreated ?? 'Created',
+                          value: _formatDateTime(context, conversation.createdAt),
                         ),
                         _buildInfoRow(
                           context,
                           isDark,
-                          label: 'Última actualización',
-                          value: _formatDateTime(conversation.updatedAt),
+                          label: l10n?.infoLastUpdated ?? 'Last updated',
+                          value: _formatDateTime(context, conversation.updatedAt),
                         ),
                       ],
                     ),
@@ -184,19 +186,19 @@ class ConversationInfoPanel extends StatelessWidget {
                     _buildSection(
                       context,
                       isDark,
-                      title: 'Tipo',
+                      title: l10n?.infoSectionType ?? 'Type',
                       icon: Icons.chat_bubble_outline,
                       children: [
                         _buildInfoRow(
                           context,
                           isDark,
-                          label: 'Tipo',
-                          value: conversation.isCall ? 'Llamada' : 'Chat',
+                          label: l10n?.infoType ?? 'Type',
+                          value: conversation.isCall ? (l10n?.typeCall ?? 'Call') : (l10n?.chatType ?? 'Chat'),
                         ),
                         _buildInfoRow(
                           context,
                           isDark,
-                          label: 'Origen',
+                          label: l10n?.infoOrigin ?? 'Origin',
                           value: conversation.origin,
                         ),
                       ],
@@ -207,13 +209,13 @@ class ConversationInfoPanel extends StatelessWidget {
                     _buildSection(
                       context,
                       isDark,
-                      title: 'Identificador',
+                      title: l10n?.infoSectionIdentifier ?? 'Identifier',
                       icon: Icons.tag,
                       children: [
                         _buildInfoRow(
                           context,
                           isDark,
-                          label: 'ID',
+                          label: l10n?.infoId ?? 'ID',
                           value: '#${conversation.id}',
                         ),
                       ],
@@ -310,16 +312,17 @@ class ConversationInfoPanel extends StatelessWidget {
     );
   }
 
-  String _formatDateTime(DateTime dateTime) {
+  String _formatDateTime(BuildContext context, DateTime dateTime) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final diff = now.difference(dateTime);
 
     if (diff.inDays == 0) {
-      return 'Hoy ${_formatTime(dateTime)}';
+      return '${l10n?.today ?? 'Today'} ${_formatTime(dateTime)}';
     } else if (diff.inDays == 1) {
-      return 'Ayer ${_formatTime(dateTime)}';
+      return '${l10n?.yesterday ?? 'Yesterday'} ${_formatTime(dateTime)}';
     } else if (diff.inDays < 7) {
-      return '${_getDayName(dateTime.weekday)} ${_formatTime(dateTime)}';
+      return '${_getDayName(dateTime.weekday, l10n)} ${_formatTime(dateTime)}';
     } else {
       return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${_formatTime(dateTime)}';
     }
@@ -329,8 +332,16 @@ class ConversationInfoPanel extends StatelessWidget {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  String _getDayName(int weekday) {
-    const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  String _getDayName(int weekday, AppLocalizations? l10n) {
+    final days = [
+      l10n?.weekdayMon ?? 'Mon',
+      l10n?.weekdayTue ?? 'Tue',
+      l10n?.weekdayWed ?? 'Wed',
+      l10n?.weekdayThu ?? 'Thu',
+      l10n?.weekdayFri ?? 'Fri',
+      l10n?.weekdaySat ?? 'Sat',
+      l10n?.weekdaySun ?? 'Sun',
+    ];
     return days[weekday - 1];
   }
 }

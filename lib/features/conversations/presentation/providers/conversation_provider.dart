@@ -731,7 +731,7 @@ class ConversationProvider extends ChangeNotifier {
   /// Returns true on success, false on failure.
   Future<bool> assignConversationToMe(int conversationId, {bool reopen = false}) async {
     if (_currentUserAgentId == null) {
-      _errorMessage = 'No se pudo identificar el usuario actual';
+      _errorMessage = 'Could not identify current user';
       notifyListeners();
       return false;
     }

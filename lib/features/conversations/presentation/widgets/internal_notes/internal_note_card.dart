@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
@@ -24,6 +25,7 @@ class InternalNoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.all(ViernesSpacing.md),
@@ -69,7 +71,7 @@ class InternalNoteCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      _formatDate(note.createdAt),
+                      _formatDate(note.createdAt, l10n),
                       style: ViernesTextStyles.bodySmall.copyWith(
                         color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
                         fontSize: 11,
@@ -83,7 +85,7 @@ class InternalNoteCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(right: ViernesSpacing.sm),
                   child: Text(
-                    '(editada)',
+                    l10n?.edited ?? '(edited)',
                     style: ViernesTextStyles.bodySmall.copyWith(
                       color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.5),
                       fontStyle: FontStyle.italic,
@@ -102,7 +104,7 @@ class InternalNoteCard extends StatelessWidget {
                   ),
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(ViernesSpacing.xs),
-                  tooltip: 'Editar',
+                  tooltip: l10n?.edit ?? 'Edit',
                 ),
                 IconButton(
                   onPressed: onDelete,
@@ -113,7 +115,7 @@ class InternalNoteCard extends StatelessWidget {
                   ),
                   constraints: const BoxConstraints(),
                   padding: const EdgeInsets.all(ViernesSpacing.xs),
-                  tooltip: 'Eliminar',
+                  tooltip: l10n?.delete ?? 'Delete',
                 ),
               ],
             ],
@@ -138,18 +140,18 @@ class InternalNoteCard extends StatelessWidget {
     return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AppLocalizations? l10n) {
     final now = DateTime.now();
     final diff = now.difference(date);
 
     if (diff.inMinutes < 1) {
-      return 'Ahora';
+      return l10n?.now ?? 'Now';
     } else if (diff.inHours < 1) {
-      return 'Hace ${diff.inMinutes} min';
+      return l10n?.minutesAgo(diff.inMinutes) ?? '${diff.inMinutes}m ago';
     } else if (diff.inDays < 1) {
-      return 'Hace ${diff.inHours} h';
+      return l10n?.hoursAgo(diff.inHours) ?? '${diff.inHours}h ago';
     } else if (diff.inDays < 7) {
-      return 'Hace ${diff.inDays} días';
+      return l10n?.daysAgo(diff.inDays) ?? '${diff.inDays}d ago';
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

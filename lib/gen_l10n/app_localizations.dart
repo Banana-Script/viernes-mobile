@@ -1055,7 +1055,7 @@ abstract class AppLocalizations {
   /// No description provided for @tryAdjustingFilters.
   ///
   /// In en, this message translates to:
-  /// **'Try adjusting your filters or search query'**
+  /// **'Try adjusting your filters'**
   String get tryAdjustingFilters;
 
   /// No description provided for @loadingCustomerDetails.
@@ -1525,6 +1525,1086 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Phone Call'**
   String get phoneCallType;
+
+  /// No description provided for @searchConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search conversations...'**
+  String get searchConversations;
+
+  /// No description provided for @errorLoadingConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading conversations'**
+  String get errorLoadingConversations;
+
+  /// No description provided for @noConversationsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations found'**
+  String get noConversationsFound;
+
+  /// No description provided for @conversationsWillAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations will appear here'**
+  String get conversationsWillAppearHere;
+
+  /// No description provided for @errorConversationNotLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Conversation not loaded'**
+  String get errorConversationNotLoaded;
+
+  /// No description provided for @errorStatusesNotLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Status options not loaded. Please try again.'**
+  String get errorStatusesNotLoaded;
+
+  /// No description provided for @errorStatusNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Status {statusValue} not found'**
+  String errorStatusNotFound(Object statusValue);
+
+  /// No description provided for @errorUpdatingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating status'**
+  String get errorUpdatingStatus;
+
+  /// No description provided for @internalNotesComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal notes feature coming soon'**
+  String get internalNotesComingSoon;
+
+  /// No description provided for @reassignmentComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassignment feature coming soon'**
+  String get reassignmentComingSoon;
+
+  /// No description provided for @unknownCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Customer'**
+  String get unknownCustomer;
+
+  /// No description provided for @errorLoadingMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading messages'**
+  String get errorLoadingMessages;
+
+  /// No description provided for @unknownError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error'**
+  String get unknownError;
+
+  /// No description provided for @noMessagesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get noMessagesYet;
+
+  /// No description provided for @startTheConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the conversation'**
+  String get startTheConversation;
+
+  /// No description provided for @aiIsThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'AI is thinking...'**
+  String get aiIsThinking;
+
+  /// No description provided for @userIsTyping.
+  ///
+  /// In en, this message translates to:
+  /// **'{userName} is typing...'**
+  String userIsTyping(Object userName);
+
+  /// No description provided for @typing.
+  ///
+  /// In en, this message translates to:
+  /// **'Typing...'**
+  String get typing;
+
+  /// No description provided for @assignedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation assigned successfully'**
+  String get assignedSuccessfully;
+
+  /// No description provided for @failedToSendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message: {error}'**
+  String failedToSendMessage(Object error);
+
+  /// No description provided for @filtersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersTitle;
+
+  /// No description provided for @clearFiltersButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFiltersButton;
+
+  /// No description provided for @applyFiltersButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filters'**
+  String get applyFiltersButton;
+
+  /// No description provided for @filterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get filterStatus;
+
+  /// No description provided for @filterPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get filterPriority;
+
+  /// No description provided for @priorityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get priorityHigh;
+
+  /// No description provided for @priorityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get priorityMedium;
+
+  /// No description provided for @priorityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get priorityLow;
+
+  /// No description provided for @priorityNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get priorityNormal;
+
+  /// No description provided for @filterAssignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned To'**
+  String get filterAssignedTo;
+
+  /// No description provided for @viernesUnassignedFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Viernes (Unassigned)'**
+  String get viernesUnassignedFilter;
+
+  /// No description provided for @filterTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get filterTags;
+
+  /// No description provided for @filterDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Start Date'**
+  String get filterDateRange;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @senderCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get senderCustomer;
+
+  /// No description provided for @senderViernes.
+  ///
+  /// In en, this message translates to:
+  /// **'Viernes'**
+  String get senderViernes;
+
+  /// No description provided for @channelCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get channelCall;
+
+  /// No description provided for @channelChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get channelChat;
+
+  /// No description provided for @channelWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get channelWhatsApp;
+
+  /// No description provided for @channelInstagram.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram'**
+  String get channelInstagram;
+
+  /// No description provided for @channelMessenger.
+  ///
+  /// In en, this message translates to:
+  /// **'Messenger'**
+  String get channelMessenger;
+
+  /// No description provided for @channelFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Facebook'**
+  String get channelFacebook;
+
+  /// No description provided for @channelEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get channelEmail;
+
+  /// No description provided for @channelWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Web'**
+  String get channelWeb;
+
+  /// No description provided for @channelSms.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get channelSms;
+
+  /// No description provided for @agentViernesDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Viernes'**
+  String get agentViernesDefault;
+
+  /// No description provided for @timeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'now'**
+  String get timeNow;
+
+  /// No description provided for @messagePreviewCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone call conversation'**
+  String get messagePreviewCall;
+
+  /// No description provided for @messagePreviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get messagePreviewEmpty;
+
+  /// No description provided for @conversationLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation locked. Use a template to reopen.'**
+  String get conversationLocked;
+
+  /// No description provided for @conversationClosedSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation was closed successfully.'**
+  String get conversationClosedSuccessful;
+
+  /// No description provided for @conversationClosedUnsuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation was closed unsuccessfully.'**
+  String get conversationClosedUnsuccessful;
+
+  /// No description provided for @conversationUnassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned conversation. Assign it first.'**
+  String get conversationUnassigned;
+
+  /// No description provided for @conversationAssignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation assigned to: {agentName}'**
+  String conversationAssignedTo(Object agentName);
+
+  /// No description provided for @fileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'File too large. Maximum is {maxSize}.'**
+  String fileTooLarge(Object maxSize);
+
+  /// No description provided for @permissionDeniedMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied. Enable access to {permissionType} in Settings.'**
+  String permissionDeniedMedia(Object permissionType);
+
+  /// No description provided for @errorSelectingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error selecting image: {errorMessage}'**
+  String errorSelectingImage(Object errorMessage);
+
+  /// No description provided for @unexpectedErrorImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error selecting image.'**
+  String get unexpectedErrorImage;
+
+  /// No description provided for @errorSelectingDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Error selecting document: {errorMessage}'**
+  String errorSelectingDocument(Object errorMessage);
+
+  /// No description provided for @unexpectedErrorDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error selecting document.'**
+  String get unexpectedErrorDocument;
+
+  /// No description provided for @errorSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sending message'**
+  String get errorSendFailed;
+
+  /// No description provided for @errorSelfAssignFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Error assigning conversation to yourself'**
+  String get errorSelfAssignFailed;
+
+  /// No description provided for @disabledUnassignedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned conversation'**
+  String get disabledUnassignedTitle;
+
+  /// No description provided for @disabledUnassignedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign it to be able to respond'**
+  String get disabledUnassignedHint;
+
+  /// No description provided for @assignToMeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to me'**
+  String get assignToMeButton;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'gallery'**
+  String get gallery;
+
+  /// No description provided for @actionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actionsTitle;
+
+  /// No description provided for @actionViewInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'View information'**
+  String get actionViewInfo;
+
+  /// No description provided for @actionViewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'View report'**
+  String get actionViewReport;
+
+  /// No description provided for @actionViewInternalNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'View internal notes'**
+  String get actionViewInternalNotes;
+
+  /// No description provided for @actionHideToolCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Tool Calls'**
+  String get actionHideToolCalls;
+
+  /// No description provided for @actionShowToolCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Tool Calls'**
+  String get actionShowToolCalls;
+
+  /// No description provided for @actionCompleteSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete successfully'**
+  String get actionCompleteSuccessful;
+
+  /// No description provided for @actionCompleteUnsuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete unsuccessfully'**
+  String get actionCompleteUnsuccessful;
+
+  /// No description provided for @actionRequestReassignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Request reassignment'**
+  String get actionRequestReassignment;
+
+  /// No description provided for @completeDialogSuccessfulTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete conversation successfully'**
+  String get completeDialogSuccessfulTitle;
+
+  /// No description provided for @completeDialogUnsuccessfulTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete conversation unsuccessfully'**
+  String get completeDialogUnsuccessfulTitle;
+
+  /// No description provided for @completeDialogSuccessfulMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to mark this conversation as completed successfully? This action cannot be undone.'**
+  String get completeDialogSuccessfulMessage;
+
+  /// No description provided for @completeDialogUnsuccessfulMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to mark this conversation as completed unsuccessfully? This action cannot be undone.'**
+  String get completeDialogUnsuccessfulMessage;
+
+  /// No description provided for @completeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get completeButton;
+
+  /// No description provided for @completeUnsuccessfulButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete unsuccessfully'**
+  String get completeUnsuccessfulButton;
+
+  /// No description provided for @attachmentOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get attachmentOptionsTitle;
+
+  /// No description provided for @attachmentQuickReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Replies'**
+  String get attachmentQuickReplies;
+
+  /// No description provided for @attachmentQuickRepliesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Predefined quick responses'**
+  String get attachmentQuickRepliesHint;
+
+  /// No description provided for @attachmentTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get attachmentTakePhoto;
+
+  /// No description provided for @attachmentTakePhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use device camera'**
+  String get attachmentTakePhotoHint;
+
+  /// No description provided for @attachmentGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get attachmentGallery;
+
+  /// No description provided for @attachmentGalleryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select existing image'**
+  String get attachmentGalleryHint;
+
+  /// No description provided for @attachmentDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get attachmentDocument;
+
+  /// No description provided for @attachmentDocumentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF, Word, Excel and more'**
+  String get attachmentDocumentHint;
+
+  /// No description provided for @infoPanelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation information'**
+  String get infoPanelTitle;
+
+  /// No description provided for @infoSectionCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get infoSectionCustomer;
+
+  /// No description provided for @infoSectionStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get infoSectionStatus;
+
+  /// No description provided for @infoSectionAssignedAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned agent'**
+  String get infoSectionAssignedAgent;
+
+  /// No description provided for @infoSectionDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get infoSectionDates;
+
+  /// No description provided for @infoCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get infoCreated;
+
+  /// No description provided for @infoLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated'**
+  String get infoLastUpdated;
+
+  /// No description provided for @infoSectionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get infoSectionType;
+
+  /// No description provided for @infoType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get infoType;
+
+  /// No description provided for @typeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get typeCall;
+
+  /// No description provided for @infoOrigin.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get infoOrigin;
+
+  /// No description provided for @infoSectionIdentifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Identifier'**
+  String get infoSectionIdentifier;
+
+  /// No description provided for @infoId.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get infoId;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation report'**
+  String get reportTitle;
+
+  /// No description provided for @reportDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get reportDuration;
+
+  /// No description provided for @reportType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get reportType;
+
+  /// No description provided for @reportPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get reportPriority;
+
+  /// No description provided for @reportStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get reportStatus;
+
+  /// No description provided for @reportTimelineSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get reportTimelineSection;
+
+  /// No description provided for @reportAssignedAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned agents'**
+  String get reportAssignedAgents;
+
+  /// No description provided for @reportTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get reportTags;
+
+  /// No description provided for @timelineConversationStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation started'**
+  String get timelineConversationStarted;
+
+  /// No description provided for @timelineFirstResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'First response'**
+  String get timelineFirstResponse;
+
+  /// No description provided for @timelineLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated'**
+  String get timelineLastUpdated;
+
+  /// No description provided for @assignedTimestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned: {timestamp}'**
+  String assignedTimestamp(Object timestamp);
+
+  /// No description provided for @reassignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request reassignment'**
+  String get reassignTitle;
+
+  /// No description provided for @reassignSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search agent...'**
+  String get reassignSearchHint;
+
+  /// No description provided for @reassignError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error requesting reassignment'**
+  String get reassignError;
+
+  /// No description provided for @reassignNoAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'No agents available'**
+  String get reassignNoAgents;
+
+  /// No description provided for @reassignNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No agents found'**
+  String get reassignNoMatch;
+
+  /// No description provided for @reassignButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassign'**
+  String get reassignButton;
+
+  /// No description provided for @reassignCurrentBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get reassignCurrentBadge;
+
+  /// No description provided for @reassignUnavailableBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get reassignUnavailableBadge;
+
+  /// No description provided for @newInternalNoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New internal note'**
+  String get newInternalNoteTitle;
+
+  /// No description provided for @editInternalNoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get editInternalNoteTitle;
+
+  /// No description provided for @errorCreateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Error creating note'**
+  String get errorCreateNote;
+
+  /// No description provided for @errorUpdateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating note'**
+  String get errorUpdateNote;
+
+  /// No description provided for @errorDeleteNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting note'**
+  String get errorDeleteNote;
+
+  /// No description provided for @internalNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal notes'**
+  String get internalNotesTitle;
+
+  /// No description provided for @addNoteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get addNoteTooltip;
+
+  /// No description provided for @errorLoadingNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading notes'**
+  String get errorLoadingNotes;
+
+  /// No description provided for @noInternalNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No internal notes'**
+  String get noInternalNotesTitle;
+
+  /// No description provided for @internalNotesAgentsOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal notes are only visible to agents'**
+  String get internalNotesAgentsOnly;
+
+  /// No description provided for @addNoteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add note'**
+  String get addNoteButton;
+
+  /// No description provided for @allConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'All Conversations'**
+  String get allConversations;
+
+  /// No description provided for @myConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'My Conversations'**
+  String get myConversations;
+
+  /// No description provided for @allTagsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'All Tags ({count})'**
+  String allTagsCount(Object count);
+
+  /// No description provided for @conversationCompletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation completed successfully'**
+  String get conversationCompletedSuccessfully;
+
+  /// No description provided for @conversationCompletedUnsuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation completed unsuccessfully'**
+  String get conversationCompletedUnsuccessfully;
+
+  /// No description provided for @assignedToAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned: {agentName}'**
+  String assignedToAgent(Object agentName);
+
+  /// No description provided for @file.
+  ///
+  /// In en, this message translates to:
+  /// **'File'**
+  String get file;
+
+  /// No description provided for @deleteNoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Note'**
+  String get deleteNoteTitle;
+
+  /// No description provided for @deleteNoteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this note? This action cannot be undone.'**
+  String get deleteNoteConfirmation;
+
+  /// No description provided for @statusStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'STARTED'**
+  String get statusStarted;
+
+  /// No description provided for @statusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'IN PROGRESS'**
+  String get statusInProgress;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'COMPLETED'**
+  String get statusCompleted;
+
+  /// No description provided for @statusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'CLOSED'**
+  String get statusClosed;
+
+  /// No description provided for @edited.
+  ///
+  /// In en, this message translates to:
+  /// **'(edited)'**
+  String get edited;
+
+  /// No description provided for @now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get now;
+
+  /// No description provided for @noteVisibleToAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'This note will only be visible to agents'**
+  String get noteVisibleToAgents;
+
+  /// No description provided for @writeNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your note here...'**
+  String get writeNoteHint;
+
+  /// No description provided for @pleaseWriteNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write a note'**
+  String get pleaseWriteNote;
+
+  /// No description provided for @noteTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Note must be at least 3 characters'**
+  String get noteTooShort;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @weekdayMon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get weekdayMon;
+
+  /// No description provided for @weekdayTue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get weekdayTue;
+
+  /// No description provided for @weekdayWed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get weekdayWed;
+
+  /// No description provided for @weekdayThu.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get weekdayThu;
+
+  /// No description provided for @weekdayFri.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get weekdayFri;
+
+  /// No description provided for @weekdaySat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get weekdaySat;
+
+  /// No description provided for @weekdaySun.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get weekdaySun;
+
+  /// No description provided for @quickReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Replies'**
+  String get quickReplies;
+
+  /// No description provided for @searchQuickReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Search quick replies...'**
+  String get searchQuickReplies;
+
+  /// No description provided for @noQuickRepliesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No quick replies found'**
+  String get noQuickRepliesFound;
+
+  /// No description provided for @emojis.
+  ///
+  /// In en, this message translates to:
+  /// **'Emojis'**
+  String get emojis;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get typeMessage;
+
+  /// No description provided for @errorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorLabel;
+
+  /// No description provided for @noMessageText.
+  ///
+  /// In en, this message translates to:
+  /// **'No message text'**
+  String get noMessageText;
+
+  /// No description provided for @sessionIdNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Session ID not available for this conversation'**
+  String get sessionIdNotAvailable;
+
+  /// No description provided for @sendMessageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message'**
+  String get sendMessageError;
+
+  /// No description provided for @failedToSendMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send media: {error}'**
+  String failedToSendMedia(Object error);
+
+  /// No description provided for @failedToUpdateStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update status: {error}'**
+  String failedToUpdateStatus(Object error);
+
+  /// No description provided for @failedToAssignConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to assign conversation: {error}'**
+  String failedToAssignConversation(Object error);
+
+  /// No description provided for @couldNotIdentifyCurrentUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not identify current user'**
+  String get couldNotIdentifyCurrentUser;
 }
 
 class _AppLocalizationsDelegate

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../../core/theme/viernes_colors.dart';
 import '../../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../../gen_l10n/app_localizations.dart';
 
 /// Attachment Bottom Sheet Component
 ///
@@ -43,6 +44,7 @@ class AttachmentBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -72,7 +74,7 @@ class AttachmentBottomSheet extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    'Opciones',
+                    l10n?.attachmentOptionsTitle ?? 'Options',
                     style: ViernesTextStyles.h6.copyWith(
                       color: ViernesColors.getTextColor(isDark),
                     ),
@@ -85,8 +87,8 @@ class AttachmentBottomSheet extends StatelessWidget {
             _AttachmentOption(
               icon: Icons.flash_on_rounded,
               iconColor: ViernesColors.warning,
-              label: 'Quick Replies',
-              subtitle: 'Respuestas rápidas predefinidas',
+              label: l10n?.attachmentQuickReplies ?? 'Quick Replies',
+              subtitle: l10n?.attachmentQuickRepliesHint ?? 'Predefined quick responses',
               onTap: () {
                 Navigator.pop(context);
                 onQuickReply?.call();
@@ -95,8 +97,8 @@ class AttachmentBottomSheet extends StatelessWidget {
             _AttachmentOption(
               icon: Icons.camera_alt_rounded,
               iconColor: ViernesColors.info,
-              label: 'Tomar foto',
-              subtitle: 'Usar la cámara del dispositivo',
+              label: l10n?.attachmentTakePhoto ?? 'Take photo',
+              subtitle: l10n?.attachmentTakePhotoHint ?? 'Use device camera',
               onTap: () {
                 Navigator.pop(context);
                 onCamera?.call();
@@ -105,8 +107,8 @@ class AttachmentBottomSheet extends StatelessWidget {
             _AttachmentOption(
               icon: Icons.photo_library_rounded,
               iconColor: ViernesColors.success,
-              label: 'Galería',
-              subtitle: 'Seleccionar imagen existente',
+              label: l10n?.attachmentGallery ?? 'Gallery',
+              subtitle: l10n?.attachmentGalleryHint ?? 'Select existing image',
               onTap: () {
                 Navigator.pop(context);
                 onGallery?.call();
@@ -115,8 +117,8 @@ class AttachmentBottomSheet extends StatelessWidget {
             _AttachmentOption(
               icon: Icons.insert_drive_file_rounded,
               iconColor: ViernesColors.primary,
-              label: 'Documento',
-              subtitle: 'PDF, Word, Excel y más',
+              label: l10n?.attachmentDocument ?? 'Document',
+              subtitle: l10n?.attachmentDocumentHint ?? 'PDF, Word, Excel and more',
               onTap: () {
                 Navigator.pop(context);
                 onDocument?.call();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../domain/entities/internal_note_entity.dart';
 import 'internal_note_card.dart';
 import 'internal_note_modal.dart';
@@ -108,9 +109,10 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
   }
 
   Future<void> _handleCreateNote() async {
+    final l10n = AppLocalizations.of(context);
     final result = await InternalNoteModal.show(
       context: context,
-      title: 'Nueva nota interna',
+      title: l10n?.newInternalNoteTitle ?? 'New internal note',
     );
 
     if (result != null && result.isNotEmpty && widget.onCreateNote != null) {
@@ -120,8 +122,8 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
         setState(() => _isCreating = false);
         if (!success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Error al crear la nota'),
+            SnackBar(
+              content: Text(l10n?.errorCreateNote ?? 'Error creating note'),
               backgroundColor: ViernesColors.danger,
             ),
           );
@@ -131,9 +133,10 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
   }
 
   Future<void> _handleEditNote(InternalNoteEntity note) async {
+    final l10n = AppLocalizations.of(context);
     final result = await InternalNoteModal.show(
       context: context,
-      title: 'Editar nota',
+      title: l10n?.editInternalNoteTitle ?? 'Edit note',
       initialContent: note.content,
     );
 
@@ -141,8 +144,8 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
       final success = await widget.onUpdateNote!(note.id, result);
       if (mounted && !success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al actualizar la nota'),
+          SnackBar(
+            content: Text(l10n?.errorUpdateNote ?? 'Error updating note'),
             backgroundColor: ViernesColors.danger,
           ),
         );
@@ -151,14 +154,15 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
   }
 
   Future<void> _handleDeleteNote(InternalNoteEntity note) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await DeleteNoteDialog.show(context: context);
 
     if (confirmed == true && widget.onDeleteNote != null) {
       final success = await widget.onDeleteNote!(note.id);
       if (mounted && !success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al eliminar la nota'),
+          SnackBar(
+            content: Text(l10n?.errorDeleteNote ?? 'Error deleting note'),
             backgroundColor: ViernesColors.danger,
           ),
         );
@@ -169,6 +173,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -201,7 +206,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
                   const SizedBox(width: ViernesSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Notas internas',
+                      l10n?.internalNotesTitle ?? 'Internal notes',
                       style: ViernesTextStyles.h6.copyWith(
                         color: ViernesColors.getTextColor(isDark),
                       ),
@@ -220,7 +225,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
                             Icons.add_circle_outline,
                             color: ViernesColors.primary,
                           ),
-                    tooltip: 'Agregar nota',
+                    tooltip: l10n?.addNoteTooltip ?? 'Add note',
                   ),
                 ],
               ),
@@ -237,6 +242,8 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
   }
 
   Widget _buildContent(bool isDark) {
+    final l10n = AppLocalizations.of(context);
+
     // Error state
     if (widget.errorMessage != null && widget.notes.isEmpty) {
       return Center(
@@ -259,7 +266,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
             const SizedBox(height: ViernesSpacing.md),
             TextButton(
               onPressed: widget.onRefresh,
-              child: const Text('Reintentar'),
+              child: Text(l10n?.retry ?? 'Retry'),
             ),
           ],
         ),
@@ -284,14 +291,14 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
             ),
             const SizedBox(height: ViernesSpacing.md),
             Text(
-              'Sin notas internas',
+              l10n?.noInternalNotesTitle ?? 'No internal notes',
               style: ViernesTextStyles.h6.copyWith(
                 color: ViernesColors.getTextColor(isDark),
               ),
             ),
             const SizedBox(height: ViernesSpacing.sm),
             Text(
-              'Las notas internas son visibles solo para agentes',
+              l10n?.internalNotesAgentsOnly ?? 'Internal notes are only visible to agents',
               style: ViernesTextStyles.bodySmall.copyWith(
                 color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
               ),
@@ -301,7 +308,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
             ElevatedButton.icon(
               onPressed: _handleCreateNote,
               icon: const Icon(Icons.add),
-              label: const Text('Agregar nota'),
+              label: Text(l10n?.addNoteButton ?? 'Add note'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: ViernesColors.primary,
                 foregroundColor: Colors.white,

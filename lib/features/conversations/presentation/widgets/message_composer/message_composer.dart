@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
@@ -137,7 +138,8 @@ class _MessageComposerState extends State<MessageComposer> {
   }
 
   /// Get message explaining why input is disabled
-  String? get _disabledMessage {
+  String? _getDisabledMessage(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final conversation = widget.conversation;
     final currentUser = widget.currentUser;
 
@@ -145,26 +147,27 @@ class _MessageComposerState extends State<MessageComposer> {
 
     // Check locked status first (before status check)
     if (conversation.locked && !widget.allowDirectChat) {
-      return 'Conversación bloqueada. Usa una plantilla para reabrir.';
+      return l10n?.conversationLocked ?? 'Conversation locked. Use a template to reopen.';
     }
 
     // Check conversation status
     final statusValue = conversation.status?.valueDefinition ?? '';
     if (statusValue == '030') {
-      return 'Esta conversación ha sido cerrada exitosamente.';
+      return l10n?.conversationClosedSuccessful ?? 'This conversation was closed successfully.';
     }
     if (statusValue == '040') {
-      return 'Esta conversación fue cerrada sin éxito.';
+      return l10n?.conversationClosedUnsuccessful ?? 'This conversation was closed unsuccessfully.';
     }
 
     // Check agent assignment
     if (conversation.agentId == null) {
-      return 'Conversación sin asignar. Asígnala primero.';
+      return l10n?.conversationUnassigned ?? 'Unassigned conversation. Assign it first.';
     }
 
     // Check if assigned to another agent
     if (currentUser != null && conversation.agentId != currentUser.databaseId) {
-      return 'Conversación asignada a: ${conversation.agent?.fullname ?? 'otro agente'}';
+      final agentName = conversation.agent?.fullname ?? 'Unknown';
+      return l10n?.conversationAssignedTo(agentName) ?? 'Conversation assigned to: $agentName';
     }
 
     return null;
@@ -245,6 +248,11 @@ class _MessageComposerState extends State<MessageComposer> {
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
+    // Cache l10n before async operations to avoid using context across async gaps
+    final l10n = AppLocalizations.of(context);
+    final permissionType = source == ImageSource.camera
+        ? (l10n?.camera ?? 'camera')
+        : (l10n?.gallery ?? 'gallery');
 
     try {
       final image = await picker.pickImage(
@@ -258,7 +266,7 @@ class _MessageComposerState extends State<MessageComposer> {
 
       final fileSize = await image.length();
       if (!AttachmentModel.isValidSize(fileSize)) {
-        _showErrorSnackBar('Archivo muy grande. El máximo es 5MB.');
+        _showErrorSnackBar(l10n?.fileTooLarge('5MB') ?? 'File too large. Maximum is 5MB.');
         return;
       }
 
@@ -275,22 +283,25 @@ class _MessageComposerState extends State<MessageComposer> {
       });
     } on PlatformException catch (e) {
       // Handle permission denied or other platform errors
-      final permissionType = source == ImageSource.camera ? 'cámara' : 'galería';
       if (e.code == 'camera_access_denied' ||
           e.code == 'photo_access_denied' ||
           e.code.contains('denied')) {
-        _showErrorSnackBar('Permiso denegado. Habilita el acceso a la $permissionType en Configuración.');
+        _showErrorSnackBar(l10n?.permissionDeniedMedia(permissionType) ??
+            'Permission denied. Enable access to $permissionType in Settings.');
       } else {
-        _showErrorSnackBar('Error al seleccionar imagen: ${e.message}');
+        _showErrorSnackBar(l10n?.errorSelectingImage(e.message ?? '') ??
+            'Error selecting image: ${e.message}');
       }
     } catch (e) {
-      _showErrorSnackBar('Error inesperado al seleccionar imagen.');
+      _showErrorSnackBar(l10n?.unexpectedErrorImage ?? 'Unexpected error selecting image.');
       debugPrint('Image picker error: $e');
     }
   }
 
   Future<void> _pickDocument() async {
     _closeOverlays();
+    // Cache l10n before async operations to avoid using context across async gaps
+    final l10n = AppLocalizations.of(context);
 
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -305,7 +316,7 @@ class _MessageComposerState extends State<MessageComposer> {
       final extension = file.extension;
       if (!AttachmentModel.isValidSizeForType(file.size, AttachmentType.document, extension)) {
         final maxSize = AttachmentModel.getFormattedMaxSizeForType(AttachmentType.document, extension);
-        _showErrorSnackBar('Archivo muy grande. El máximo es $maxSize.');
+        _showErrorSnackBar(l10n?.fileTooLarge(maxSize) ?? 'File too large. Maximum is $maxSize.');
         return;
       }
 
@@ -321,9 +332,10 @@ class _MessageComposerState extends State<MessageComposer> {
         ));
       });
     } on PlatformException catch (e) {
-      _showErrorSnackBar('Error al seleccionar documento: ${e.message}');
+      _showErrorSnackBar(l10n?.errorSelectingDocument(e.message ?? '') ??
+          'Error selecting document: ${e.message}');
     } catch (e) {
-      _showErrorSnackBar('Error inesperado al seleccionar documento.');
+      _showErrorSnackBar(l10n?.unexpectedErrorDocument ?? 'Unexpected error selecting document.');
       debugPrint('Document picker error: $e');
     }
   }
@@ -356,11 +368,12 @@ class _MessageComposerState extends State<MessageComposer> {
     _closeOverlays();
 
     try {
+      final l10n = AppLocalizations.of(context);
       // Send text message if present and no attachments
       if (text.isNotEmpty && attachmentsToSend.isEmpty) {
         final success = await widget.onSendMessage(text);
         if (!success) {
-          _showErrorSnackBar('Error al enviar mensaje');
+          _showErrorSnackBar(l10n?.errorSendFailed ?? 'Error sending message');
           // Restore text on failure
           _textController.text = text;
         }
@@ -376,7 +389,7 @@ class _MessageComposerState extends State<MessageComposer> {
       else if (text.isNotEmpty) {
         final success = await widget.onSendMessage(text);
         if (!success) {
-          _showErrorSnackBar('Error al enviar mensaje');
+          _showErrorSnackBar(l10n?.errorSendFailed ?? 'Error sending message');
           _textController.text = text;
         }
       }
@@ -395,8 +408,9 @@ class _MessageComposerState extends State<MessageComposer> {
     final isLoading = _isSending || widget.isSending;
 
     // If input is disabled, show the disabled banner instead
-    if (!_isInputEnabled && _disabledMessage != null) {
-      return _buildDisabledBanner(context, _disabledMessage!, isDark);
+    final disabledMessage = _getDisabledMessage(context);
+    if (!_isInputEnabled && disabledMessage != null) {
+      return _buildDisabledBanner(context, disabledMessage, isDark);
     }
 
     return Column(
@@ -450,7 +464,8 @@ class _MessageComposerState extends State<MessageComposer> {
     try {
       final success = await widget.onAssignToMe!();
       if (!success && mounted) {
-        _showErrorSnackBar('Error al asignarte la conversación');
+        final l10n = AppLocalizations.of(context);
+        _showErrorSnackBar(l10n?.errorSelfAssignFailed ?? 'Error assigning conversation to yourself');
       }
     } finally {
       if (mounted) {
@@ -461,18 +476,24 @@ class _MessageComposerState extends State<MessageComposer> {
 
   /// Build banner shown when input is disabled
   Widget _buildDisabledBanner(BuildContext context, String message, bool isDark) {
+    final l10n = AppLocalizations.of(context);
+
     // Check if this is an unassigned AND active conversation
-    // Only show "Asignar a mí" for active statuses ('010' = Started, '020' = In Progress)
+    // Only show "Assign to me" for active statuses ('010' = Started, '020' = In Progress)
     final statusValue = widget.conversation?.status?.valueDefinition ?? '';
     final isActiveStatus = statusValue == '010' || statusValue == '020';
     final isUnassigned = widget.conversation?.agentId == null && isActiveStatus;
 
-    // Determine icon based on message type
+    // Determine icon based on conversation state
     IconData icon = Icons.lock_outline;
-    if (message.contains('asignar') || message.contains('asignada')) {
+    if (isUnassigned || widget.conversation?.agentId != null) {
       icon = Icons.person_off_outlined;
-    } else if (message.contains('cerrada')) {
-      icon = Icons.check_circle_outline;
+    } else {
+      final closedSuccessful = l10n?.conversationClosedSuccessful ?? '';
+      final closedUnsuccessful = l10n?.conversationClosedUnsuccessful ?? '';
+      if (message == closedSuccessful || message == closedUnsuccessful) {
+        icon = Icons.check_circle_outline;
+      }
     }
 
     return Container(
@@ -511,14 +532,14 @@ class _MessageComposerState extends State<MessageComposer> {
                   children: [
                     if (isUnassigned) ...[
                       Text(
-                        'Conversación sin asignar',
+                        l10n?.disabledUnassignedTitle ?? 'Unassigned conversation',
                         style: ViernesTextStyles.bodySmall.copyWith(
                           color: ViernesColors.getTextColor(isDark),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
-                        'Asígnala para poder responder',
+                        l10n?.disabledUnassignedHint ?? 'Assign it to be able to respond',
                         style: ViernesTextStyles.caption.copyWith(
                           color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
                         ),
@@ -533,7 +554,7 @@ class _MessageComposerState extends State<MessageComposer> {
                   ],
                 ),
               ),
-              // Show "Asignar a mí" button for unassigned conversations
+              // Show "Assign to me" button for unassigned conversations
               if (isUnassigned && widget.onAssignToMe != null)
                 Padding(
                   padding: const EdgeInsets.only(left: ViernesSpacing.sm),
@@ -557,7 +578,7 @@ class _MessageComposerState extends State<MessageComposer> {
                               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text('Asignar a mí'),
+                        : Text(l10n?.assignToMeButton ?? 'Assign to me'),
                   ),
                 ),
             ],
@@ -589,6 +610,8 @@ class _MessageComposerState extends State<MessageComposer> {
   }
 
   Widget _buildInputRow(bool isDark, bool isLoading) {
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       constraints: const BoxConstraints(
         minHeight: 44,
@@ -622,6 +645,7 @@ class _MessageComposerState extends State<MessageComposer> {
                 controller: _textController,
                 focusNode: _focusNode,
                 enabled: !isLoading,
+                hintText: l10n?.typeMessage ?? 'Type a message...',
                 onChanged: (_) => setState(() {}), // Trigger rebuild for send button
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
@@ -64,6 +65,7 @@ class TagsBadge extends StatelessWidget {
 
   void _showAllTagsDialog(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
@@ -84,7 +86,7 @@ class TagsBadge extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'All Tags (${tags.length})',
+                    l10n?.allTagsCount(tags.length.toString()) ?? 'All Tags (${tags.length})',
                     style: ViernesTextStyles.h6.copyWith(
                       color: ViernesColors.primary,
                       fontSize: 14,

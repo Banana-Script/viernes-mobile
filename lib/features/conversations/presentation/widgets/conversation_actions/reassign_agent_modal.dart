@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 
 /// Agent option for reassignment
 class ReassignAgentOption {
@@ -93,9 +94,10 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
         Navigator.pop(context, _selectedAgentId);
       } else {
         setState(() => _isSubmitting = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error al solicitar reasignación'),
+          SnackBar(
+            content: Text(l10n?.reassignError ?? 'Error requesting reassignment'),
             backgroundColor: ViernesColors.danger,
           ),
         );
@@ -106,6 +108,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -138,7 +141,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                   const SizedBox(width: ViernesSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Solicitar reasignación',
+                      l10n?.reassignTitle ?? 'Request reassignment',
                       style: ViernesTextStyles.h6.copyWith(
                         color: ViernesColors.getTextColor(isDark),
                       ),
@@ -152,7 +155,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
               padding: const EdgeInsets.symmetric(horizontal: ViernesSpacing.md),
               child: TextField(
                 decoration: InputDecoration(
-                  hintText: 'Buscar agente...',
+                  hintText: l10n?.reassignSearchHint ?? 'Search agent...',
                   prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -187,7 +190,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
               child: widget.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _filteredAgents.isEmpty
-                      ? _buildEmptyState(isDark)
+                      ? _buildEmptyState(isDark, l10n)
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(
                             vertical: ViernesSpacing.sm,
@@ -201,6 +204,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                             return _buildAgentTile(
                               context,
                               isDark,
+                              l10n,
                               agent: agent,
                               isSelected: isSelected,
                               isCurrentAgent: isCurrentAgent,
@@ -241,7 +245,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                         ),
                       ),
                       child: Text(
-                        'Cancelar',
+                        l10n?.cancel ?? 'Cancel',
                         style: TextStyle(
                           color: ViernesColors.getTextColor(isDark),
                         ),
@@ -271,7 +275,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text('Reasignar'),
+                          : Text(l10n?.reassignButton ?? 'Reassign'),
                     ),
                   ),
                 ],
@@ -283,7 +287,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState(bool isDark, AppLocalizations? l10n) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -296,8 +300,8 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
           const SizedBox(height: ViernesSpacing.md),
           Text(
             _searchQuery.isEmpty
-                ? 'No hay agentes disponibles'
-                : 'No se encontraron agentes',
+                ? l10n?.reassignNoAgents ?? 'No agents available'
+                : l10n?.reassignNoMatch ?? 'No agents found',
             style: ViernesTextStyles.bodyText.copyWith(
               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
             ),
@@ -309,7 +313,8 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
 
   Widget _buildAgentTile(
     BuildContext context,
-    bool isDark, {
+    bool isDark,
+    AppLocalizations? l10n, {
     required ReassignAgentOption agent,
     required bool isSelected,
     required bool isCurrentAgent,
@@ -352,7 +357,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'Actual',
+                l10n?.reassignCurrentBadge ?? 'Current',
                 style: ViernesTextStyles.bodySmall.copyWith(
                   color: ViernesColors.info,
                   fontSize: 10,
@@ -370,7 +375,7 @@ class _ReassignAgentModalState extends State<ReassignAgentModal> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'No disponible',
+                l10n?.reassignUnavailableBadge ?? 'Unavailable',
                 style: ViernesTextStyles.bodySmall.copyWith(
                   color: ViernesColors.warning,
                   fontSize: 10,

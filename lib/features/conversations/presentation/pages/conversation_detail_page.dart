@@ -10,6 +10,7 @@ import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/utils/logger.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/conversation_provider.dart';
 import '../../domain/repositories/conversation_repository.dart' show ConversationStatusOption;
@@ -291,6 +292,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
     );
 
     if (confirmed == true && mounted) {
+      final l10n = AppLocalizations.of(context);
       final provider = provider_pkg.Provider.of<ConversationProvider>(context, listen: false);
       final scaffoldMessenger = ScaffoldMessenger.of(context);
 
@@ -298,8 +300,8 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
       final conversation = provider.selectedConversation;
       if (conversation == null) {
         scaffoldMessenger.showSnackBar(
-          const SnackBar(
-            content: Text('Error: Conversación no cargada'),
+          SnackBar(
+            content: Text(l10n?.errorConversationNotLoaded ?? 'Error: Conversation not loaded'),
             backgroundColor: ViernesColors.danger,
           ),
         );
@@ -309,8 +311,8 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
       // Check if status options are loaded
       if (provider.availableStatuses.isEmpty) {
         scaffoldMessenger.showSnackBar(
-          const SnackBar(
-            content: Text('Error: Opciones de estado no cargadas. Intente de nuevo.'),
+          SnackBar(
+            content: Text(l10n?.errorStatusesNotLoaded ?? 'Error: Status options not loaded. Please try again.'),
             backgroundColor: ViernesColors.danger,
           ),
         );
@@ -331,7 +333,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
       if (statusOption == null) {
         scaffoldMessenger.showSnackBar(
           SnackBar(
-            content: Text('Error: Estado $statusValue no encontrado'),
+            content: Text(l10n?.errorStatusNotFound(statusValue) ?? 'Error: Status $statusValue not found'),
             backgroundColor: ViernesColors.danger,
           ),
         );
@@ -350,8 +352,8 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
             SnackBar(
               content: Text(
                 isSuccessful
-                    ? 'Conversación completada exitosamente'
-                    : 'Conversación completada sin éxito',
+                    ? l10n?.conversationCompletedSuccessfully ?? 'Conversation completed successfully'
+                    : l10n?.conversationCompletedUnsuccessfully ?? 'Conversation completed unsuccessfully',
               ),
               backgroundColor: isSuccessful ? ViernesColors.success : ViernesColors.warning,
             ),
@@ -359,7 +361,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
         } else {
           scaffoldMessenger.showSnackBar(
             SnackBar(
-              content: Text(provider.errorMessage ?? 'Error al actualizar estado'),
+              content: Text(provider.errorMessage ?? l10n?.errorUpdatingStatus ?? 'Error updating status'),
               backgroundColor: ViernesColors.danger,
             ),
           );
@@ -390,9 +392,10 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
       onCreateNote: (content) async {
         // Would call provider.createNote(conversation.id, content)
         if (mounted) {
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Función de notas internas próximamente disponible'),
+            SnackBar(
+              content: Text(l10n?.internalNotesComingSoon ?? 'Internal notes feature coming soon'),
               backgroundColor: ViernesColors.info,
             ),
           );
@@ -422,9 +425,10 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
 
     if (sampleAgents.isEmpty) {
       // Show info message when no agents available
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Función de reasignación próximamente disponible'),
+        SnackBar(
+          content: Text(l10n?.reassignmentComingSoon ?? 'Reassignment feature coming soon'),
           backgroundColor: ViernesColors.info,
         ),
       );
@@ -501,6 +505,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
       ),
       title: provider_pkg.Consumer<ConversationProvider>(
         builder: (context, provider, _) {
+          final l10n = AppLocalizations.of(context);
           final conversation = provider.selectedConversation;
           if (conversation == null) {
             return _buildAppBarSkeleton(isDark);
@@ -510,7 +515,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                conversation.user?.fullname ?? 'Unknown Customer',
+                conversation.user?.fullname ?? l10n?.unknownCustomer ?? 'Unknown Customer',
                 style: ViernesTextStyles.h6.copyWith(
                   color: ViernesColors.getTextColor(isDark),
                 ),
@@ -540,6 +545,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
   Widget _buildStatusBar(BuildContext context, bool isDark) {
     return provider_pkg.Consumer<ConversationProvider>(
       builder: (context, provider, _) {
+        final l10n = AppLocalizations.of(context);
         final conversation = provider.selectedConversation;
         if (conversation == null) {
           return const SizedBox.shrink();
@@ -569,7 +575,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
               const Spacer(),
               if (conversation.agent != null)
                 Text(
-                  'Assigned: ${conversation.agent!.fullname}',
+                  l10n?.assignedToAgent(conversation.agent!.fullname) ?? 'Assigned: ${conversation.agent!.fullname}',
                   style: ViernesTextStyles.bodySmall.copyWith(
                     color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                   ),
@@ -593,6 +599,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
         // Error state
         if (provider.messageStatus == MessageStatus.error &&
             provider.messages.isEmpty) {
+          final l10n = AppLocalizations.of(context);
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -604,14 +611,14 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
                 ),
                 const SizedBox(height: ViernesSpacing.md),
                 Text(
-                  'Error loading messages',
+                  l10n?.errorLoadingMessages ?? 'Error loading messages',
                   style: ViernesTextStyles.h6.copyWith(
                     color: ViernesColors.getTextColor(isDark),
                   ),
                 ),
                 const SizedBox(height: ViernesSpacing.sm),
                 Text(
-                  provider.messageErrorMessage ?? 'Unknown error',
+                  provider.messageErrorMessage ?? l10n?.unknownError ?? 'Unknown error',
                   style: ViernesTextStyles.bodySmall.copyWith(
                     color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                   ),
@@ -623,7 +630,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
                     widget.conversationId,
                     resetPage: true,
                   ),
-                  child: const Text('Retry'),
+                  child: Text(l10n?.retry ?? 'Retry'),
                 ),
               ],
             ),
@@ -632,6 +639,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
 
         // Empty state
         if (provider.messages.isEmpty) {
+          final l10n = AppLocalizations.of(context);
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -643,14 +651,14 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
                 ),
                 const SizedBox(height: ViernesSpacing.md),
                 Text(
-                  'No messages yet',
+                  l10n?.noMessagesYet ?? 'No messages yet',
                   style: ViernesTextStyles.h6.copyWith(
                     color: ViernesColors.getTextColor(isDark),
                   ),
                 ),
                 const SizedBox(height: ViernesSpacing.sm),
                 Text(
-                  'Start the conversation',
+                  l10n?.startTheConversation ?? 'Start the conversation',
                   style: ViernesTextStyles.bodySmall.copyWith(
                     color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                   ),
@@ -716,11 +724,12 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
 
   /// Build typing indicator widget
   Widget _buildTypingIndicator(bool isDark) {
+    final l10n = AppLocalizations.of(context);
     final typingLabel = _typingBy == 'ai'
-        ? 'AI is thinking...'
+        ? l10n?.aiIsThinking ?? 'AI is thinking...'
         : _typingBy.isNotEmpty
-            ? '$_typingBy is typing...'
-            : 'Typing...';
+            ? l10n?.userIsTyping(_typingBy) ?? '$_typingBy is typing...'
+            : l10n?.typing ?? 'Typing...';
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -792,6 +801,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
   }
 
   Widget _buildMessageInput(BuildContext context, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     return provider_pkg.Consumer2<ConversationProvider, AuthProvider>(
       builder: (context, conversationProvider, authProvider, _) {
         return MessageComposer(
@@ -809,7 +819,7 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
             if (!success && mounted) {
               scaffoldMessenger.showSnackBar(
                 SnackBar(
-                  content: Text(conversationProvider.messageErrorMessage ?? 'Failed to send message'),
+                  content: Text(conversationProvider.messageErrorMessage ?? (l10n?.sendMessageError ?? 'Failed to send message')),
                   backgroundColor: ViernesColors.danger,
                 ),
               );
@@ -834,8 +844,8 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
             final success = await conversationProvider.assignConversationToMe(widget.conversationId);
             if (success && mounted) {
               scaffoldMessenger.showSnackBar(
-                const SnackBar(
-                  content: Text('Conversación asignada exitosamente'),
+                SnackBar(
+                  content: Text(l10n?.assignedSuccessfully ?? 'Conversation assigned successfully'),
                   backgroundColor: ViernesColors.success,
                 ),
               );

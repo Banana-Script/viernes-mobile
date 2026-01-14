@@ -4,6 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/list_components/index.dart';
 import '../providers/conversation_provider.dart';
 import '../widgets/conversation_card.dart';
@@ -98,10 +99,12 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   }
 
   Widget _buildHeader(BuildContext context, bool isDark) {
-    return const ViernesPageHeader(title: 'Conversations');
+    final l10n = AppLocalizations.of(context);
+    return ViernesPageHeader(title: l10n?.conversationsLabel ?? 'Conversations');
   }
 
   Widget _buildSearchBar(BuildContext context, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: ViernesSpacing.md,
@@ -112,7 +115,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
           Expanded(
             child: ViernesSearchBar(
               controller: _searchController,
-              hintText: 'Search conversations...',
+              hintText: l10n?.searchConversations ?? 'Search conversations...',
               onSearchChanged: (value) {
                 final provider = Provider.of<ConversationProvider>(context, listen: false);
                 provider.updateSearchTerm(value);
@@ -273,6 +276,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
   }
 
   Widget _buildConversationsList(BuildContext context, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     return Consumer<ConversationProvider>(
       builder: (context, provider, _) {
         // Loading state
@@ -287,7 +291,7 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
         if (provider.status == ConversationStatus.error &&
             provider.conversations.isEmpty) {
           return ViernesErrorState(
-            message: provider.errorMessage ?? 'Error loading conversations',
+            message: provider.errorMessage ?? l10n?.errorLoadingConversations ?? 'Error loading conversations',
             onRetry: () => provider.retry(),
           );
         }
@@ -295,12 +299,12 @@ class _ConversationsListPageState extends State<ConversationsListPage> {
         // Empty state
         if (provider.conversations.isEmpty) {
           return ViernesEmptyState(
-            message: 'No conversations found',
+            message: l10n?.noConversationsFound ?? 'No conversations found',
             icon: Icons.chat_bubble_outline,
             hasFilters: provider.searchTerm.isNotEmpty || provider.filters.hasActiveFilters,
             description: provider.searchTerm.isNotEmpty || provider.filters.hasActiveFilters
-                ? 'Try adjusting your filters'
-                : 'Conversations will appear here',
+                ? l10n?.tryAdjustingFilters ?? 'Try adjusting your filters'
+                : l10n?.conversationsWillAppearHere ?? 'Conversations will appear here',
           );
         }
 
