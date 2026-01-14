@@ -495,5 +495,10 @@
   "failedToSendMedia": "Error al enviar archivo: {error}",
   "failedToUpdateStatus": "Error al actualizar estado: {error}",
   "failedToAssignConversation": "Error al asignar conversación: {error}",
-  "couldNotIdentifyCurrentUser": "No se pudo identificar el usuario actual"
+  "couldNotIdentifyCurrentUser": "No se pudo identificar el usuario actual",
+  "newInternalNote": "Nueva Nota",
+  "editInternalNote": "Editar Nota",
+  "back": "Volver",
+  "noteDeleted": "Nota eliminada",
+  "undo": "Deshacer"
 }

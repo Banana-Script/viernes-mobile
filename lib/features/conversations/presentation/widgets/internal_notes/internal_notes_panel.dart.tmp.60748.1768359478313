@@ -148,8 +148,8 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 200 &&
-        _getHasMore() &&
-        !_getIsLoading()) {
+        widget.hasMore &&
+        !widget.isLoading) {
       widget.onLoadMore?.call();
     }
   }
@@ -466,7 +466,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.visibility_off_outlined,
                   size: 16,
                   color: ViernesColors.warning,
@@ -598,28 +598,12 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
     return _buildListContentInner(isDark);
   }
 
-  /// Translate error keys to localized messages
-  String _translateError(String? errorKey, AppLocalizations? l10n) {
-    if (errorKey == null) return '';
-    switch (errorKey) {
-      case 'error_loading_notes':
-        return l10n?.errorLoadingNotes ?? 'Error loading notes';
-      case 'error_creating_note':
-        return l10n?.errorCreateNote ?? 'Error creating note';
-      case 'error_updating_note':
-        return l10n?.errorUpdateNote ?? 'Error updating note';
-      case 'error_deleting_note':
-        return l10n?.errorDeleteNote ?? 'Error deleting note';
-      default:
-        return errorKey; // Return as-is if not a known key
-    }
-  }
-
   /// Inner list content builder
   Widget _buildListContentInner(bool isDark) {
     final l10n = AppLocalizations.of(context);
     final notes = _getNotes();
     final isLoading = _getIsLoading();
+    final hasMore = _getHasMore();
     final errorMessage = _getErrorMessage();
 
     // Error state
@@ -636,7 +620,7 @@ class _InternalNotesPanelState extends State<InternalNotesPanel> {
             ),
             const SizedBox(height: ViernesSpacing.md),
             Text(
-              _translateError(errorMessage, l10n),
+              errorMessage!,
               style: ViernesTextStyles.bodyText.copyWith(
                 color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
               ),

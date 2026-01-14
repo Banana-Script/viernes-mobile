@@ -27,7 +27,7 @@ import '../widgets/conversation_actions/conversation_info_panel.dart';
 import '../widgets/conversation_actions/conversation_report_modal.dart';
 import '../widgets/conversation_actions/reassign_agent_modal.dart';
 import '../widgets/internal_notes/internal_notes_panel.dart';
-import '../../domain/entities/internal_note_entity.dart';
+import '../../../../core/di/dependency_injection.dart';
 
 /// Conversation Detail Page
 ///
@@ -375,41 +375,47 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
     ConversationEntity conversation,
   ) {
     final authProvider = provider_pkg.Provider.of<AuthProvider>(context, listen: false);
+    final notesProvider = DependencyInjection.internalNotesProvider;
 
-    // Show the panel - note: a full implementation would require
-    // proper dependency injection for the InternalNotesProvider
-    InternalNotesPanel.show(
+    // Load notes when opening the panel
+    notesProvider.loadNotes(conversation.id, resetPage: true);
+
+    // Show the panel - pass provider for internal selective rebuilding
+    // DO NOT wrap with ListenableBuilder - it resets panel's internal state!
+    showModalBottomSheet(
       context: context,
-      conversationId: conversation.id,
-      notes: const <InternalNoteEntity>[], // Would be loaded from provider
-      currentUserId: authProvider.user?.databaseId,
-      onRefresh: () async {
-        // Would call provider.loadNotes(conversation.id, resetPage: true)
-      },
-      onLoadMore: () async {
-        // Would call provider.loadMoreNotes()
-      },
-      onCreateNote: (content) async {
-        // Would call provider.createNote(conversation.id, content)
-        if (mounted) {
-          final l10n = AppLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n?.internalNotesComingSoon ?? 'Internal notes feature coming soon'),
-              backgroundColor: ViernesColors.info,
-            ),
-          );
-        }
-        return false;
-      },
-      onUpdateNote: (noteId, content) async {
-        // Would call provider.updateNote(conversation.id, noteId, content)
-        return false;
-      },
-      onDeleteNote: (noteId) async {
-        // Would call provider.deleteNote(conversation.id, noteId)
-        return false;
-      },
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (sheetContext, scrollController) => InternalNotesPanel(
+          conversationId: conversation.id,
+          currentUserId: authProvider.user?.databaseId,
+          // Pass provider for internal selective rebuilding of list only
+          notesProvider: notesProvider,
+          getNotesFromProvider: () => notesProvider.notes,
+          isProviderLoading: () => notesProvider.isLoading || notesProvider.isLoadingMore,
+          providerHasMore: () => notesProvider.hasMore,
+          getProviderError: () => notesProvider.errorMessage,
+          onRefresh: () async {
+            await notesProvider.loadNotes(conversation.id, resetPage: true);
+          },
+          onLoadMore: () async {
+            await notesProvider.loadMoreNotes();
+          },
+          onCreateNote: (content) async {
+            return await notesProvider.createNote(conversation.id, content);
+          },
+          onUpdateNote: (noteId, content) async {
+            return await notesProvider.updateNote(conversation.id, noteId, content);
+          },
+          onDeleteNote: (noteId) async {
+            return await notesProvider.deleteNote(conversation.id, noteId);
+          },
+        ),
+      ),
     );
   }
 

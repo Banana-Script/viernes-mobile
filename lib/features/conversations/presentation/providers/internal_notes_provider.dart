@@ -72,7 +72,7 @@ class InternalNotesProvider extends ChangeNotifier {
     } catch (e, stackTrace) {
       AppLogger.error('Error loading internal notes', error: e, stackTrace: stackTrace);
       _status = InternalNotesStatus.error;
-      _errorMessage = 'Error al cargar notas: ${e.toString()}';
+      _errorMessage = 'error_loading_notes';
     }
 
     notifyListeners();
@@ -107,7 +107,7 @@ class InternalNotesProvider extends ChangeNotifier {
       return true;
     } catch (e, stackTrace) {
       AppLogger.error('Error creating internal note', error: e, stackTrace: stackTrace);
-      _errorMessage = 'Error al crear nota: ${e.toString()}';
+      _errorMessage = 'error_creating_note';
       _isCreating = false;
       notifyListeners();
       return false;
@@ -142,7 +142,7 @@ class InternalNotesProvider extends ChangeNotifier {
       return true;
     } catch (e, stackTrace) {
       AppLogger.error('Error updating internal note', error: e, stackTrace: stackTrace);
-      _errorMessage = 'Error al actualizar nota: ${e.toString()}';
+      _errorMessage = 'error_updating_note';
       _isUpdating = false;
       notifyListeners();
       return false;
@@ -162,7 +162,7 @@ class InternalNotesProvider extends ChangeNotifier {
 
       // Remove from list
       _notes = _notes.where((n) => n.id != noteId).toList();
-      _totalCount--;
+      if (_totalCount > 0) _totalCount--;
 
       AppLogger.info('Deleted internal note: $noteId');
       _isDeleting = false;
@@ -170,7 +170,7 @@ class InternalNotesProvider extends ChangeNotifier {
       return true;
     } catch (e, stackTrace) {
       AppLogger.error('Error deleting internal note', error: e, stackTrace: stackTrace);
-      _errorMessage = 'Error al eliminar nota: ${e.toString()}';
+      _errorMessage = 'error_deleting_note';
       _isDeleting = false;
       notifyListeners();
       return false;

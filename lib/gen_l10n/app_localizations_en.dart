@@ -1325,4 +1325,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotIdentifyCurrentUser => 'Could not identify current user';
+
+  @override
+  String get newInternalNote => 'New Note';
+
+  @override
+  String get editInternalNote => 'Edit Note';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get noteDeleted => 'Note deleted';
+
+  @override
+  String get undo => 'Undo';
 }

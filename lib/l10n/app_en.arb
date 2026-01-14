@@ -1063,5 +1063,10 @@
   "failedToSendMedia": "Failed to send media: {error}",
   "failedToUpdateStatus": "Failed to update status: {error}",
   "failedToAssignConversation": "Failed to assign conversation: {error}",
-  "couldNotIdentifyCurrentUser": "Could not identify current user"
+  "couldNotIdentifyCurrentUser": "Could not identify current user",
+  "newInternalNote": "New Note",
+  "editInternalNote": "Edit Note",
+  "back": "Back",
+  "noteDeleted": "Note deleted",
+  "undo": "Undo"
 }

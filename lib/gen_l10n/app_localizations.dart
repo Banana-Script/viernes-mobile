@@ -2605,6 +2605,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not identify current user'**
   String get couldNotIdentifyCurrentUser;
+
+  /// No description provided for @newInternalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'New Note'**
+  String get newInternalNote;
+
+  /// No description provided for @editInternalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Note'**
+  String get editInternalNote;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @noteDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Note deleted'**
+  String get noteDeleted;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
 }
 
 class _AppLocalizationsDelegate

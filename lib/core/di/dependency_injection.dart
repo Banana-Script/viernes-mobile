@@ -50,6 +50,8 @@ import '../../features/conversations/domain/usecases/assign_conversation_usecase
 import '../../features/conversations/domain/usecases/assign_agent_usecase.dart';
 import '../../features/conversations/domain/usecases/get_filter_options_usecase.dart' as conversation_filters;
 import '../../features/conversations/presentation/providers/conversation_provider.dart';
+import '../../features/conversations/data/datasources/internal_notes_remote_datasource.dart';
+import '../../features/conversations/presentation/providers/internal_notes_provider.dart';
 
 import '../services/http_client.dart';
 import '../services/value_definitions_service.dart';
@@ -109,6 +111,8 @@ class DependencyInjection {
   static late final AssignAgentUseCase _assignAgentUseCase;
   static late final conversation_filters.GetFilterOptionsUseCase _getConversationFilterOptionsUseCase;
   static late final ConversationProvider _conversationProvider;
+  static late final InternalNotesRemoteDataSource _internalNotesRemoteDataSource;
+  static late final InternalNotesProvider _internalNotesProvider;
 
   static void initialize() {
     // Firebase
@@ -248,6 +252,10 @@ class DependencyInjection {
       assignAgentUseCase: _assignAgentUseCase,
       getFilterOptionsUseCase: _getConversationFilterOptionsUseCase,
     );
+
+    // Internal Notes
+    _internalNotesRemoteDataSource = InternalNotesRemoteDataSourceImpl(_httpClient);
+    _internalNotesProvider = InternalNotesProvider(_internalNotesRemoteDataSource);
   }
 
   // Getters
@@ -266,6 +274,7 @@ class DependencyInjection {
   // Conversation getters
   static ConversationProvider get conversationProvider => _conversationProvider;
   static ConversationRepository get conversationRepository => _conversationRepository;
+  static InternalNotesProvider get internalNotesProvider => _internalNotesProvider;
 
   // Value Definitions getters
   static ValueDefinitionsService get valueDefinitionsService => _valueDefinitionsService;

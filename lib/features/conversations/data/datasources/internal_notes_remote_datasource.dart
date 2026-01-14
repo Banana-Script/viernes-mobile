@@ -121,7 +121,7 @@ class InternalNotesRemoteDataSourceImpl implements InternalNotesRemoteDataSource
 
     try {
       final requestData = {
-        'content': content,
+        'note': content,
       };
 
       AppLogger.apiRequest('POST', endpoint, params: requestData);
@@ -194,7 +194,7 @@ class InternalNotesRemoteDataSourceImpl implements InternalNotesRemoteDataSource
 
     try {
       final requestData = {
-        'content': content,
+        'note': content,
       };
 
       AppLogger.apiRequest('PUT', endpoint, params: requestData);

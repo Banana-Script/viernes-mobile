@@ -17,15 +17,15 @@ class InternalNoteModel extends InternalNoteEntity {
 
   /// Create from JSON
   factory InternalNoteModel.fromJson(Map<String, dynamic> json) {
+    // Extract author info - API returns author object with id and fullname
+    final author = json['author'] as Map<String, dynamic>?;
+
     return InternalNoteModel(
       id: json['id'] as int,
       conversationId: json['conversation_id'] as int,
-      agentId: json['agent_id'] as int? ?? json['user_id'] as int? ?? 0,
-      agentName: json['agent_name'] as String? ??
-          json['user_name'] as String? ??
-          json['user']?['fullname'] as String? ??
-          'Unknown',
-      content: json['content'] as String? ?? json['note'] as String? ?? '',
+      agentId: json['user_id'] as int? ?? author?['id'] as int? ?? 0,
+      agentName: author?['fullname'] as String? ?? 'Unknown',
+      content: json['note'] as String? ?? json['content'] as String? ?? '',
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'] as String)
@@ -36,7 +36,7 @@ class InternalNoteModel extends InternalNoteEntity {
   /// Convert to JSON for API requests
   Map<String, dynamic> toJson() {
     return {
-      'content': content,
+      'note': content,
     };
   }
 
@@ -74,13 +74,18 @@ class InternalNotesResponseModel extends InternalNotesResponse {
             .toList() ??
         [];
 
+    // API returns pagination object with page, page_size, total, total_pages
+    final pagination = json['pagination'] as Map<String, dynamic>?;
+    final currentPage = pagination?['page'] as int? ?? json['page'] as int? ?? 1;
+    final totalPages = pagination?['total_pages'] as int? ?? json['total_pages'] as int? ?? 1;
+    final total = pagination?['total'] as int? ?? json['total'] as int? ?? notesList.length;
+
     return InternalNotesResponseModel(
       notes: notesList,
-      totalCount: json['total'] as int? ?? notesList.length,
-      currentPage: json['current_page'] as int? ?? json['page'] as int? ?? 1,
-      totalPages: json['total_pages'] as int? ?? json['pages'] as int? ?? 1,
-      hasNextPage: json['has_next_page'] as bool? ??
-          (json['current_page'] as int? ?? 1) < (json['total_pages'] as int? ?? 1),
+      totalCount: total,
+      currentPage: currentPage,
+      totalPages: totalPages,
+      hasNextPage: currentPage < totalPages,
     );
   }
 }
