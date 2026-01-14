@@ -228,7 +228,7 @@ class DependencyInjection {
     // HttpClient is already initialized in _initializeAuth()
 
     // Data sources
-    _conversationRemoteDataSource = ConversationRemoteDataSourceImpl(_httpClient);
+    _conversationRemoteDataSource = ConversationRemoteDataSourceImpl(_httpClient, _valueDefinitionsService);
 
     // Repositories
     _conversationRepository = ConversationRepositoryImpl(_conversationRemoteDataSource);

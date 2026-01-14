@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../../core/services/http_client.dart';
+import '../../../../core/services/value_definitions_service.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/conversation_filters.dart';
@@ -110,8 +111,9 @@ abstract class ConversationRemoteDataSource {
 /// Conversation Remote Data Source Implementation
 class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
   final HttpClient _httpClient;
+  final ValueDefinitionsService _valueDefinitionsService;
 
-  ConversationRemoteDataSourceImpl(this._httpClient);
+  ConversationRemoteDataSourceImpl(this._httpClient, this._valueDefinitionsService);
 
   @override
   Future<ConversationsListResponseModel> getConversations({
@@ -1016,11 +1018,13 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
     const endpoint = '/organization_users/agents';
 
     try {
+      final activeStatusId = _valueDefinitionsService.getActiveStatusId();
       final queryParams = {
         'page': '1',
         'page_size': '100',
         'order_by': 'status_id',
         'order_direction': 'asc',
+        'filters': 'status_id=$activeStatusId',
       };
 
       AppLogger.apiRequest('GET', endpoint, params: queryParams);
@@ -1034,10 +1038,23 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
-        final results = data['results'] as List? ?? [];
-        return results
-            .map((a) => AgentOptionModel.fromJson(a as Map<String, dynamic>))
-            .toList();
+        final agents = data['agents'] as List? ?? [];
+        return agents.map((a) {
+          final agentData = a as Map<String, dynamic>;
+          final userData = agentData['user'] as Map<String, dynamic>? ?? {};
+          final userId = userData['id'];
+          // Skip agents without user ID to avoid runtime exceptions
+          if (userId == null) {
+            AppLogger.warning('Agent without user ID found, skipping', tag: 'ConversationDataSource');
+            return null;
+          }
+          // Map nested structure to flat structure expected by AgentOptionModel
+          return AgentOptionModel.fromJson({
+            'id': userId, // user ID used for reassignment endpoint
+            'fullname': userData['fullname'] ?? '',
+            'email': userData['email'] ?? '',
+          });
+        }).whereType<AgentOptionModel>().toList();
       } else {
         throw NetworkException(
           'Failed to load organization agents',
@@ -1081,7 +1098,8 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
 
       AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
 
-      if (response.statusCode != 200 && response.statusCode != 201) {
+      // Accept 200, 201 and 204 (No Content) as success
+      if (response.statusCode != 200 && response.statusCode != 201 && response.statusCode != 204) {
         throw NetworkException(
           'Failed to reassign conversation',
           statusCode: response.statusCode,
