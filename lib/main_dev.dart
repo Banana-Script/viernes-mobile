@@ -17,10 +17,15 @@ void main() async {
   // Set environment to DEV
   EnvironmentConfig.setEnvironment(Environment.dev);
 
-  // Initialize Firebase with DEV-specific options
-  await Firebase.initializeApp(
-    options: FirebaseOptionsDev.currentPlatform,
-  );
+  // Initialize Firebase with DEV-specific options (handle if already initialized by native layer)
+  try {
+    await Firebase.initializeApp(
+      options: FirebaseOptionsDev.currentPlatform,
+    );
+  } catch (e) {
+    // Firebase already initialized by native layer (e.g., when using prod flavor with dev target)
+    debugPrint('[Firebase] Already initialized: $e');
+  }
 
   // Register FCM background message handler
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
