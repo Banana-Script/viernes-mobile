@@ -1352,4 +1352,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get undo => 'Deshacer';
+
+  @override
+  String get mediaImage => '📷 Imagen';
+
+  @override
+  String get mediaAudio => '🎵 Audio';
+
+  @override
+  String get mediaVideo => '🎬 Video';
+
+  @override
+  String get mediaDocument => '📄 Documento';
+
+  @override
+  String get mediaLocation => '📍 Ubicación';
+
+  @override
+  String get mediaSticker => '🎭 Sticker';
 }

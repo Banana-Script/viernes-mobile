@@ -5,6 +5,7 @@ import '../../../../core/theme/viernes_spacing.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/utils/timezone_utils.dart';
 import '../../domain/entities/message_entity.dart';
+import 'media/index.dart';
 
 /// Message Bubble Widget
 ///
@@ -70,18 +71,8 @@ class MessageBubble extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                   ],
-                  if (message.hasText)
-                    Text(
-                      message.text!,
-                      style: ViernesTextStyles.bodyText.copyWith(
-                        color: isCustomer
-                            ? Colors.white
-                            : ViernesColors.getTextColor(isDark),
-                        height: 1.5,
-                        letterSpacing: 0.15,
-                      ),
-                    ),
-                  if (message.hasMedia) _buildMediaPreview(context),
+                  // Parse message content for media patterns
+                  _buildMessageContent(context, isCustomer),
                   const SizedBox(height: 4),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -154,57 +145,151 @@ class MessageBubble extends StatelessWidget {
     }
   }
 
+  /// Build message content based on parsed media patterns
+  Widget _buildMessageContent(BuildContext context, bool isCustomer) {
+    // Parse the message text for media patterns
+    final parsedContent = MessageContentParser.parse(message.text);
+
+    // Build widgets based on parsed content type
+    final widgets = <Widget>[];
+
+    // Render media content if detected
+    if (parsedContent.isMedia) {
+      widgets.add(_buildParsedMediaContent(context, parsedContent));
+
+      // Add caption/text if there's additional text content
+      if (parsedContent.textContent != null && parsedContent.textContent!.isNotEmpty) {
+        widgets.add(const SizedBox(height: 8));
+        widgets.add(
+          Text(
+            parsedContent.textContent!,
+            style: ViernesTextStyles.bodyText.copyWith(
+              color: isCustomer ? Colors.white : ViernesColors.getTextColor(isDark),
+              height: 1.5,
+              letterSpacing: 0.15,
+            ),
+          ),
+        );
+      }
+    } else {
+      // No media pattern detected, check for regular text or media attachment
+      if (message.hasText && parsedContent.textContent != null) {
+        widgets.add(
+          Text(
+            parsedContent.textContent!,
+            style: ViernesTextStyles.bodyText.copyWith(
+              color: isCustomer ? Colors.white : ViernesColors.getTextColor(isDark),
+              height: 1.5,
+              letterSpacing: 0.15,
+            ),
+          ),
+        );
+      }
+
+      // Also check for media attachments from message entity
+      if (message.hasMedia) {
+        widgets.add(_buildMediaPreview(context));
+      }
+    }
+
+    if (widgets.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: widgets,
+    );
+  }
+
+  /// Build widget for parsed media content
+  Widget _buildParsedMediaContent(BuildContext context, ParsedMessageContent content) {
+    // Guard against null URLs for media types
+    if (content.type != MediaContentType.text &&
+        content.type != MediaContentType.location &&
+        content.mediaUrl == null) {
+      return const SizedBox.shrink();
+    }
+
+    switch (content.type) {
+      case MediaContentType.image:
+        return ImageMessageWidget(
+          url: content.mediaUrl!,
+          fileName: content.fileName,
+          caption: content.textContent,
+        );
+
+      case MediaContentType.audio:
+        return AudioPlayerWidget(
+          url: content.mediaUrl!,
+          fileName: content.fileName,
+        );
+
+      case MediaContentType.video:
+        return VideoPlayerWidget(
+          url: content.mediaUrl!,
+          fileName: content.fileName,
+        );
+
+      case MediaContentType.document:
+        return DocumentPreviewWidget(
+          url: content.mediaUrl!,
+          fileName: content.fileName,
+        );
+
+      case MediaContentType.location:
+        if (content.latitude == null || content.longitude == null) {
+          return const SizedBox.shrink();
+        }
+        return LocationMessageWidget(
+          latitude: content.latitude!,
+          longitude: content.longitude!,
+        );
+
+      case MediaContentType.sticker:
+        return StickerMessageWidget(
+          url: content.mediaUrl!,
+        );
+
+      case MediaContentType.text:
+        return const SizedBox.shrink();
+    }
+  }
+
   Widget _buildMediaPreview(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
     if (message.isImage) {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            message.media!,
-            width: 200,
-            height: 150,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                width: 200,
-                height: 150,
-                color: Colors.grey.withValues(alpha: 0.3),
-                child: const Icon(Icons.broken_image, size: 48),
-              );
-            },
-          ),
+        child: ImageMessageWidget(
+          url: message.media!,
+          fileName: message.fileName,
+        ),
+      );
+    } else if (message.isVideo) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: VideoPlayerWidget(
+          url: message.media!,
+          fileName: message.fileName,
+        ),
+      );
+    } else if (message.isAudio) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: AudioPlayerWidget(
+          url: message.media!,
+          fileName: message.fileName,
         ),
       );
     } else if (message.hasFile) {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              _getFileIcon(),
-              size: 20,
-              color: message.isAgentMessage
-                  ? Colors.black.withValues(alpha: 0.8)
-                  : ViernesColors.accent,
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                message.fileName ?? l10n?.file ?? 'File',
-                style: ViernesTextStyles.bodySmall.copyWith(
-                  color: message.isAgentMessage
-                      ? Colors.black
-                      : ViernesColors.accent,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+        child: DocumentPreviewWidget(
+          url: message.media ?? '',
+          fileName: message.fileName ?? l10n?.file ?? 'File',
         ),
       );
     }
@@ -245,13 +330,6 @@ class MessageBubble extends StatelessWidget {
       ),
       child: Icon(icon, size: 12, color: color),
     );
-  }
-
-  IconData _getFileIcon() {
-    if (message.isDocument) return Icons.description;
-    if (message.isVideo) return Icons.video_file;
-    if (message.isAudio) return Icons.audio_file;
-    return Icons.attach_file;
   }
 
   Color _getBubbleColor(bool isCustomer, bool isDark) {

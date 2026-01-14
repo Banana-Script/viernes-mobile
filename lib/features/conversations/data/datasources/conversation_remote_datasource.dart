@@ -341,6 +341,7 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
       final requestData = {
         'message': text,
         'session_id': normalizedSessionId,
+        'conversationId': conversationId,
       };
 
       AppLogger.apiRequest('POST', endpoint, params: requestData);

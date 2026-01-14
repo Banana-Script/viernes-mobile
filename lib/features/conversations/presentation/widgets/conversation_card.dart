@@ -10,6 +10,7 @@ import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../customers/domain/entities/conversation_entity.dart';
 import '../providers/conversation_provider.dart';
+import 'media/message_content_parser.dart';
 import 'status_badge.dart';
 import 'priority_badge.dart';
 import 'tags_badge.dart';
@@ -561,6 +562,18 @@ class _ConversationCardState extends State<ConversationCard>
       senderIcon = Icons.person_outline;
     }
 
+    // Check if message contains media patterns and get preview text
+    final mediaPreview = MessageContentParser.getPreviewText(
+      message,
+      imageLabel: l10n?.mediaImage ?? '📷 Imagen',
+      audioLabel: l10n?.mediaAudio ?? '🎵 Audio',
+      videoLabel: l10n?.mediaVideo ?? '🎬 Video',
+      documentLabel: l10n?.mediaDocument ?? '📄 Documento',
+      locationLabel: l10n?.mediaLocation ?? '📍 Ubicación',
+      stickerLabel: l10n?.mediaSticker ?? '🎭 Sticker',
+    );
+    final displayMessage = mediaPreview ?? message;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -605,17 +618,17 @@ class _ConversationCardState extends State<ConversationCard>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
-              Icons.chat_bubble_outline,
+              mediaPreview != null ? Icons.attachment : Icons.chat_bubble_outline,
               size: 14,
               color: textColor.withValues(alpha: 0.5),
             ),
             const SizedBox(width: ViernesSpacing.xs),
             Expanded(
               child: Text(
-                '"$message"',
+                mediaPreview != null ? displayMessage : '"$displayMessage"',
                 style: ViernesTextStyles.bodySmall.copyWith(
                   color: textColor.withValues(alpha: 0.7),
-                  fontStyle: FontStyle.italic,
+                  fontStyle: mediaPreview != null ? FontStyle.normal : FontStyle.italic,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

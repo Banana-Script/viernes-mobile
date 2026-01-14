@@ -2635,6 +2635,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Undo'**
   String get undo;
+
+  /// No description provided for @mediaImage.
+  ///
+  /// In en, this message translates to:
+  /// **'📷 Image'**
+  String get mediaImage;
+
+  /// No description provided for @mediaAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'🎵 Audio'**
+  String get mediaAudio;
+
+  /// No description provided for @mediaVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'🎬 Video'**
+  String get mediaVideo;
+
+  /// No description provided for @mediaDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'📄 Document'**
+  String get mediaDocument;
+
+  /// No description provided for @mediaLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'📍 Location'**
+  String get mediaLocation;
+
+  /// No description provided for @mediaSticker.
+  ///
+  /// In en, this message translates to:
+  /// **'🎭 Sticker'**
+  String get mediaSticker;
 }
 
 class _AppLocalizationsDelegate

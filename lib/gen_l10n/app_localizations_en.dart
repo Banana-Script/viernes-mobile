@@ -1340,4 +1340,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get undo => 'Undo';
+
+  @override
+  String get mediaImage => '📷 Image';
+
+  @override
+  String get mediaAudio => '🎵 Audio';
+
+  @override
+  String get mediaVideo => '🎬 Video';
+
+  @override
+  String get mediaDocument => '📄 Document';
+
+  @override
+  String get mediaLocation => '📍 Location';
+
+  @override
+  String get mediaSticker => '🎭 Sticker';
 }

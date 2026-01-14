@@ -1068,5 +1068,11 @@
   "editInternalNote": "Edit Note",
   "back": "Back",
   "noteDeleted": "Note deleted",
-  "undo": "Undo"
+  "undo": "Undo",
+  "mediaImage": "📷 Image",
+  "mediaAudio": "🎵 Audio",
+  "mediaVideo": "🎬 Video",
+  "mediaDocument": "📄 Document",
+  "mediaLocation": "📍 Location",
+  "mediaSticker": "🎭 Sticker"
 }

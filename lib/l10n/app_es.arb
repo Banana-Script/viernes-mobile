@@ -500,5 +500,11 @@
   "editInternalNote": "Editar Nota",
   "back": "Volver",
   "noteDeleted": "Nota eliminada",
-  "undo": "Deshacer"
+  "undo": "Deshacer",
+  "mediaImage": "📷 Imagen",
+  "mediaAudio": "🎵 Audio",
+  "mediaVideo": "🎬 Video",
+  "mediaDocument": "📄 Documento",
+  "mediaLocation": "📍 Ubicación",
+  "mediaSticker": "🎭 Sticker"
 }
