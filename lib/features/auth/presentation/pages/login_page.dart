@@ -4,6 +4,7 @@ import 'package:provider/provider.dart' as provider_pkg;
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_input.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../providers/auth_provider.dart';
@@ -32,6 +33,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final isDark = ref.watch(isDarkModeProvider);
     final authProvider = provider_pkg.Provider.of<AuthProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // Show error message if there's an error
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -132,7 +134,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           children: [
                             // Title
                             Text(
-                              'INICIAR SESIÓN',
+                              l10n.signIn.toUpperCase(),
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w700,
@@ -145,7 +147,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                             // Subtitle
                             Text(
-                              'Ingresa tu email y contraseña para continuar',
+                              l10n.loginInstructions,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -160,8 +162,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             // Email input
                             ViernesInput.email(
                               controller: _emailController,
-                              labelText: 'Email',
-                              hintText: 'tu@email.com',
+                              labelText: l10n.email,
+                              hintText: l10n.emailPlaceholder,
                               prefixIcon: Icon(
                                 Icons.email_outlined,
                                 color: isDark ? ViernesColors.accent : ViernesColors.primary,
@@ -175,8 +177,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             // Password input
                             ViernesInput.password(
                               controller: _passwordController,
-                              labelText: 'Contraseña',
-                              hintText: 'Tu contraseña',
+                              labelText: l10n.password,
+                              hintText: l10n.yourPassword,
                               prefixIcon: Icon(
                                 Icons.lock_outline,
                                 color: isDark ? ViernesColors.accent : ViernesColors.primary,
@@ -200,7 +202,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
-                                  '¿Olvidaste tu contraseña?',
+                                  l10n.forgotPasswordQuestion,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -214,7 +216,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                             // Submit button with gradient
                             ViernesGradientButton(
-                              text: 'INICIAR SESIÓN',
+                              text: l10n.signIn.toUpperCase(),
                               onPressed: authProvider.status == AuthStatus.loading
                                   ? null
                                   : () => _handleLogin(authProvider),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 
 /// Animated splash screen for Viernes app
 ///
@@ -96,6 +97,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Accessibility: respect reduce motion preference
     final reduceMotion = MediaQuery.of(context).disableAnimations;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF060818) : Colors.white,
@@ -122,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
                     );
                   },
                   child: Semantics(
-                    label: 'Viernes animación',
+                    label: l10n.viernesAnimation,
                     child: SizedBox(
                       width: 280,
                       height: 280,
@@ -148,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                     );
                   },
                   child: Semantics(
-                    label: 'Viernes - Powered by Banana',
+                    label: l10n.viernesPoweredByBanana,
                     child: Column(
                       children: [
                         Image.asset(

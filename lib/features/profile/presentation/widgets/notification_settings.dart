@@ -3,6 +3,7 @@ import '../../../../core/models/notification_preferences.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 
 /// Notification Settings Widget
@@ -45,6 +46,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return ViernesGlassmorphismCard(
       borderRadius: 24,
@@ -61,7 +63,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Notificaciones',
+                l10n.notifications,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -88,8 +90,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
           // Main toggle
           _buildToggleOption(
             isDark: isDark,
-            title: 'Activar notificaciones',
-            subtitle: 'Recibir alertas de nuevos mensajes',
+            title: l10n.enableNotifications,
+            subtitle: l10n.enableNotificationsDesc,
             value: _preferences.enabled,
             onChanged: (value) {
               _updatePreferences(_preferences.copyWith(enabled: value));
@@ -104,8 +106,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             // Sound toggle
             _buildToggleOption(
               isDark: isDark,
-              title: 'Sonido',
-              subtitle: 'Reproducir sonido al recibir notificaciones',
+              title: l10n.sound,
+              subtitle: l10n.playSound,
               value: _preferences.soundEnabled,
               onChanged: (value) {
                 _updatePreferences(_preferences.copyWith(soundEnabled: value));
@@ -117,8 +119,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             // Vibration toggle
             _buildToggleOption(
               isDark: isDark,
-              title: 'Vibración',
-              subtitle: 'Vibrar al recibir notificaciones',
+              title: l10n.vibration,
+              subtitle: l10n.vibrateOnNotification,
               value: _preferences.vibrationEnabled,
               onChanged: (value) {
                 _updatePreferences(_preferences.copyWith(vibrationEnabled: value));
@@ -130,7 +132,7 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             const SizedBox(height: 16),
 
             Text(
-              'Tipos de notificaciones',
+              l10n.notificationTypes,
               style: ViernesTextStyles.bodySmall.copyWith(
                 color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.6),
                 fontWeight: FontWeight.w600,
@@ -141,8 +143,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             // Message notifications
             _buildToggleOption(
               isDark: isDark,
-              title: 'Nuevos mensajes',
-              subtitle: 'Notificar cuando llegan mensajes de clientes',
+              title: l10n.newMessages,
+              subtitle: l10n.newMessagesDesc,
               value: _preferences.showMessageNotifications,
               onChanged: (value) {
                 _updatePreferences(_preferences.copyWith(showMessageNotifications: value));
@@ -154,8 +156,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             // Assignment notifications
             _buildToggleOption(
               isDark: isDark,
-              title: 'Asignaciones',
-              subtitle: 'Notificar cuando te asignan una conversación',
+              title: l10n.assignments,
+              subtitle: l10n.assignmentsDesc,
               value: _preferences.showAssignmentNotifications,
               onChanged: (value) {
                 _updatePreferences(_preferences.copyWith(showAssignmentNotifications: value));
@@ -167,8 +169,8 @@ class _NotificationSettingsState extends State<NotificationSettings> {
             // New conversation notifications
             _buildToggleOption(
               isDark: isDark,
-              title: 'Nuevas conversaciones',
-              subtitle: 'Notificar cuando inicia una nueva conversación',
+              title: l10n.newConversations,
+              subtitle: l10n.newConversationsDesc,
               value: _preferences.showNewConversationNotifications,
               onChanged: (value) {
                 _updatePreferences(_preferences.copyWith(showNewConversationNotifications: value));

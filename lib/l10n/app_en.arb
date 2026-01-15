@@ -275,6 +275,16 @@
     "description": "Profile section title"
   },
 
+  "defaultUserName": "User",
+  "@defaultUserName": {
+    "description": "Default user name fallback"
+  },
+
+  "noEmail": "No email",
+  "@noEmail": {
+    "description": "Fallback text when email is not available"
+  },
+
   "notifications": "Notifications",
   "@notifications": {
     "description": "Notifications section title"
@@ -633,6 +643,21 @@
   "currentLanguage": "Current Language",
   "@currentLanguage": {
     "description": "Label for current language section"
+  },
+
+  "system": "System",
+  "@system": {
+    "description": "Short form for system/automatic option"
+  },
+
+  "languageSelectorPrefix": "Language selector: ",
+  "@languageSelectorPrefix": {
+    "description": "Accessibility prefix for language selector"
+  },
+
+  "errorChangingLanguage": "Error changing language",
+  "@errorChangingLanguage": {
+    "description": "Error message when language change fails"
   },
 
   "activeLanguage": "Active Language",
@@ -1076,5 +1101,119 @@
   "mediaVideo": "🎬 Video",
   "mediaDocument": "📄 Document",
   "mediaLocation": "📍 Location",
-  "mediaSticker": "🎭 Sticker"
+  "mediaSticker": "🎭 Sticker",
+
+  "loadingVideo": "Loading video...",
+  "@loadingVideo": {
+    "description": "Loading state for video player"
+  },
+
+  "failedToLoadVideo": "Failed to load video",
+  "@failedToLoadVideo": {
+    "description": "Error message when video fails to load"
+  },
+
+  "viewComponentsDemo": "View Components Demo",
+  "@viewComponentsDemo": {
+    "description": "Button text to view components demo"
+  },
+  "analyticsDashboard": "Analytics Dashboard",
+  "@analyticsDashboard": {
+    "description": "Button text to view analytics dashboard"
+  },
+  "viernesAnimation": "Viernes animation",
+  "@viernesAnimation": {
+    "description": "Accessibility label for Viernes animation"
+  },
+  "viernesPoweredByBanana": "Viernes - Powered by Banana",
+  "@viernesPoweredByBanana": {
+    "description": "Accessibility label for Viernes logo"
+  },
+  "forgotPassword": "Forgot Password",
+  "@forgotPassword": {
+    "description": "Forgot password page title"
+  },
+  "sendInstructions": "SEND INSTRUCTIONS",
+  "@sendInstructions": {
+    "description": "Send password reset instructions button"
+  },
+  "rememberedPassword": "Remembered your password? ",
+  "@rememberedPassword": {
+    "description": "Text before sign in link on forgot password page"
+  },
+  "backToLogin": "BACK TO LOGIN",
+  "@backToLogin": {
+    "description": "Back to login button text"
+  },
+  "recoverPassword": "RECOVER PASSWORD",
+  "@recoverPassword": {
+    "description": "Forgot password page title"
+  },
+  "recoverPasswordInstructions": "Enter your email and we will send you instructions to reset your password",
+  "@recoverPasswordInstructions": {
+    "description": "Forgot password page subtitle"
+  },
+  "emailPlaceholder": "your@email.com",
+  "@emailPlaceholder": {
+    "description": "Email placeholder text"
+  },
+  "emailSent": "Email Sent!",
+  "@emailSent": {
+    "description": "Success title after sending password reset email"
+  },
+  "emailSentInstructions": "We have sent password reset instructions to:",
+  "@emailSentInstructions": {
+    "description": "Success message after sending password reset email"
+  },
+  "checkInboxInstructions": "Check your inbox and follow the instructions to reset your password.",
+  "@checkInboxInstructions": {
+    "description": "Instruction to check inbox"
+  },
+  "checkSpamFolder": "If you don't receive the email in a few minutes, check your spam folder.",
+  "@checkSpamFolder": {
+    "description": "Instruction to check spam folder"
+  },
+  "loginInstructions": "Enter your email and password to continue",
+  "@loginInstructions": {
+    "description": "Login page subtitle"
+  },
+  "yourPassword": "Your password",
+  "@yourPassword": {
+    "description": "Password placeholder text"
+  },
+  "forgotPasswordQuestion": "Forgot your password?",
+  "@forgotPasswordQuestion": {
+    "description": "Forgot password link text"
+  },
+  "enableNotificationsDesc": "Receive alerts for new messages",
+  "@enableNotificationsDesc": {
+    "description": "Short description for enable notifications toggle"
+  },
+  "playSoundShort": "Play sound when receiving",
+  "@playSoundShort": {
+    "description": "Short description for sound toggle"
+  },
+  "clientMessages": "Messages from customers",
+  "@clientMessages": {
+    "description": "Description for new messages notification type"
+  },
+  "conversationsAssignedToYou": "Conversations assigned to you",
+  "@conversationsAssignedToYou": {
+    "description": "Description for assignments notification type"
+  },
+  "conversationStart": "New conversation initiation",
+  "@conversationStart": {
+    "description": "Description for new conversations notification type"
+  },
+  "notificationsDisabled": "Disabled",
+  "@notificationsDisabled": {
+    "description": "Label when notifications are disabled"
+  },
+  "activeTypesCount": "{count} of 3 types active",
+  "@activeTypesCount": {
+    "description": "Label showing count of active notification types",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
 }

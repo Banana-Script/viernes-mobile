@@ -4,6 +4,7 @@ import 'package:chewie/chewie.dart';
 import '../../../../../core/theme/viernes_colors.dart';
 import '../../../../../core/theme/viernes_spacing.dart';
 import '../../../../../core/theme/viernes_text_styles.dart';
+import '../../../../../gen_l10n/app_localizations.dart';
 
 /// Video Player Widget
 ///
@@ -57,7 +58,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         allowPlaybackSpeedChanging: false,
         placeholder: _buildPlaceholder(),
         errorBuilder: (context, errorMessage) {
-          return _buildErrorWidget(errorMessage);
+          final l10n = AppLocalizations.of(context)!;
+          return _buildErrorWidget(l10n, errorMessage);
         },
         materialProgressColors: ChewieProgressColors(
           playedColor: ViernesColors.primary,
@@ -103,6 +105,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +122,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               color: Colors.black,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: _buildVideoContent(),
+            child: _buildVideoContent(l10n),
           ),
         ),
 
@@ -151,13 +154,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     );
   }
 
-  Widget _buildVideoContent() {
+  Widget _buildVideoContent(AppLocalizations l10n) {
     if (_isLoading) {
-      return _buildLoadingWidget();
+      return _buildLoadingWidget(l10n);
     }
 
     if (_hasError || _chewieController == null) {
-      return _buildErrorWidget(_errorMessage ?? 'Failed to load video');
+      return _buildErrorWidget(l10n, _errorMessage ?? l10n.failedToLoadVideo);
     }
 
     return AspectRatio(
@@ -166,23 +169,23 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     );
   }
 
-  Widget _buildLoadingWidget() {
+  Widget _buildLoadingWidget(AppLocalizations l10n) {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Container(
         color: Colors.black,
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(
+              const CircularProgressIndicator(
                 color: Colors.white,
                 strokeWidth: 2,
               ),
-              SizedBox(height: ViernesSpacing.sm),
+              const SizedBox(height: ViernesSpacing.sm),
               Text(
-                'Loading video...',
-                style: TextStyle(
+                l10n.loadingVideo,
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 12,
                 ),
@@ -207,7 +210,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     );
   }
 
-  Widget _buildErrorWidget(String message) {
+  Widget _buildErrorWidget(AppLocalizations l10n, String message) {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Container(
@@ -223,7 +226,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               ),
               const SizedBox(height: ViernesSpacing.sm),
               Text(
-                'Failed to load video',
+                l10n.failedToLoadVideo,
                 style: ViernesTextStyles.bodyText.copyWith(
                   color: Colors.white,
                 ),
@@ -242,7 +245,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   });
                   _initPlayer();
                 },
-                child: const Text('Retry'),
+                child: Text(l10n.retry),
               ),
             ],
           ),

@@ -180,6 +180,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profile => 'Perfil';
 
   @override
+  String get defaultUserName => 'Usuario';
+
+  @override
+  String get noEmail => 'Sin email';
+
+  @override
   String get notifications => 'Notificaciones';
 
   @override
@@ -397,6 +403,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get currentLanguage => 'Idioma Actual';
+
+  @override
+  String get system => 'Sistema';
+
+  @override
+  String get languageSelectorPrefix => 'Selector de idioma: ';
+
+  @override
+  String get errorChangingLanguage => 'Error al cambiar idioma';
 
   @override
   String get activeLanguage => 'Idioma Activo';
@@ -1377,4 +1392,92 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mediaSticker => '🎭 Sticker';
+
+  @override
+  String get loadingVideo => 'Cargando video...';
+
+  @override
+  String get failedToLoadVideo => 'Error al cargar video';
+
+  @override
+  String get viewComponentsDemo => 'Ver Demo de Componentes';
+
+  @override
+  String get analyticsDashboard => 'Panel de Análisis';
+
+  @override
+  String get viernesAnimation => 'Animación de Viernes';
+
+  @override
+  String get viernesPoweredByBanana => 'Viernes - Desarrollado por Banana';
+
+  @override
+  String get forgotPassword => 'Olvidé mi Contraseña';
+
+  @override
+  String get sendInstructions => 'ENVIAR INSTRUCCIONES';
+
+  @override
+  String get rememberedPassword => '¿Recordaste tu contraseña? ';
+
+  @override
+  String get backToLogin => 'VOLVER AL LOGIN';
+
+  @override
+  String get recoverPassword => 'RECUPERAR CONTRASEÑA';
+
+  @override
+  String get recoverPasswordInstructions =>
+      'Ingresa tu email y te enviaremos instrucciones para restablecer tu contraseña';
+
+  @override
+  String get emailPlaceholder => 'tu@email.com';
+
+  @override
+  String get emailSent => '¡Email Enviado!';
+
+  @override
+  String get emailSentInstructions =>
+      'Hemos enviado las instrucciones para restablecer tu contraseña a:';
+
+  @override
+  String get checkInboxInstructions =>
+      'Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.';
+
+  @override
+  String get checkSpamFolder =>
+      'Si no recibes el email en unos minutos, revisa tu carpeta de spam.';
+
+  @override
+  String get loginInstructions =>
+      'Ingresa tu email y contraseña para continuar';
+
+  @override
+  String get yourPassword => 'Tu contraseña';
+
+  @override
+  String get forgotPasswordQuestion => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get enableNotificationsDesc => 'Recibir alertas de nuevos mensajes';
+
+  @override
+  String get playSoundShort => 'Reproducir sonido al recibir';
+
+  @override
+  String get clientMessages => 'Mensajes de clientes';
+
+  @override
+  String get conversationsAssignedToYou => 'Conversaciones asignadas a ti';
+
+  @override
+  String get conversationStart => 'Inicio de conversación';
+
+  @override
+  String get notificationsDisabled => 'Desactivadas';
+
+  @override
+  String activeTypesCount(int count) {
+    return '$count de 3 tipos activos';
+  }
 }

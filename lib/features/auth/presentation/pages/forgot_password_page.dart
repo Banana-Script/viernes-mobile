@@ -4,6 +4,7 @@ import 'package:provider/provider.dart' as provider_pkg;
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/theme_manager.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_input.dart';
 import '../../../../shared/widgets/viernes_gradient_button.dart';
 import '../providers/auth_provider.dart';
@@ -47,10 +48,11 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     final isDark = ref.watch(isDarkModeProvider);
     final authProvider = provider_pkg.Provider.of<AuthProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // Show success message when email is sent
     if (_emailSent) {
-      return _buildSuccessScreen(isDark);
+      return _buildSuccessScreen(isDark, l10n);
     }
 
     return Scaffold(
@@ -135,7 +137,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                           children: [
                             // Title
                             Text(
-                              'RECUPERAR CONTRASEÑA',
+                              l10n.recoverPassword,
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w700,
@@ -148,7 +150,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
                             // Subtitle
                             Text(
-                              'Ingresa tu email y te enviaremos instrucciones para restablecer tu contraseña',
+                              l10n.recoverPasswordInstructions,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -163,8 +165,8 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                             // Email input
                             ViernesInput.email(
                               controller: _emailController,
-                              labelText: 'Email',
-                              hintText: 'tu@email.com',
+                              labelText: l10n.email,
+                              hintText: l10n.emailPlaceholder,
                               prefixIcon: Icon(
                                 Icons.email_outlined,
                                 color: isDark ? ViernesColors.accent : ViernesColors.primary,
@@ -178,7 +180,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
                             // Submit button with gradient
                             ViernesGradientButton(
-                              text: 'ENVIAR INSTRUCCIONES',
+                              text: l10n.sendInstructions,
                               onPressed: authProvider.status == AuthStatus.loading
                                   ? null
                                   : () async => await _handleForgotPassword(authProvider),
@@ -202,7 +204,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  '¿Recordaste tu contraseña? ',
+                                  l10n.rememberedPassword,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: isDark
@@ -220,7 +222,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   child: Text(
-                                    'INICIAR SESIÓN',
+                                    l10n.signIn.toUpperCase(),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
@@ -335,7 +337,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
     );
   }
 
-  Widget _buildSuccessScreen(bool isDark) {
+  Widget _buildSuccessScreen(bool isDark, AppLocalizations l10n) {
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -374,7 +376,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
                 // Success title
                 Text(
-                  '¡Email Enviado!',
+                  l10n.emailSent,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
@@ -387,7 +389,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
                 // Success message
                 Text(
-                  'Hemos enviado las instrucciones para restablecer tu contraseña a:',
+                  l10n.emailSentInstructions,
                   style: TextStyle(
                     fontSize: 16,
                     color: isDark
@@ -435,7 +437,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.',
+                        l10n.checkInboxInstructions,
                         style: TextStyle(
                           fontSize: 14,
                           color: isDark
@@ -446,7 +448,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Si no recibes el email en unos minutos, revisa tu carpeta de spam.',
+                        l10n.checkSpamFolder,
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark
@@ -463,7 +465,7 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
 
                 // Back to login button
                 ViernesGradientButton(
-                  text: 'VOLVER AL LOGIN',
+                  text: l10n.backToLogin,
                   onPressed: () => Navigator.of(context).pop(),
                   isLoading: false,
                 ),

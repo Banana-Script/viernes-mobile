@@ -82,6 +82,8 @@
   "passwordsDoNotMatch": "Las contraseñas no coinciden",
 
   "profile": "Perfil",
+  "defaultUserName": "Usuario",
+  "noEmail": "Sin email",
   "notifications": "Notificaciones",
   "appearance": "Apariencia",
 
@@ -169,6 +171,9 @@
   "spanishDesc": "Idioma español",
   "currentLanguage": "Idioma Actual",
   "activeLanguage": "Idioma Activo",
+  "system": "Sistema",
+  "languageSelectorPrefix": "Selector de idioma: ",
+  "errorChangingLanguage": "Error al cambiar idioma",
 
   "errorUserAlreadyExists": "El usuario ya tiene acceso a la organización",
   "errorInvalidCustomerData": "Datos de cliente inválidos",
@@ -508,5 +513,34 @@
   "mediaVideo": "🎬 Video",
   "mediaDocument": "📄 Documento",
   "mediaLocation": "📍 Ubicación",
-  "mediaSticker": "🎭 Sticker"
+  "mediaSticker": "🎭 Sticker",
+
+  "loadingVideo": "Cargando video...",
+  "failedToLoadVideo": "Error al cargar video",
+
+  "viewComponentsDemo": "Ver Demo de Componentes",
+  "analyticsDashboard": "Panel de Análisis",
+  "viernesAnimation": "Animación de Viernes",
+  "viernesPoweredByBanana": "Viernes - Desarrollado por Banana",
+  "forgotPassword": "Olvidé mi Contraseña",
+  "sendInstructions": "ENVIAR INSTRUCCIONES",
+  "rememberedPassword": "¿Recordaste tu contraseña? ",
+  "backToLogin": "VOLVER AL LOGIN",
+  "recoverPassword": "RECUPERAR CONTRASEÑA",
+  "recoverPasswordInstructions": "Ingresa tu email y te enviaremos instrucciones para restablecer tu contraseña",
+  "emailPlaceholder": "tu@email.com",
+  "emailSent": "¡Email Enviado!",
+  "emailSentInstructions": "Hemos enviado las instrucciones para restablecer tu contraseña a:",
+  "checkInboxInstructions": "Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.",
+  "checkSpamFolder": "Si no recibes el email en unos minutos, revisa tu carpeta de spam.",
+  "loginInstructions": "Ingresa tu email y contraseña para continuar",
+  "yourPassword": "Tu contraseña",
+  "forgotPasswordQuestion": "¿Olvidaste tu contraseña?",
+  "enableNotificationsDesc": "Recibir alertas de nuevos mensajes",
+  "playSoundShort": "Reproducir sonido al recibir",
+  "clientMessages": "Mensajes de clientes",
+  "conversationsAssignedToYou": "Conversaciones asignadas a ti",
+  "conversationStart": "Inicio de conversación",
+  "notificationsDisabled": "Desactivadas",
+  "activeTypesCount": "{count} de 3 tipos activos"
 }

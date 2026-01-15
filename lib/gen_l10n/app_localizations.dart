@@ -428,6 +428,18 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get profile;
 
+  /// Default user name fallback
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get defaultUserName;
+
+  /// Fallback text when email is not available
+  ///
+  /// In en, this message translates to:
+  /// **'No email'**
+  String get noEmail;
+
   /// Notifications section title
   ///
   /// In en, this message translates to:
@@ -853,6 +865,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Current Language'**
   String get currentLanguage;
+
+  /// Short form for system/automatic option
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get system;
+
+  /// Accessibility prefix for language selector
+  ///
+  /// In en, this message translates to:
+  /// **'Language selector: '**
+  String get languageSelectorPrefix;
+
+  /// Error message when language change fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error changing language'**
+  String get errorChangingLanguage;
 
   /// Label for active language
   ///
@@ -2683,6 +2713,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'🎭 Sticker'**
   String get mediaSticker;
+
+  /// Loading state for video player
+  ///
+  /// In en, this message translates to:
+  /// **'Loading video...'**
+  String get loadingVideo;
+
+  /// Error message when video fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load video'**
+  String get failedToLoadVideo;
+
+  /// Button text to view components demo
+  ///
+  /// In en, this message translates to:
+  /// **'View Components Demo'**
+  String get viewComponentsDemo;
+
+  /// Button text to view analytics dashboard
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics Dashboard'**
+  String get analyticsDashboard;
+
+  /// Accessibility label for Viernes animation
+  ///
+  /// In en, this message translates to:
+  /// **'Viernes animation'**
+  String get viernesAnimation;
+
+  /// Accessibility label for Viernes logo
+  ///
+  /// In en, this message translates to:
+  /// **'Viernes - Powered by Banana'**
+  String get viernesPoweredByBanana;
+
+  /// Forgot password page title
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get forgotPassword;
+
+  /// Send password reset instructions button
+  ///
+  /// In en, this message translates to:
+  /// **'SEND INSTRUCTIONS'**
+  String get sendInstructions;
+
+  /// Text before sign in link on forgot password page
+  ///
+  /// In en, this message translates to:
+  /// **'Remembered your password? '**
+  String get rememberedPassword;
+
+  /// Back to login button text
+  ///
+  /// In en, this message translates to:
+  /// **'BACK TO LOGIN'**
+  String get backToLogin;
+
+  /// Forgot password page title
+  ///
+  /// In en, this message translates to:
+  /// **'RECOVER PASSWORD'**
+  String get recoverPassword;
+
+  /// Forgot password page subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and we will send you instructions to reset your password'**
+  String get recoverPasswordInstructions;
+
+  /// Email placeholder text
+  ///
+  /// In en, this message translates to:
+  /// **'your@email.com'**
+  String get emailPlaceholder;
+
+  /// Success title after sending password reset email
+  ///
+  /// In en, this message translates to:
+  /// **'Email Sent!'**
+  String get emailSent;
+
+  /// Success message after sending password reset email
+  ///
+  /// In en, this message translates to:
+  /// **'We have sent password reset instructions to:'**
+  String get emailSentInstructions;
+
+  /// Instruction to check inbox
+  ///
+  /// In en, this message translates to:
+  /// **'Check your inbox and follow the instructions to reset your password.'**
+  String get checkInboxInstructions;
+
+  /// Instruction to check spam folder
+  ///
+  /// In en, this message translates to:
+  /// **'If you don\'t receive the email in a few minutes, check your spam folder.'**
+  String get checkSpamFolder;
+
+  /// Login page subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and password to continue'**
+  String get loginInstructions;
+
+  /// Password placeholder text
+  ///
+  /// In en, this message translates to:
+  /// **'Your password'**
+  String get yourPassword;
+
+  /// Forgot password link text
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get forgotPasswordQuestion;
+
+  /// Short description for enable notifications toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Receive alerts for new messages'**
+  String get enableNotificationsDesc;
+
+  /// Short description for sound toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Play sound when receiving'**
+  String get playSoundShort;
+
+  /// Description for new messages notification type
+  ///
+  /// In en, this message translates to:
+  /// **'Messages from customers'**
+  String get clientMessages;
+
+  /// Description for assignments notification type
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations assigned to you'**
+  String get conversationsAssignedToYou;
+
+  /// Description for new conversations notification type
+  ///
+  /// In en, this message translates to:
+  /// **'New conversation initiation'**
+  String get conversationStart;
+
+  /// Label when notifications are disabled
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get notificationsDisabled;
+
+  /// Label showing count of active notification types
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of 3 types active'**
+  String activeTypesCount(int count);
 }
 
 class _AppLocalizationsDelegate

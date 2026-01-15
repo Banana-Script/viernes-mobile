@@ -3,6 +3,7 @@ import 'package:provider/provider.dart' as provider;
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/viernes_spacing.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_button.dart';
 import '../../../../shared/widgets/viernes_card.dart';
 import '../../../dashboard/presentation/pages/dashboard_page.dart';
@@ -16,12 +17,13 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: isDark ? ViernesColors.backgroundDark : ViernesColors.backgroundLight,
       appBar: AppBar(
         title: Text(
-          'Viernes Dashboard',
+          l10n.viernesDashboard,
           style: ViernesTextStyles.h5.copyWith(
             fontWeight: FontWeight.bold,
             color: isDark ? ViernesColors.secondary : ViernesColors.primary,
@@ -85,7 +87,7 @@ class HomePage extends StatelessWidget {
                         ),
                         ViernesSpacing.spaceLg,
                         Text(
-                          'Welcome to Viernes!',
+                          l10n.welcomeToViernes,
                           style: ViernesTextStyles.h2.copyWith(
                             color: isDark ? Colors.white : ViernesColors.primary,
                             fontWeight: FontWeight.bold,
@@ -94,7 +96,7 @@ class HomePage extends StatelessWidget {
                         ),
                         ViernesSpacing.spaceXs,
                         Text(
-                          'Your AI-powered business assistant',
+                          l10n.aiBusinessAssistant,
                           style: ViernesTextStyles.bodyLarge.copyWith(
                             color: isDark
                                 ? Colors.white.withValues(alpha: 0.7)
@@ -115,7 +117,7 @@ class HomePage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _InfoRow(
-                                label: 'Email',
+                                label: l10n.email,
                                 value: user.email,
                                 icon: Icons.email,
                               ),
@@ -123,7 +125,7 @@ class HomePage extends StatelessWidget {
 
                               if (user.displayName != null) ...[
                                 _InfoRow(
-                                  label: 'Name',
+                                  label: l10n.name,
                                   value: user.displayName!,
                                   icon: Icons.person,
                                 ),
@@ -131,7 +133,7 @@ class HomePage extends StatelessWidget {
                               ],
 
                               _InfoRow(
-                                label: 'User ID',
+                                label: l10n.userId,
                                 value: user.uid,
                                 icon: Icons.fingerprint,
                               ),
@@ -164,8 +166,8 @@ class HomePage extends StatelessWidget {
                                     ViernesSpacing.hSpaceSm,
                                     Text(
                                       user.emailVerified
-                                          ? 'Email Verified'
-                                          : 'Email Not Verified',
+                                          ? l10n.emailVerified
+                                          : l10n.emailNotVerified,
                                       style: ViernesTextStyles.bodyText.copyWith(
                                         color: user.emailVerified
                                             ? ViernesColors.success
@@ -188,7 +190,7 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Explore Viernes features and manage your business with AI assistance.',
+                          l10n.exploreViernes,
                           style: ViernesTextStyles.bodyText.copyWith(
                             color: isDark
                                 ? Colors.white.withValues(alpha: 0.7)
@@ -200,7 +202,7 @@ class HomePage extends StatelessWidget {
 
                         // Components Demo Action
                         ViernesButton.primary(
-                          text: 'View Components Demo',
+                          text: l10n.viewComponentsDemo,
                           icon: Icons.widgets,
                           onPressed: () {
                             Navigator.of(context).push(
@@ -214,7 +216,7 @@ class HomePage extends StatelessWidget {
 
                         // Dashboard Action
                         ViernesButton.secondary(
-                          text: 'Analytics Dashboard',
+                          text: l10n.analyticsDashboard,
                           icon: Icons.analytics,
                           onPressed: () {
                             Navigator.of(context).push(
@@ -230,7 +232,7 @@ class HomePage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: ViernesButton.secondary(
-                                text: 'Settings',
+                                text: l10n.settings,
                                 icon: Icons.settings,
                                 size: ViernesButtonSize.small,
                                 onPressed: () {
@@ -241,7 +243,7 @@ class HomePage extends StatelessWidget {
                             ViernesSpacing.hSpaceMd,
                             Expanded(
                               child: ViernesButton.text(
-                                text: 'Help',
+                                text: l10n.help,
                                 icon: Icons.help,
                                 size: ViernesButtonSize.small,
                                 onPressed: () {
@@ -259,7 +261,7 @@ class HomePage extends StatelessWidget {
 
                   // Sign out button
                   ViernesButton.danger(
-                    text: 'Sign Out',
+                    text: l10n.signOut,
                     isLoading: authProvider.status == AuthStatus.loading,
                     onPressed: () => _showSignOutDialog(context),
                     icon: Icons.logout,
@@ -276,23 +278,24 @@ class HomePage extends StatelessWidget {
   }
 
   void _showSignOutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Sign Out'),
-          content: const Text('Are you sure you want to sign out?'),
+          title: Text(l10n.signOutConfirmTitle),
+          content: Text(l10n.signOutConfirmMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 provider.Provider.of<AuthProvider>(context, listen: false).signOut();
               },
-              child: const Text('Sign Out'),
+              child: Text(l10n.signOut),
             ),
           ],
         );

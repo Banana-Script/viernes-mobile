@@ -3,6 +3,7 @@ import '../../../../core/models/notification_preferences.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
+import '../../../../gen_l10n/app_localizations.dart';
 import '../../../../shared/widgets/viernes_background.dart';
 import '../../../../shared/widgets/viernes_glassmorphism_card.dart';
 
@@ -14,16 +15,17 @@ class NotificationSettingsPage extends StatefulWidget {
   const NotificationSettingsPage({super.key});
 
   /// Returns a summary string for display in parent page
-  static String getNotificationSummary() {
+  static String getNotificationSummary(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final prefs = NotificationService.instance.preferences;
-    if (!prefs.enabled) return 'Desactivadas';
+    if (!prefs.enabled) return l10n.notificationsDisabled;
 
     int activeCount = 0;
     if (prefs.showMessageNotifications) activeCount++;
     if (prefs.showAssignmentNotifications) activeCount++;
     if (prefs.showNewConversationNotifications) activeCount++;
 
-    return '$activeCount de 3 tipos activos';
+    return l10n.activeTypesCount(activeCount);
   }
 
   @override
@@ -60,6 +62,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: ViernesBackground(
@@ -67,7 +70,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           child: Column(
             children: [
               // App Bar
-              _buildAppBar(isDark),
+              _buildAppBar(isDark, l10n),
 
               // Content
               Expanded(
@@ -108,7 +111,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Activar notificaciones',
+                                        l10n.enableNotifications,
                                         style: ViernesTextStyles.bodyText.copyWith(
                                           fontWeight: FontWeight.w600,
                                           color: ViernesColors.getTextColor(isDark),
@@ -116,7 +119,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        'Recibir alertas de nuevos mensajes',
+                                        l10n.enableNotificationsDesc,
                                         style: ViernesTextStyles.bodySmall.copyWith(
                                           color: ViernesColors.getTextColor(isDark)
                                               .withValues(alpha: 0.6),
@@ -147,7 +150,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                         const SizedBox(height: 24),
 
                         // Sound & Vibration section
-                        _buildSectionHeader(isDark, 'Sonido y Vibración'),
+                        _buildSectionHeader(isDark, l10n.soundAndVibration),
                         const SizedBox(height: 12),
 
                         ViernesGlassmorphismCard(
@@ -158,8 +161,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                               _buildToggleRow(
                                 isDark: isDark,
                                 icon: Icons.volume_up_outlined,
-                                title: 'Sonido',
-                                subtitle: 'Reproducir sonido al recibir',
+                                title: l10n.sound,
+                                subtitle: l10n.playSoundShort,
                                 value: _preferences.soundEnabled,
                                 onChanged: (value) {
                                   _updatePreferences(
@@ -174,8 +177,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                               _buildToggleRow(
                                 isDark: isDark,
                                 icon: Icons.vibration,
-                                title: 'Vibración',
-                                subtitle: 'Vibrar al recibir notificaciones',
+                                title: l10n.vibration,
+                                subtitle: l10n.vibrateOnNotification,
                                 value: _preferences.vibrationEnabled,
                                 onChanged: (value) {
                                   _updatePreferences(
@@ -190,7 +193,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                         const SizedBox(height: 24),
 
                         // Notification types section
-                        _buildSectionHeader(isDark, 'Tipos de Notificaciones'),
+                        _buildSectionHeader(isDark, l10n.notificationTypes),
                         const SizedBox(height: 12),
 
                         ViernesGlassmorphismCard(
@@ -201,8 +204,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                               _buildToggleRow(
                                 isDark: isDark,
                                 icon: Icons.chat_bubble_outline,
-                                title: 'Nuevos mensajes',
-                                subtitle: 'Mensajes de clientes',
+                                title: l10n.newMessages,
+                                subtitle: l10n.clientMessages,
                                 value: _preferences.showMessageNotifications,
                                 onChanged: (value) {
                                   _updatePreferences(
@@ -217,8 +220,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                               _buildToggleRow(
                                 isDark: isDark,
                                 icon: Icons.assignment_ind_outlined,
-                                title: 'Asignaciones',
-                                subtitle: 'Conversaciones asignadas a ti',
+                                title: l10n.assignments,
+                                subtitle: l10n.conversationsAssignedToYou,
                                 value: _preferences.showAssignmentNotifications,
                                 onChanged: (value) {
                                   _updatePreferences(
@@ -233,8 +236,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                               _buildToggleRow(
                                 isDark: isDark,
                                 icon: Icons.add_comment_outlined,
-                                title: 'Nuevas conversaciones',
-                                subtitle: 'Inicio de conversación',
+                                title: l10n.newConversations,
+                                subtitle: l10n.conversationStart,
                                 value: _preferences.showNewConversationNotifications,
                                 onChanged: (value) {
                                   _updatePreferences(
@@ -259,7 +262,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     );
   }
 
-  Widget _buildAppBar(bool isDark) {
+  Widget _buildAppBar(bool isDark, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
       child: Row(
@@ -281,7 +284,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           const SizedBox(width: 12),
           // Title
           Text(
-            'Notificaciones',
+            l10n.notifications,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,

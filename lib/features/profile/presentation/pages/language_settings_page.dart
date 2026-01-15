@@ -16,8 +16,9 @@ class LanguageSettingsPage extends ConsumerWidget {
   const LanguageSettingsPage({super.key});
 
   /// Returns a summary string for display in parent page
-  static String getLocaleSummary(Locale? locale) {
-    if (locale == null) return 'System';
+  static String getLocaleSummary(BuildContext context, Locale? locale) {
+    final l10n = AppLocalizations.of(context)!;
+    if (locale == null) return l10n.system;
     switch (locale.languageCode) {
       case 'en':
         return 'English';
@@ -145,7 +146,7 @@ class LanguageSettingsPage extends ConsumerWidget {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    getLocaleSummary(currentLocale),
+                                    getLocaleSummary(context, currentLocale),
                                     style: ViernesTextStyles.bodySmall.copyWith(
                                       color: ViernesColors.getTextColor(isDark)
                                           .withValues(alpha: 0.6),
@@ -232,9 +233,10 @@ class LanguageSettingsPage extends ConsumerWidget {
     final isSelected = (currentLocale == null && locale == null) ||
         (currentLocale != null && locale != null && currentLocale.languageCode == locale.languageCode);
 
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
-      label: 'Language selector: $title',
-      value: isSelected ? 'Selected' : 'Not selected',
+      label: '${l10n.languageSelectorPrefix}$title',
+      value: isSelected ? l10n.selected : l10n.notSelected,
       button: true,
       child: Material(
         color: Colors.transparent,
@@ -247,7 +249,7 @@ class LanguageSettingsPage extends ConsumerWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Error changing language: $e'),
+                    content: Text('${l10n.errorChangingLanguage}: $e'),
                     backgroundColor: ViernesColors.danger,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(

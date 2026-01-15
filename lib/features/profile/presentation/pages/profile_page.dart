@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider/provider.dart' as provider_pkg;
 import '../../../../gen_l10n/app_localizations.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/viernes_colors.dart';
 import '../../../../core/theme/viernes_text_styles.dart';
 import '../../../../core/theme/theme_manager.dart';
@@ -27,6 +26,8 @@ class ProfilePage extends ConsumerWidget {
     final isDark = ref.watch(isDarkModeProvider);
     final themeMode = ref.watch(themeManagerProvider);
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: ViernesBackground(
         child: SafeArea(
@@ -40,7 +41,7 @@ class ProfilePage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Header
-                    _buildHeader(isDark),
+                    _buildHeader(isDark, l10n),
 
                     const SizedBox(height: 24),
 
@@ -86,7 +87,7 @@ class ProfilePage extends ConsumerWidget {
 
                           // User name
                           Text(
-                            user?.fullname ?? user?.displayName ?? 'User',
+                            user?.fullname ?? user?.displayName ?? l10n.defaultUserName,
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
@@ -97,7 +98,7 @@ class ProfilePage extends ConsumerWidget {
 
                           // User email
                           Text(
-                            user?.email ?? 'No email',
+                            user?.email ?? l10n.noEmail,
                             style: ViernesTextStyles.bodyText.copyWith(
                               color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                             ),
@@ -137,8 +138,8 @@ class ProfilePage extends ConsumerWidget {
                                   const SizedBox(width: 8),
                                   Text(
                                     user.emailVerified
-                                        ? AppStrings.emailVerified
-                                        : AppStrings.emailNotVerified,
+                                        ? l10n.emailVerified
+                                        : l10n.emailNotVerified,
                                     style: ViernesTextStyles.bodySmall.copyWith(
                                       color: user.emailVerified
                                           ? ViernesColors.success
@@ -211,8 +212,8 @@ class ProfilePage extends ConsumerWidget {
                     // Notification Settings Tile
                     ViernesSettingsTile(
                       icon: Icons.notifications_outlined,
-                      title: AppStrings.notifications,
-                      subtitle: NotificationSettingsPage.getNotificationSummary(),
+                      title: l10n.notifications,
+                      subtitle: NotificationSettingsPage.getNotificationSummary(context),
                       iconColor: ViernesColors.primary,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
@@ -226,7 +227,7 @@ class ProfilePage extends ConsumerWidget {
                     // Appearance Settings Tile
                     ViernesSettingsTile(
                       icon: Icons.palette_outlined,
-                      title: AppStrings.appearance,
+                      title: l10n.appearance,
                       subtitle: AppearanceSettingsPage.getThemeSummary(themeMode),
                       iconColor: ViernesColors.secondary,
                       onTap: () => Navigator.of(context).push(
@@ -242,7 +243,7 @@ class ProfilePage extends ConsumerWidget {
                     ViernesSettingsTile(
                       icon: Icons.language_outlined,
                       title: AppLocalizations.of(context)!.language,
-                      subtitle: LanguageSettingsPage.getLocaleSummary(ref.watch(localeManagerProvider)),
+                      subtitle: LanguageSettingsPage.getLocaleSummary(context, ref.watch(localeManagerProvider)),
                       iconColor: ViernesColors.accent,
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
@@ -273,11 +274,11 @@ class ProfilePage extends ConsumerWidget {
 
                     // Sign out button
                     Semantics(
-                      label: AppStrings.signOutButton,
+                      label: l10n.signOutButton,
                       button: true,
                       child: ViernesGradientButton(
-                        text: AppStrings.signOut,
-                        onPressed: () => _showSignOutDialog(context, authProvider),
+                        text: l10n.signOut,
+                        onPressed: () => _showSignOutDialog(context, authProvider, l10n),
                         isLoading: authProvider.status == auth_provider.AuthStatus.loading,
                         height: 56,
                         borderRadius: 14,
@@ -295,12 +296,12 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader(bool isDark, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       child: Center(
         child: Text(
-          AppStrings.profile,
+          l10n.profile,
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w700,
@@ -312,7 +313,7 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  void _showSignOutDialog(BuildContext context, auth_provider.AuthProvider authProvider) {
+  void _showSignOutDialog(BuildContext context, auth_provider.AuthProvider authProvider, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
@@ -350,7 +351,7 @@ class ProfilePage extends ConsumerWidget {
 
                 // Title
                 Text(
-                  AppStrings.signOutConfirmTitle,
+                  l10n.signOutConfirmTitle,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -361,7 +362,7 @@ class ProfilePage extends ConsumerWidget {
 
                 // Message
                 Text(
-                  AppStrings.signOutConfirmMessage,
+                  l10n.signOutConfirmMessage,
                   style: ViernesTextStyles.bodyText.copyWith(
                     color: ViernesColors.getTextColor(isDark).withValues(alpha: 0.7),
                   ),
@@ -392,7 +393,7 @@ class ProfilePage extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(12),
                             child: Center(
                               child: Text(
-                                AppStrings.cancel,
+                                l10n.cancel,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -407,7 +408,7 @@ class ProfilePage extends ConsumerWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ViernesGradientButton(
-                        text: AppStrings.confirm,
+                        text: l10n.confirm,
                         onPressed: provider.status == auth_provider.AuthStatus.loading
                             ? null
                             : () {
