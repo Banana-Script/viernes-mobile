@@ -1345,6 +1345,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get conversationNotAvailable => 'Conversation not available';
+
+  @override
+  String get sendMediaError => 'Failed to send media';
+
+  @override
   String get couldNotIdentifyCurrentUser => 'Could not identify current user';
 
   @override
@@ -1466,4 +1472,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String activeTypesCount(int count) {
     return '$count of 3 types active';
   }
+
+  @override
+  String get userNotActivatedError =>
+      'You must activate your status to interact in conversations. Please enable your availability in Profile settings.';
 }

@@ -57,6 +57,32 @@ class MessageContentParser {
   static final _locationPattern =
       RegExp(r'location::(-?\d+\.?\d*),\s*(-?\d+\.?\d*)');
 
+  // Pattern to detect if text is just a filename (not a real caption)
+  static final _filenameOnlyPattern = RegExp(
+    r'^(scaled_)?[a-zA-Z0-9_-]+\.(jpg|jpeg|png|gif|webp|mp4|mov|avi|mp3|wav|ogg|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|zip)$',
+    caseSensitive: false,
+  );
+
+  /// Check if text is just a filename and should not be shown as caption
+  static String? _filterFilenameText(String? text, String? mediaUrl) {
+    if (text == null || text.isEmpty) return null;
+
+    // Check if the text matches a filename pattern
+    if (_filenameOnlyPattern.hasMatch(text)) {
+      return null;
+    }
+
+    // Check if the text matches the filename from the URL
+    if (mediaUrl != null) {
+      final urlFileName = _extractFileName(mediaUrl);
+      if (urlFileName != null && text == urlFileName) {
+        return null;
+      }
+    }
+
+    return text;
+  }
+
   /// Parse message text and extract media content
   static ParsedMessageContent parse(String? text) {
     if (text == null || text.isEmpty) {
@@ -74,7 +100,7 @@ class MessageContentParser {
       return ParsedMessageContent(
         type: MediaContentType.image,
         mediaUrl: url,
-        textContent: remainingText.isNotEmpty ? remainingText : null,
+        textContent: _filterFilenameText(remainingText.isNotEmpty ? remainingText : null, url),
         fileName: _extractFileName(url),
       );
     }
@@ -87,7 +113,7 @@ class MessageContentParser {
       return ParsedMessageContent(
         type: MediaContentType.audio,
         mediaUrl: url,
-        textContent: remainingText.isNotEmpty ? remainingText : null,
+        textContent: _filterFilenameText(remainingText.isNotEmpty ? remainingText : null, url),
         fileName: _extractFileName(url),
       );
     }
@@ -100,7 +126,7 @@ class MessageContentParser {
       return ParsedMessageContent(
         type: MediaContentType.video,
         mediaUrl: url,
-        textContent: remainingText.isNotEmpty ? remainingText : null,
+        textContent: _filterFilenameText(remainingText.isNotEmpty ? remainingText : null, url),
         fileName: _extractFileName(url),
       );
     }
@@ -113,7 +139,7 @@ class MessageContentParser {
       return ParsedMessageContent(
         type: MediaContentType.document,
         mediaUrl: url,
-        textContent: remainingText.isNotEmpty ? remainingText : null,
+        textContent: _filterFilenameText(remainingText.isNotEmpty ? remainingText : null, url),
         fileName: _extractFileName(url),
       );
     }
@@ -140,7 +166,7 @@ class MessageContentParser {
           type: MediaContentType.location,
           latitude: lat,
           longitude: lng,
-          textContent: remainingText.isNotEmpty ? remainingText : null,
+          textContent: _filterFilenameText(remainingText.isNotEmpty ? remainingText : null, null),
         );
       }
     }

@@ -20,6 +20,7 @@ import '../widgets/message_bubble.dart';
 import '../widgets/status_badge.dart';
 import '../widgets/priority_badge.dart';
 import '../widgets/message_composer/message_composer.dart';
+import '../widgets/message_composer/models/attachment_model.dart';
 import '../widgets/conversation_detail_skeleton.dart';
 import '../widgets/conversation_actions/conversation_actions_bottom_sheet.dart';
 import '../widgets/conversation_actions/complete_conversation_dialog.dart';
@@ -69,7 +70,24 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
       if (widget.allowDirectChat && mounted) {
         final conversation = provider.selectedConversation;
         if (conversation != null && conversation.agentId == null) {
-          await provider.assignConversationToMe(widget.conversationId);
+          final success = await provider.assignConversationToMe(widget.conversationId);
+          if (!success && mounted) {
+            final l10n = AppLocalizations.of(context);
+            final errorMsg = provider.errorMessage;
+            final displayMessage = errorMsg == 'USER_NOT_ACTIVATED'
+                ? l10n?.userNotActivatedError ?? 'You must activate your status to interact in conversations'
+                : errorMsg ?? l10n?.anErrorOccurred ?? 'Failed to assign conversation';
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(displayMessage),
+                backgroundColor: ViernesColors.danger,
+                duration: errorMsg == 'USER_NOT_ACTIVATED'
+                    ? const Duration(seconds: 5)
+                    : const Duration(seconds: 4),
+              ),
+            );
+          }
         }
       }
 
@@ -858,10 +876,59 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
             return success;
           },
           onSendMedia: (attachments, caption) async {
-            // TODO: Implement media upload and send
-            // For now, just send caption as text if provided
-            if (caption != null && caption.isNotEmpty) {
-              await conversationProvider.sendMessage(widget.conversationId, caption);
+            final scaffoldMessenger = ScaffoldMessenger.of(context);
+            final conversation = conversationProvider.selectedConversation;
+
+            // Validate conversation exists
+            if (conversation == null) {
+              scaffoldMessenger.showSnackBar(
+                SnackBar(
+                  content: Text(l10n?.conversationNotAvailable ?? 'Conversation not available'),
+                  backgroundColor: ViernesColors.danger,
+                ),
+              );
+              return;
+            }
+
+            // Validate session ID
+            final sessionId = conversation.user?.sessionId;
+            if (sessionId == null || sessionId.isEmpty) {
+              scaffoldMessenger.showSnackBar(
+                SnackBar(
+                  content: Text(l10n?.sessionIdNotAvailable ?? 'Session ID not available'),
+                  backgroundColor: ViernesColors.danger,
+                ),
+              );
+              return;
+            }
+
+            final organizationId = conversation.organizationId.toString();
+
+            for (int i = 0; i < attachments.length; i++) {
+              final attachment = attachments[i];
+              final isLast = i == attachments.length - 1;
+
+              final success = await conversationProvider.sendMediaMessage(
+                conversationId: widget.conversationId,
+                filePath: attachment.path,
+                fileName: attachment.fileName,
+                sessionId: sessionId,
+                type: attachment.type == AttachmentType.image ? 'image' : 'document',
+                organizationId: organizationId,
+                caption: isLast ? caption : null,
+              );
+
+              // Show error and stop on failure
+              if (!success && mounted) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
+                    content: Text(conversationProvider.messageErrorMessage ??
+                        (l10n?.sendMediaError ?? 'Failed to send media')),
+                    backgroundColor: ViernesColors.danger,
+                  ),
+                );
+                return;
+              }
             }
           },
           onSearchQuickReplies: (query) {
@@ -878,6 +945,22 @@ class _ConversationDetailPageState extends ConsumerState<ConversationDetailPage>
                 SnackBar(
                   content: Text(l10n?.assignedSuccessfully ?? 'Conversation assigned successfully'),
                   backgroundColor: ViernesColors.success,
+                ),
+              );
+            } else if (!success && mounted) {
+              // Check for specific user not activated error
+              final errorMsg = conversationProvider.errorMessage;
+              final displayMessage = errorMsg == 'USER_NOT_ACTIVATED'
+                  ? l10n?.userNotActivatedError ?? 'You must activate your status to interact in conversations'
+                  : errorMsg ?? l10n?.anErrorOccurred ?? 'Failed to assign conversation';
+
+              scaffoldMessenger.showSnackBar(
+                SnackBar(
+                  content: Text(displayMessage),
+                  backgroundColor: ViernesColors.danger,
+                  duration: errorMsg == 'USER_NOT_ACTIVATED'
+                      ? const Duration(seconds: 5)
+                      : const Duration(seconds: 4),
                 ),
               );
             }

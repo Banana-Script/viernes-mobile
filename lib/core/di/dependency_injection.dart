@@ -259,6 +259,7 @@ class DependencyInjection {
       getOrganizationAgentsUseCase: _getOrganizationAgentsUseCase,
       reassignConversationUseCase: _reassignConversationUseCase,
       getFilterOptionsUseCase: _getConversationFilterOptionsUseCase,
+      repository: _conversationRepository,
     );
 
     // Internal Notes

@@ -1090,6 +1090,8 @@
   "failedToSendMedia": "Failed to send media: {error}",
   "failedToUpdateStatus": "Failed to update status: {error}",
   "failedToAssignConversation": "Failed to assign conversation: {error}",
+  "conversationNotAvailable": "Conversation not available",
+  "sendMediaError": "Failed to send media",
   "couldNotIdentifyCurrentUser": "Could not identify current user",
   "newInternalNote": "New Note",
   "editInternalNote": "Edit Note",
@@ -1215,5 +1217,9 @@
     "placeholders": {
       "count": {"type": "int"}
     }
+  },
+  "userNotActivatedError": "You must activate your status to interact in conversations. Please enable your availability in Profile settings.",
+  "@userNotActivatedError": {
+    "description": "Error message when user tries to interact but is not activated"
   }
 }

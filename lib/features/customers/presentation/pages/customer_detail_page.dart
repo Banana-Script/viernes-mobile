@@ -243,10 +243,19 @@ class _CustomerDetailPageState extends ConsumerState<CustomerDetailPage>
       final success = await conversationProvider.assignConversationToMe(conversationId, reopen: true);
 
       if (!success && mounted) {
+        // Check for specific user not activated error
+        final errorMsg = conversationProvider.errorMessage;
+        final displayMessage = errorMsg == 'USER_NOT_ACTIVATED'
+            ? l10n?.userNotActivatedError ?? 'You must activate your status to interact in conversations'
+            : errorMsg ?? l10n?.anErrorOccurred ?? 'Error opening conversation';
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(conversationProvider.errorMessage ?? l10n?.anErrorOccurred ?? 'Error opening conversation'),
+            content: Text(displayMessage),
             backgroundColor: ViernesColors.danger,
+            duration: errorMsg == 'USER_NOT_ACTIVATED'
+                ? const Duration(seconds: 5)
+                : const Duration(seconds: 4),
           ),
         );
         return;

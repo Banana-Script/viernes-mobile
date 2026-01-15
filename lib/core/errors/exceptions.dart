@@ -209,3 +209,18 @@ class TimeoutException extends ViernesException {
     return buffer.toString();
   }
 }
+
+/// User Not Activated Exception
+///
+/// Thrown when a user tries to perform an action that requires them to be
+/// activated (e.g., interacting in chats) but they are not currently active.
+class UserNotActivatedException extends ViernesException {
+  UserNotActivatedException(
+    super.message, {
+    super.stackTrace,
+    super.originalError,
+  });
+
+  @override
+  String toString() => 'UserNotActivatedException: $message';
+}

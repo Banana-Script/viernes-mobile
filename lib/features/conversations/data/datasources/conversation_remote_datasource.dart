@@ -7,6 +7,7 @@ import '../../domain/entities/conversation_filters.dart';
 import '../../domain/entities/message_entity.dart';
 import '../models/message_model.dart';
 import '../models/conversations_list_response_model.dart';
+import '../models/media_upload_response.dart';
 import '../../../customers/data/models/conversation_model.dart';
 
 /// Conversation Remote Data Source
@@ -40,12 +41,32 @@ abstract class ConversationRemoteDataSource {
     required String text,
   });
 
-  /// Send media message
+  /// Send media message (legacy - not used for WhatsApp)
   Future<MessageModel> sendMediaMessage({
     required int conversationId,
     required String filePath,
     required String fileName,
     String? caption,
+  });
+
+  /// Step 1: Upload media file to S3
+  Future<MediaUploadResponse> uploadMedia({
+    required int conversationId,
+    required String filePath,
+    required String fileName,
+    required String sessionId,
+    required String type,
+  });
+
+  /// Step 2: Send media message via WhatsApp
+  Future<void> sendWhatsAppMedia({
+    required String type,
+    required int conversationId,
+    required String mediaId,
+    required String fileUrl,
+    required String originalFilename,
+    required String organizationId,
+    required String sessionId,
   });
 
   /// Update conversation status
@@ -502,6 +523,164 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
       AppLogger.apiError(endpoint, e, stackTrace);
       throw ParseException(
         'Error parsing send media response: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<MediaUploadResponse> uploadMedia({
+    required int conversationId,
+    required String filePath,
+    required String fileName,
+    required String sessionId,
+    required String type,
+  }) async {
+    const endpoint = '/organization_file_upload/whatsapp-upload-media';
+
+    try {
+      final queryParams = {
+        'conversation_id': conversationId.toString(),
+        'type': type,
+        'session_id': sessionId,
+      };
+
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(filePath, filename: fileName),
+      });
+
+      AppLogger.apiRequest('POST', endpoint, params: {'file': fileName, ...queryParams});
+
+      final response = await _httpClient.dio.post(
+        endpoint,
+        queryParameters: queryParams,
+        data: formData,
+        options: Options(headers: {'ngrok-skip-browser-warning': 'ANY-VALUE'}),
+      );
+
+      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return MediaUploadResponse.fromJson(response.data as Map<String, dynamic>);
+      } else {
+        throw NetworkException(
+          'Failed to upload media',
+          statusCode: response.statusCode,
+          endpoint: endpoint,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+
+      if (e.response?.statusCode == 400) {
+        throw ValidationException(
+          'Invalid file or file too large',
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else if (e.response?.statusCode == 401) {
+        throw UnauthorizedException(
+          'Authentication required',
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else {
+        throw NetworkException(
+          'Network error while uploading media',
+          statusCode: e.response?.statusCode,
+          endpoint: endpoint,
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      }
+    } catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace);
+      throw ParseException(
+        'Error parsing upload media response: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> sendWhatsAppMedia({
+    required String type,
+    required int conversationId,
+    required String mediaId,
+    required String fileUrl,
+    required String originalFilename,
+    required String organizationId,
+    required String sessionId,
+  }) async {
+    const endpoint = '/whatsapp-send-media';
+
+    try {
+      final requestData = {
+        'type': type,
+        'conversation_id': conversationId,
+        'media_id': mediaId,
+        'file_url': fileUrl,
+        'original_filename': originalFilename,
+        'organizationId': organizationId,
+        'session_id': sessionId,
+      };
+
+      AppLogger.apiRequest('POST', endpoint, params: requestData);
+
+      final response = await _httpClient.dio.post(
+        endpoint,
+        queryParameters: {'session_id': sessionId},
+        data: requestData,
+        options: Options(headers: {'ngrok-skip-browser-warning': 'ANY-VALUE'}),
+      );
+
+      AppLogger.apiResponse(response.statusCode ?? 0, endpoint);
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw NetworkException(
+          'Failed to send WhatsApp media',
+          statusCode: response.statusCode,
+          endpoint: endpoint,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+
+      if (e.response?.statusCode == 400) {
+        throw ValidationException(
+          'Invalid media data',
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else if (e.response?.statusCode == 401) {
+        throw UnauthorizedException(
+          'Authentication required',
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else if (e.response?.statusCode == 404) {
+        throw NotFoundException(
+          'WhatsApp session not found',
+          resourceType: 'WhatsApp Session',
+          resourceId: sessionId,
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      } else {
+        throw NetworkException(
+          'Network error while sending WhatsApp media',
+          statusCode: e.response?.statusCode,
+          endpoint: endpoint,
+          stackTrace: stackTrace,
+          originalError: e,
+        );
+      }
+    } catch (e, stackTrace) {
+      AppLogger.apiError(endpoint, e, stackTrace);
+      throw ParseException(
+        'Error sending WhatsApp media: ${e.toString()}',
         stackTrace: stackTrace,
         originalError: e,
       );
@@ -1006,6 +1185,22 @@ class ConversationRemoteDataSourceImpl implements ConversationRemoteDataSource {
       }
     } on DioException catch (e, stackTrace) {
       AppLogger.apiError(endpoint, e, stackTrace, statusCode: e.response?.statusCode);
+
+      // Check for specific "user not activated" error from server
+      if (e.response?.statusCode == 500) {
+        final responseData = e.response?.data;
+        if (responseData is Map<String, dynamic>) {
+          final message = responseData['message'] as String?;
+          if (message != null && message.contains('not enabled to interact')) {
+            throw UserNotActivatedException(
+              message,
+              stackTrace: stackTrace,
+              originalError: e,
+            );
+          }
+        }
+      }
+
       _handleDioException(e, stackTrace, endpoint, conversationId);
     } catch (e, stackTrace) {
       AppLogger.apiError(endpoint, e, stackTrace);

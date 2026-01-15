@@ -54,78 +54,80 @@ class AttachmentBottomSheet extends StatelessWidget {
         ),
       ),
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: ViernesSpacing.sm),
-              decoration: BoxDecoration(
-                color: ViernesColors.getBorderColor(isDark),
-                borderRadius: BorderRadius.circular(2),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: ViernesSpacing.sm),
+                decoration: BoxDecoration(
+                  color: ViernesColors.getBorderColor(isDark),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: ViernesSpacing.md),
-            // Title
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: ViernesSpacing.lg),
-              child: Row(
-                children: [
-                  Text(
-                    l10n?.attachmentOptionsTitle ?? 'Options',
-                    style: ViernesTextStyles.h6.copyWith(
-                      color: ViernesColors.getTextColor(isDark),
+              const SizedBox(height: ViernesSpacing.md),
+              // Title
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: ViernesSpacing.lg),
+                child: Row(
+                  children: [
+                    Text(
+                      l10n?.attachmentOptionsTitle ?? 'Options',
+                      style: ViernesTextStyles.h6.copyWith(
+                        color: ViernesColors.getTextColor(isDark),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: ViernesSpacing.md),
-            // Options
-            _AttachmentOption(
-              icon: Icons.flash_on_rounded,
-              iconColor: ViernesColors.warning,
-              label: l10n?.attachmentQuickReplies ?? 'Quick Replies',
-              subtitle: l10n?.attachmentQuickRepliesHint ?? 'Predefined quick responses',
-              onTap: () {
-                Navigator.pop(context);
-                onQuickReply?.call();
-              },
-            ),
-            _AttachmentOption(
-              icon: Icons.camera_alt_rounded,
-              iconColor: ViernesColors.info,
-              label: l10n?.attachmentTakePhoto ?? 'Take photo',
-              subtitle: l10n?.attachmentTakePhotoHint ?? 'Use device camera',
-              onTap: () {
-                Navigator.pop(context);
-                onCamera?.call();
-              },
-            ),
-            _AttachmentOption(
-              icon: Icons.photo_library_rounded,
-              iconColor: ViernesColors.success,
-              label: l10n?.attachmentGallery ?? 'Gallery',
-              subtitle: l10n?.attachmentGalleryHint ?? 'Select existing image',
-              onTap: () {
-                Navigator.pop(context);
-                onGallery?.call();
-              },
-            ),
-            _AttachmentOption(
-              icon: Icons.insert_drive_file_rounded,
-              iconColor: ViernesColors.primary,
-              label: l10n?.attachmentDocument ?? 'Document',
-              subtitle: l10n?.attachmentDocumentHint ?? 'PDF, Word, Excel and more',
-              onTap: () {
-                Navigator.pop(context);
-                onDocument?.call();
-              },
-            ),
-            const SizedBox(height: ViernesSpacing.lg),
-          ],
+              const SizedBox(height: ViernesSpacing.md),
+              // Options
+              _AttachmentOption(
+                icon: Icons.flash_on_rounded,
+                iconColor: ViernesColors.warning,
+                label: l10n?.attachmentQuickReplies ?? 'Quick Replies',
+                subtitle: l10n?.attachmentQuickRepliesHint ?? 'Predefined quick responses',
+                onTap: () {
+                  Navigator.pop(context);
+                  onQuickReply?.call();
+                },
+              ),
+              _AttachmentOption(
+                icon: Icons.camera_alt_rounded,
+                iconColor: ViernesColors.info,
+                label: l10n?.attachmentTakePhoto ?? 'Take photo',
+                subtitle: l10n?.attachmentTakePhotoHint ?? 'Use device camera',
+                onTap: () {
+                  Navigator.pop(context);
+                  onCamera?.call();
+                },
+              ),
+              _AttachmentOption(
+                icon: Icons.photo_library_rounded,
+                iconColor: ViernesColors.success,
+                label: l10n?.attachmentGallery ?? 'Gallery',
+                subtitle: l10n?.attachmentGalleryHint ?? 'Select existing image',
+                onTap: () {
+                  Navigator.pop(context);
+                  onGallery?.call();
+                },
+              ),
+              _AttachmentOption(
+                icon: Icons.insert_drive_file_rounded,
+                iconColor: ViernesColors.primary,
+                label: l10n?.attachmentDocument ?? 'Document',
+                subtitle: l10n?.attachmentDocumentHint ?? 'PDF, Word, Excel and more',
+                onTap: () {
+                  Navigator.pop(context);
+                  onDocument?.call();
+                },
+              ),
+              const SizedBox(height: ViernesSpacing.lg),
+            ],
+          ),
         ),
       ),
     );

@@ -158,6 +158,74 @@ class ConversationRepositoryImpl implements ConversationRepository {
   }
 
   @override
+  Future<MediaUploadResult> uploadMedia({
+    required int conversationId,
+    required String filePath,
+    required String fileName,
+    required String sessionId,
+    required String type,
+  }) async {
+    try {
+      final response = await _remoteDataSource.uploadMedia(
+        conversationId: conversationId,
+        filePath: filePath,
+        fileName: fileName,
+        sessionId: sessionId,
+        type: type,
+      );
+
+      return MediaUploadResult(
+        mediaId: response.mediaId,
+        fileUrl: response.fileUrl,
+        originalFilename: response.originalFilename,
+      );
+    } catch (e, stackTrace) {
+      if (e is ViernesException) {
+        rethrow;
+      }
+
+      throw NetworkException(
+        'Failed to upload media: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
+  Future<void> sendWhatsAppMedia({
+    required String type,
+    required int conversationId,
+    required String mediaId,
+    required String fileUrl,
+    required String originalFilename,
+    required String organizationId,
+    required String sessionId,
+  }) async {
+    try {
+      await _remoteDataSource.sendWhatsAppMedia(
+        type: type,
+        conversationId: conversationId,
+        mediaId: mediaId,
+        fileUrl: fileUrl,
+        originalFilename: originalFilename,
+        organizationId: organizationId,
+        sessionId: sessionId,
+      );
+    } catch (e, stackTrace) {
+      if (e is ViernesException) {
+        rethrow;
+      }
+
+      throw NetworkException(
+        'Failed to send WhatsApp media: ${e.toString()}',
+        stackTrace: stackTrace,
+        originalError: e,
+      );
+    }
+  }
+
+  @override
   Future<void> updateConversationStatus({
     required int conversationId,
     required int statusId,

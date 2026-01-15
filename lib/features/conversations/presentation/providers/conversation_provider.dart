@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
+import '../../../../core/errors/exceptions.dart';
 import '../../../../core/models/sse_events.dart';
 import '../../../../core/services/organization_sse_service.dart';
 import '../../../../core/utils/logger.dart';
@@ -33,6 +34,7 @@ class ConversationProvider extends ChangeNotifier {
   final GetConversationDetailUseCase _getConversationDetailUseCase;
   final GetMessagesUseCase _getMessagesUseCase;
   final SendMessageUseCase _sendMessageUseCase;
+  // ignore: unused_field - kept for potential future use with non-WhatsApp media
   final SendMediaUseCase _sendMediaUseCase;
   final UpdateConversationStatusUseCase _updateConversationStatusUseCase;
   final AssignConversationUseCase _assignConversationUseCase;
@@ -40,6 +42,7 @@ class ConversationProvider extends ChangeNotifier {
   final GetOrganizationAgentsUseCase _getOrganizationAgentsUseCase;
   final ReassignConversationUseCase _reassignConversationUseCase;
   final GetFilterOptionsUseCase _getFilterOptionsUseCase;
+  final ConversationRepository _repository;
 
   // Current user's agent ID (for "My Conversations" filter)
   int? _currentUserAgentId;
@@ -56,6 +59,7 @@ class ConversationProvider extends ChangeNotifier {
     required GetOrganizationAgentsUseCase getOrganizationAgentsUseCase,
     required ReassignConversationUseCase reassignConversationUseCase,
     required GetFilterOptionsUseCase getFilterOptionsUseCase,
+    required ConversationRepository repository,
   })  : _getConversationsUseCase = getConversationsUseCase,
         _getConversationDetailUseCase = getConversationDetailUseCase,
         _getMessagesUseCase = getMessagesUseCase,
@@ -66,7 +70,8 @@ class ConversationProvider extends ChangeNotifier {
         _assignAgentUseCase = assignAgentUseCase,
         _getOrganizationAgentsUseCase = getOrganizationAgentsUseCase,
         _reassignConversationUseCase = reassignConversationUseCase,
-        _getFilterOptionsUseCase = getFilterOptionsUseCase;
+        _getFilterOptionsUseCase = getFilterOptionsUseCase,
+        _repository = repository;
 
   // Conversations list state
   ConversationStatus _status = ConversationStatus.initial;
@@ -602,16 +607,13 @@ class ConversationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final message = await _sendMessageUseCase(
+      await _sendMessageUseCase(
         conversationId: conversationId,
         sessionId: sessionId,
         text: text,
       );
 
-      // Add message to list
-      _messages.insert(0, message);
-      _messageTotalCount++;
-
+      // Message will be added via SSE event, not locally
       _messageStatus = MessageStatus.loaded;
       notifyListeners();
       return true;
@@ -629,28 +631,76 @@ class ConversationProvider extends ChangeNotifier {
     }
   }
 
-  /// Send media message
+  /// Send media message via WhatsApp (3-step flow)
+  ///
+  /// 1. Upload file to S3
+  /// 2. Send media via WhatsApp
+  /// 3. Send caption as separate message (optional)
   Future<bool> sendMediaMessage({
     required int conversationId,
     required String filePath,
     required String fileName,
+    required String sessionId,
+    required String type,
+    required String organizationId,
     String? caption,
   }) async {
     _messageStatus = MessageStatus.sending;
     notifyListeners();
 
     try {
-      final message = await _sendMediaUseCase(
+      // Step 1: Upload file to S3
+      final uploadResponse = await _repository.uploadMedia(
         conversationId: conversationId,
         filePath: filePath,
         fileName: fileName,
-        caption: caption,
+        sessionId: sessionId,
+        type: type,
       );
 
-      // Add message to list
-      _messages.insert(0, message);
-      _messageTotalCount++;
+      // Step 2: Send media via WhatsApp
+      try {
+        await _repository.sendWhatsAppMedia(
+          type: type,
+          conversationId: conversationId,
+          mediaId: uploadResponse.mediaId,
+          fileUrl: uploadResponse.fileUrl,
+          originalFilename: uploadResponse.originalFilename ?? fileName,
+          organizationId: organizationId,
+          sessionId: sessionId,
+        );
+      } catch (e, stackTrace) {
+        // File uploaded to S3 but WhatsApp send failed
+        AppLogger.error(
+          'WhatsApp send failed after S3 upload. Media ID: ${uploadResponse.mediaId}',
+          tag: 'ConversationProvider',
+          error: e,
+          stackTrace: stackTrace,
+        );
+        rethrow;
+      }
 
+      // Step 3: Send caption as separate message (optional)
+      // Caption failure should not fail the entire operation since media was sent
+      if (caption != null && caption.isNotEmpty) {
+        try {
+          await _sendMessageUseCase(
+            conversationId: conversationId,
+            sessionId: sessionId,
+            text: caption,
+          );
+        } catch (e, stackTrace) {
+          // Log but don't fail - media was sent successfully
+          AppLogger.warning(
+            'Caption send failed after media was sent successfully',
+            tag: 'ConversationProvider',
+            error: e,
+            stackTrace: stackTrace,
+          );
+        }
+      }
+
+      // Message will be added via SSE event, not locally
       _messageStatus = MessageStatus.loaded;
       notifyListeners();
       return true;
@@ -773,6 +823,17 @@ class ConversationProvider extends ChangeNotifier {
 
       notifyListeners();
       return true;
+    } on UserNotActivatedException catch (e, stackTrace) {
+      // Specific error when user is not activated to interact in chats
+      _errorMessage = 'USER_NOT_ACTIVATED';
+      AppLogger.error(
+        'User not activated to interact in chats: $e',
+        tag: 'ConversationProvider',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      notifyListeners();
+      return false;
     } catch (e, stackTrace) {
       _errorMessage = 'Failed to assign conversation: $e';
       AppLogger.error(

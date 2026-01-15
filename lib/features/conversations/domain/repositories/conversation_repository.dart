@@ -35,12 +35,32 @@ abstract class ConversationRepository {
     required String text,
   });
 
-  /// Upload and send media/file
+  /// Upload and send media/file (legacy - not used for WhatsApp)
   Future<MessageEntity> sendMediaMessage({
     required int conversationId,
     required String filePath,
     required String fileName,
     String? caption,
+  });
+
+  /// Step 1: Upload media file to S3
+  Future<MediaUploadResult> uploadMedia({
+    required int conversationId,
+    required String filePath,
+    required String fileName,
+    required String sessionId,
+    required String type,
+  });
+
+  /// Step 2: Send media message via WhatsApp
+  Future<void> sendWhatsAppMedia({
+    required String type,
+    required int conversationId,
+    required String mediaId,
+    required String fileUrl,
+    required String originalFilename,
+    required String organizationId,
+    required String sessionId,
   });
 
   /// Update conversation status
@@ -158,5 +178,18 @@ class AgentOption {
     required this.id,
     required this.name,
     required this.email,
+  });
+}
+
+/// Media Upload Result
+class MediaUploadResult {
+  final String mediaId;
+  final String fileUrl;
+  final String? originalFilename;
+
+  const MediaUploadResult({
+    required this.mediaId,
+    required this.fileUrl,
+    this.originalFilename,
   });
 }

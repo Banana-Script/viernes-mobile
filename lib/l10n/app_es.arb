@@ -502,6 +502,8 @@
   "failedToSendMedia": "Error al enviar archivo: {error}",
   "failedToUpdateStatus": "Error al actualizar estado: {error}",
   "failedToAssignConversation": "Error al asignar conversación: {error}",
+  "conversationNotAvailable": "Conversación no disponible",
+  "sendMediaError": "Error al enviar archivo",
   "couldNotIdentifyCurrentUser": "No se pudo identificar el usuario actual",
   "newInternalNote": "Nueva Nota",
   "editInternalNote": "Editar Nota",
@@ -542,5 +544,6 @@
   "conversationsAssignedToYou": "Conversaciones asignadas a ti",
   "conversationStart": "Inicio de conversación",
   "notificationsDisabled": "Desactivadas",
-  "activeTypesCount": "{count} de 3 tipos activos"
+  "activeTypesCount": "{count} de 3 tipos activos",
+  "userNotActivatedError": "Debes activar tu estado para interactuar en conversaciones. Por favor, activa tu disponibilidad en Configuración de perfil."
 }

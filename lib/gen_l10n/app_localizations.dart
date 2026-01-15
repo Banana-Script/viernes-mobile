@@ -2642,6 +2642,18 @@ abstract class AppLocalizations {
   /// **'Failed to assign conversation: {error}'**
   String failedToAssignConversation(Object error);
 
+  /// No description provided for @conversationNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation not available'**
+  String get conversationNotAvailable;
+
+  /// No description provided for @sendMediaError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send media'**
+  String get sendMediaError;
+
   /// No description provided for @couldNotIdentifyCurrentUser.
   ///
   /// In en, this message translates to:
@@ -2875,6 +2887,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} of 3 types active'**
   String activeTypesCount(int count);
+
+  /// Error message when user tries to interact but is not activated
+  ///
+  /// In en, this message translates to:
+  /// **'You must activate your status to interact in conversations. Please enable your availability in Profile settings.'**
+  String get userNotActivatedError;
 }
 
 class _AppLocalizationsDelegate
