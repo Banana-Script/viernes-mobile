@@ -61,7 +61,7 @@ class EnvironmentConfig {
       case Environment.dev:
         return 'https://bot.dev.viernes-for-business.bananascript.io';
       case Environment.prod:
-        return 'https://bot.dev.viernes-for-business.bananascript.io';
+        return 'https://bot.viernes-for-business.bananascript.io';
     }
   }
 
