@@ -1,0 +1,1591 @@
+{
+  "version": "2.6",
+  "children": [
+    {
+      "type": "frame",
+      "id": "U63Sj",
+      "x": 0,
+      "y": 0,
+      "name": "Feature Graphic - Google Play",
+      "clip": true,
+      "width": 1024,
+      "height": 500,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 135,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 0.5
+          },
+          {
+            "color": "#FFE61B",
+            "position": 1
+          }
+        ]
+      },
+      "padding": [
+        60,
+        80
+      ],
+      "justifyContent": "space_between",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "UIXzD",
+          "name": "leftContent",
+          "width": 420,
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "pBPp8",
+              "name": "logoFrame",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "ellipse",
+                  "id": "DF5DG",
+                  "name": "logoCircle",
+                  "fill": "#FFE61B",
+                  "width": 60,
+                  "height": 60
+                },
+                {
+                  "type": "text",
+                  "id": "9FkNl",
+                  "name": "logoV",
+                  "fill": "#FFFFFF",
+                  "content": "viernes",
+                  "fontFamily": "Inter",
+                  "fontSize": 42,
+                  "fontWeight": "bold"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "ParDW",
+              "name": "tagline",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": 420,
+              "content": "Gestión inteligente de\nconversaciones con IA",
+              "lineHeight": 1.2,
+              "fontFamily": "Inter",
+              "fontSize": 36,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "cC0GP",
+              "name": "subtext",
+              "fill": "#E5E7EB",
+              "textGrowth": "fixed-width",
+              "width": 380,
+              "content": "La plataforma de atención al cliente\nque potencia tu negocio",
+              "lineHeight": 1.4,
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "LMho3",
+              "name": "ctaBtn",
+              "fill": "#FFE61B",
+              "cornerRadius": 30,
+              "gap": 8,
+              "padding": [
+                14,
+                28
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "RwoM7",
+                  "name": "ctaText",
+                  "fill": "#1F2937",
+                  "content": "Disponible ahora",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IqVep",
+          "name": "Phone Mockup",
+          "width": 190,
+          "height": 380,
+          "fill": "#000000",
+          "cornerRadius": 28,
+          "stroke": {
+            "thickness": 3,
+            "fill": "#374151"
+          },
+          "layout": "vertical",
+          "padding": 6,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Biki6",
+              "name": "Screen Placeholder",
+              "metadata": {
+                "type": "unsplash",
+                "username": "the_average_tech_guy",
+                "link": "https://unsplash.com/@the_average_tech_guy",
+                "author": "The Average Tech Guy"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1596742578443-7682ef5251cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczNjl8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 22,
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "VXZ4h",
+      "x": 1124,
+      "y": 0,
+      "name": "Google Play Screenshot 1 - Dashboard",
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 40,
+      "padding": [
+        80,
+        60
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "P3f3Y",
+          "name": "gpTextTop",
+          "layout": "vertical",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "2KMwA",
+              "name": "gpHeadline",
+              "fill": "#FFFFFF",
+              "content": "Analytics en tiempo real",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 56,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "uQIEB",
+              "name": "gpSubtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 800,
+              "content": "Visualiza las métricas de tu negocio\nal instante",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c3bYM",
+          "name": "Phone Mockup",
+          "width": 440,
+          "height": 880,
+          "fill": "#000000",
+          "cornerRadius": 54,
+          "stroke": {
+            "thickness": 4,
+            "fill": "#51F5F8"
+          },
+          "layout": "vertical",
+          "padding": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "wQmJS",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "appshunter",
+                "link": "https://unsplash.com/@appshunter",
+                "author": "appshunter.io"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1730818029205-5744265e23e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMDN8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 44,
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YfqJ1",
+          "name": "gpBadge",
+          "fill": "#FFE61B",
+          "cornerRadius": 30,
+          "gap": 8,
+          "padding": [
+            12,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "C7nvr",
+              "name": "gpBadgeText",
+              "fill": "#1F2937",
+              "content": "viernes for business",
+              "fontFamily": "Inter",
+              "fontSize": 20,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "0Vzhs",
+      "x": 2304,
+      "y": 0,
+      "name": "Google Play Screenshot 2 - Chat",
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#1F2937",
+            "position": 0
+          },
+          {
+            "color": "#374151",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 40,
+      "padding": [
+        80,
+        60
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Y6m89",
+          "name": "gp2TextTop",
+          "layout": "vertical",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "W9uxn",
+              "name": "gp2Headline",
+              "fill": "#FFFFFF",
+              "content": "Conversaciones con IA",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 56,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "koA99",
+              "name": "gp2Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 800,
+              "content": "Responde a tus clientes de forma\ninteligente y rápida",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pZu3f",
+          "name": "Phone Mockup",
+          "width": 440,
+          "height": 880,
+          "fill": "#000000",
+          "cornerRadius": 54,
+          "stroke": {
+            "thickness": 4,
+            "fill": "#FFE61B"
+          },
+          "layout": "vertical",
+          "padding": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "eXDFF",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "orhakim",
+                "link": "https://unsplash.com/@orhakim",
+                "author": "Or Hakim"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1654431991483-d1c291f4f06a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMDR8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 44,
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "rZf13",
+          "name": "gp2Badge",
+          "fill": "#51F5F8",
+          "cornerRadius": 30,
+          "gap": 8,
+          "padding": [
+            12,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "jAPCo",
+              "name": "gp2BadgeText",
+              "fill": "#1F2937",
+              "content": "IA integrada",
+              "fontFamily": "Inter",
+              "fontSize": 20,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "y0D3U",
+      "x": 3484,
+      "y": 0,
+      "name": "Google Play Screenshot 3 - Analytics",
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 40,
+      "padding": [
+        80,
+        60
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "B2yd3",
+          "name": "gp3TextTop",
+          "layout": "vertical",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "ckpQT",
+              "name": "gp3Headline",
+              "fill": "#FFFFFF",
+              "content": "Análisis de sentimiento",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 56,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "EPBRE",
+              "name": "gp3Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 800,
+              "content": "Comprende las emociones de\ntus conversaciones",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "1VBIm",
+          "name": "Phone Mockup",
+          "width": 440,
+          "height": 880,
+          "fill": "#000000",
+          "cornerRadius": 54,
+          "stroke": {
+            "thickness": 4,
+            "fill": "#51F5F8"
+          },
+          "layout": "vertical",
+          "padding": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "cobrd",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "mariasolponce",
+                "link": "https://unsplash.com/@mariasolponce",
+                "author": "Sol Ponce"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1735150495487-54d0ab3df985?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMDR8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 44,
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GMm2x",
+          "name": "gp3Badge",
+          "fill": "#FFE61B",
+          "cornerRadius": 30,
+          "gap": 8,
+          "padding": [
+            12,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "sh1T2",
+              "name": "gp3BadgeText",
+              "fill": "#1F2937",
+              "content": "Insights automáticos",
+              "fontFamily": "Inter",
+              "fontSize": 20,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "GaGtM",
+      "x": 4664,
+      "y": 0,
+      "name": "Google Play Screenshot 4 - Customers",
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#1F2937",
+            "position": 0
+          },
+          {
+            "color": "#374151",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 40,
+      "padding": [
+        80,
+        60
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "wYlKl",
+          "name": "gp4TextTop",
+          "layout": "vertical",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "L8xFx",
+              "name": "gp4Headline",
+              "fill": "#FFFFFF",
+              "content": "Gestión de clientes",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 56,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "OIgeM",
+              "name": "gp4Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 800,
+              "content": "Organiza y conoce mejor a\ntus clientes",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "aRpSF",
+          "name": "Phone Mockup",
+          "width": 440,
+          "height": 880,
+          "fill": "#000000",
+          "cornerRadius": 54,
+          "stroke": {
+            "thickness": 4,
+            "fill": "#FFE61B"
+          },
+          "layout": "vertical",
+          "padding": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "B5DrL",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "jontyson",
+                "link": "https://unsplash.com/@jontyson",
+                "author": "Jon Tyson"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1563223827-817bf3d83907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 44,
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "y08JK",
+          "name": "gp4Badge",
+          "fill": "#51F5F8",
+          "cornerRadius": 30,
+          "gap": 8,
+          "padding": [
+            12,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "grjj8",
+              "name": "gp4BadgeText",
+              "fill": "#1F2937",
+              "content": "CRM integrado",
+              "fontFamily": "Inter",
+              "fontSize": 20,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "h6AfZ",
+      "x": 5844,
+      "y": 0,
+      "name": "Google Play Screenshot 5 - Profile",
+      "width": 1080,
+      "height": 1920,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 40,
+      "padding": [
+        80,
+        60
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "5XaBu",
+          "name": "gp5TextTop",
+          "layout": "vertical",
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "vlR09",
+              "name": "gp5Headline",
+              "fill": "#FFFFFF",
+              "content": "Tu experiencia personal",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 56,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "Ej0MZ",
+              "name": "gp5Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 800,
+              "content": "Configura la app a tu medida\ny preferencias",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VpIwJ",
+          "name": "Phone Mockup",
+          "width": 440,
+          "height": 880,
+          "fill": "#000000",
+          "cornerRadius": 54,
+          "stroke": {
+            "thickness": 4,
+            "fill": "#51F5F8"
+          },
+          "layout": "vertical",
+          "padding": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "pzufE",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "hoianphotographer",
+                "link": "https://unsplash.com/@hoianphotographer",
+                "author": "Hoi An and Da Nang Photographer"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1769072058643-d188e215795f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 44,
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HvNyN",
+          "name": "gp5Badge",
+          "fill": "#FFE61B",
+          "cornerRadius": 30,
+          "gap": 8,
+          "padding": [
+            12,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "FK3U2",
+              "name": "gp5BadgeText",
+              "fill": "#1F2937",
+              "content": "Personalizable",
+              "fontFamily": "Inter",
+              "fontSize": 20,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "VsUPK",
+      "x": 0,
+      "y": 2100,
+      "name": "App Store Screenshot 1 - Dashboard",
+      "width": 1290,
+      "height": 2796,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 60,
+      "padding": [
+        120,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "RHNVr",
+          "name": "as1TextTop",
+          "layout": "vertical",
+          "gap": 24,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "wHdXY",
+              "name": "as1Headline",
+              "fill": "#FFFFFF",
+              "content": "Analytics en tiempo real",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 78,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "KOTlv",
+              "name": "as1Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 1000,
+              "content": "Visualiza las métricas de tu negocio\nal instante",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 38,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UrI0z",
+          "name": "Phone Mockup",
+          "width": 560,
+          "height": 1180,
+          "fill": "#000000",
+          "cornerRadius": 64,
+          "stroke": {
+            "thickness": 5,
+            "fill": "#51F5F8"
+          },
+          "layout": "vertical",
+          "padding": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "69h44",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "davidbottenberg",
+                "link": "https://unsplash.com/@davidbottenberg",
+                "author": "David Bottenberg"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1705513212769-1a62349600e1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMTd8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 50,
+              "layout": "vertical",
+              "gap": 16,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Aqz4b",
+          "name": "as1Badge",
+          "fill": "#FFE61B",
+          "cornerRadius": 40,
+          "gap": 10,
+          "padding": [
+            16,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "xXgLD",
+              "name": "as1BadgeText",
+              "fill": "#1F2937",
+              "content": "viernes for business",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "a2zDR",
+      "x": 1390,
+      "y": 2100,
+      "name": "App Store Screenshot 2 - Chat",
+      "width": 1290,
+      "height": 2796,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#1F2937",
+            "position": 0
+          },
+          {
+            "color": "#374151",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 60,
+      "padding": [
+        120,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "7jZgw",
+          "name": "as2TextTop",
+          "layout": "vertical",
+          "gap": 24,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "zLDVI",
+              "name": "as2Headline",
+              "fill": "#FFFFFF",
+              "content": "Conversaciones con IA",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 78,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "5Krj9",
+              "name": "as2Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 1000,
+              "content": "Responde a tus clientes de forma\ninteligente y rápida",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 38,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "e01Ey",
+          "name": "Phone Mockup",
+          "width": 560,
+          "height": 1180,
+          "fill": "#000000",
+          "cornerRadius": 64,
+          "stroke": {
+            "thickness": 5,
+            "fill": "#FFE61B"
+          },
+          "layout": "vertical",
+          "padding": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "9HcMA",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "kahoooo",
+                "link": "https://unsplash.com/@kahoooo",
+                "author": "Ka Ho Ng"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1764684994221-f055ca5f5258?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMTh8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 50,
+              "layout": "vertical",
+              "gap": 16,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JpnVc",
+          "name": "as2Badge",
+          "fill": "#51F5F8",
+          "cornerRadius": 40,
+          "gap": 10,
+          "padding": [
+            16,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "1XnnW",
+              "name": "as2BadgeText",
+              "fill": "#1F2937",
+              "content": "IA integrada",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "oSpiv",
+      "x": 2780,
+      "y": 2100,
+      "name": "App Store Screenshot 3 - Analytics",
+      "width": 1290,
+      "height": 2796,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 60,
+      "padding": [
+        120,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "vTYMn",
+          "name": "as3TextTop",
+          "layout": "vertical",
+          "gap": 24,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "HGw4J",
+              "name": "as3Headline",
+              "fill": "#FFFFFF",
+              "content": "Análisis de sentimiento",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 78,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "TrT1g",
+              "name": "as3Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 1000,
+              "content": "Comprende las emociones de\ntus conversaciones",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 38,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "y1ojF",
+          "name": "Phone Mockup",
+          "width": 560,
+          "height": 1180,
+          "fill": "#000000",
+          "cornerRadius": 64,
+          "stroke": {
+            "thickness": 5,
+            "fill": "#51F5F8"
+          },
+          "layout": "vertical",
+          "padding": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "0LGWd",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "jakubzerdzicki",
+                "link": "https://unsplash.com/@jakubzerdzicki",
+                "author": "Jakub Żerdzicki"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1734856080638-71e78b3d8d5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMTl8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 50,
+              "layout": "vertical",
+              "gap": 16,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "v37rD",
+          "name": "as3Badge",
+          "fill": "#FFE61B",
+          "cornerRadius": 40,
+          "gap": 10,
+          "padding": [
+            16,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "pA9Qz",
+              "name": "as3BadgeText",
+              "fill": "#1F2937",
+              "content": "Insights automáticos",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "VZbVW",
+      "x": 4170,
+      "y": 2100,
+      "name": "App Store Screenshot 4 - Customers",
+      "width": 1290,
+      "height": 2796,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#1F2937",
+            "position": 0
+          },
+          {
+            "color": "#374151",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 60,
+      "padding": [
+        120,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "HTSkp",
+          "name": "as4TextTop",
+          "layout": "vertical",
+          "gap": 24,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "tC7Uv",
+              "name": "as4Headline",
+              "fill": "#FFFFFF",
+              "content": "Gestión de clientes",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 78,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "aBC94",
+              "name": "as4Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 1000,
+              "content": "Organiza y conoce mejor a\ntus clientes",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 38,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "khkKC",
+          "name": "Phone Mockup",
+          "width": 560,
+          "height": 1180,
+          "fill": "#000000",
+          "cornerRadius": 64,
+          "stroke": {
+            "thickness": 5,
+            "fill": "#FFE61B"
+          },
+          "layout": "vertical",
+          "padding": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "4tean",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "markuswinkler",
+                "link": "https://unsplash.com/@markuswinkler",
+                "author": "Markus Winkler"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1653378972306-599af0d77fe4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMTl8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 50,
+              "layout": "vertical",
+              "gap": 16,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vIoE9",
+          "name": "as4Badge",
+          "fill": "#51F5F8",
+          "cornerRadius": 40,
+          "gap": 10,
+          "padding": [
+            16,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "S7Krl",
+              "name": "as4BadgeText",
+              "fill": "#1F2937",
+              "content": "CRM integrado",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Z2NdU",
+      "x": 5560,
+      "y": 2100,
+      "name": "App Store Screenshot 5 - Profile",
+      "width": 1290,
+      "height": 2796,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#374151",
+            "position": 0
+          },
+          {
+            "color": "#1F2937",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "vertical",
+      "gap": 60,
+      "padding": [
+        120,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "z1d0N",
+          "name": "as5TextTop",
+          "layout": "vertical",
+          "gap": 24,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "GtUYD",
+              "name": "as5Headline",
+              "fill": "#FFFFFF",
+              "content": "Tu experiencia personal",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 78,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "6KsOR",
+              "name": "as5Subtext",
+              "fill": "#D1D5DB",
+              "textGrowth": "fixed-width",
+              "width": 1000,
+              "content": "Configura la app a tu medida\ny preferencias",
+              "lineHeight": 1.4,
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 38,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "E9VyY",
+          "name": "Phone Mockup",
+          "width": 560,
+          "height": 1180,
+          "fill": "#000000",
+          "cornerRadius": 64,
+          "stroke": {
+            "thickness": 5,
+            "fill": "#51F5F8"
+          },
+          "layout": "vertical",
+          "padding": 14,
+          "children": [
+            {
+              "type": "frame",
+              "id": "qU2lA",
+              "name": "Screenshot Area",
+              "metadata": {
+                "type": "unsplash",
+                "username": "smartupworld",
+                "link": "https://unsplash.com/@smartupworld",
+                "author": "Smartupworld Affordable Website Management"
+              },
+              "width": "fill_container",
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "https://images.unsplash.com/photo-1758983308742-f4ba1f8c8cb4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3Njk0NjczMjB8&ixlib=rb-4.1.0&q=80&w=1080",
+                "mode": "fill"
+              },
+              "cornerRadius": 50,
+              "layout": "vertical",
+              "gap": 16,
+              "justifyContent": "center",
+              "alignItems": "center"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oTIlu",
+          "name": "as5Badge",
+          "fill": "#FFE61B",
+          "cornerRadius": 40,
+          "gap": 10,
+          "padding": [
+            16,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "RHCi2",
+              "name": "as5BadgeText",
+              "fill": "#1F2937",
+              "content": "Personalizable",
+              "fontFamily": "Inter",
+              "fontSize": 26,
+              "fontWeight": "600"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "accent": {
+      "type": "color",
+      "value": "#51F5F8"
+    },
+    "black": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "dark": {
+      "type": "color",
+      "value": "#1F2937"
+    },
+    "primary": {
+      "type": "color",
+      "value": "#374151"
+    },
+    "secondary": {
+      "type": "color",
+      "value": "#FFE61B"
+    },
+    "white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    }
+  }
+}
